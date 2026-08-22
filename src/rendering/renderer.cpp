@@ -790,7 +790,7 @@ namespace MiniDb
 
       const sf::FloatRect helpButton = HelpButtonBounds();
       const float panelWidth = 340.0f;
-      const float panelHeight = 204.0f;
+      const float panelHeight = 220.0f;
       const float panelLeft = HudButtonMarginPixels;
       const float panelTop = helpButton.position.y - panelHeight - 8.0f;
       sf::RectangleShape panel({panelWidth, panelHeight});
@@ -808,6 +808,7 @@ namespace MiniDb
          "Drag the train onto a line to place it there.\n"
          "Click a train or station for details on the right.\n"
          "Del deletes the selected line.\n"
+         "Ctrl+Z / Ctrl+Y undo or redo a draft click.\n"
          "Wheel zoom, middle-drag pan. F11 fullscreen.\n"
          "Space pause. 1 / 2 / 4 / 8 speed.\n"
          "Esc returns to the menu.";

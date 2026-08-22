@@ -25,7 +25,7 @@ Escape during play: cancel line drag, then cancel a draft, otherwise return to t
 
 ## Line editor
 
-`LineEditor` (`input/line_editor.h`) is SFML-free. `Game` translates clicks into `OnStationClicked`, `Confirm`, `Cancel`, `SelectLine`, `DeleteSelectedLine`, `AddTrainToSelectedLine`.
+`LineEditor` (`input/line_editor.h`) is SFML-free. `Game` translates clicks into `OnStationClicked`, `Confirm`, `Cancel`, `SelectLine`, `DeleteSelectedLine`, `UndoDraft`, `RedoDraft`, `AddTrainToSelectedLine`.
 
 Drafting:
 
@@ -34,6 +34,7 @@ Drafting:
 - Clicking the first station again with at least three unique stations confirms a loop.
 - Enter or right-click confirms an open line (at least two stations).
 - Clicking the terminal of the **selected** finished line starts an extension draft.
+- Ctrl+Z removes the last drafted station; Ctrl+Y puts it back. A new click clears the redo stack. Confirm and cancel also clear it.
 
 `World::AddLine` / `ExtendLine` do the mutation. The last confirmed line stays selected.
 
@@ -46,6 +47,7 @@ Drafting:
 | Left-click line (no drag) | Select the line |
 | Drag line onto a station | `InsertStationOnLine` on that segment |
 | Drag train token onto a line | `AddTrainToLineAt` at the cursor |
+| Ctrl+Z / Ctrl+Y | Undo or redo the last draft station |
 | Delete | Delete selected line, or the inspected train’s line; cancels an in-progress line drag |
 | T | Extra train on the selected line |
 | Space | Pause |

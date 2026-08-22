@@ -62,6 +62,16 @@ namespace MiniDb
       Result DeleteSelectedLine(World& world);
 
       /*!
+       *\brief Removes the last drafted station.
+       */
+      Result UndoDraft(void);
+
+      /*!
+       *\brief Restores the last undone draft station.
+       */
+      Result RedoDraft(void);
+
+      /*!
        *\brief Returns true while a line is being drafted.
        */
       bool IsDrafting(void) const;
@@ -71,9 +81,13 @@ namespace MiniDb
 
    private:
       bool IsTerminalOfLine(const World& world, LineId lineId, StationId stationId) const;
+      void ClearRedo(void);
+      void AppendDraftStation(StationId stationId);
 
       StationIdList _draftStationIds;
+      StationIdList _redoStationIds;
       LineId _extendLineId = InvalidLineId;
+      LineId _redoExtendLineId = InvalidLineId;
       LineId _selectedLineId = InvalidLineId;
    };
 } // namespace MiniDb

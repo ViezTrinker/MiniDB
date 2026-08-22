@@ -1,6 +1,6 @@
 /*!
  *\file line_editor_test.cpp
- *\brief Tests for deleting a selected finished line.
+ *\brief Tests for line drafting undo and deleting a finished line.
  */
 
 #include <gtest/gtest.h>
@@ -57,4 +57,55 @@ TEST(LineEditorTest, DeleteSelectedLineRejectsWhenNothingSelected)
    MiniDb::World world(1);
    MiniDb::LineEditor editor;
    EXPECT_TRUE(MiniDb::IsErr(editor.DeleteSelectedLine(world)));
+}
+
+TEST(LineEditorTest, UndoRemovesLastDraftStationAndRedoRestoresIt)
+{
+   MiniDb::World world(7);
+   world.SetPassengerAutoSpawn(MiniDb::PassengerAutoSpawn::No);
+   ASSERT_TRUE(MiniDb::IsOk(world.LoadCatalogFromString(CatalogJson)));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+
+   MiniDb::LineEditor editor;
+   ASSERT_TRUE(MiniDb::IsOk(editor.OnStationClicked(world, 3)));
+   ASSERT_TRUE(MiniDb::IsOk(editor.OnStationClicked(world, 4)));
+   ASSERT_EQ(editor.GetDraftStationIds().size(), 2u);
+
+   ASSERT_TRUE(MiniDb::IsOk(editor.UndoDraft()));
+   ASSERT_EQ(editor.GetDraftStationIds().size(), 1u);
+   EXPECT_EQ(editor.GetDraftStationIds()[0], 3u);
+
+   ASSERT_TRUE(MiniDb::IsOk(editor.RedoDraft()));
+   ASSERT_EQ(editor.GetDraftStationIds().size(), 2u);
+   EXPECT_EQ(editor.GetDraftStationIds()[0], 3u);
+   EXPECT_EQ(editor.GetDraftStationIds()[1], 4u);
+}
+
+TEST(LineEditorTest, UndoClearsDraftAndNewClickClearsRedo)
+{
+   MiniDb::World world(7);
+   world.SetPassengerAutoSpawn(MiniDb::PassengerAutoSpawn::No);
+   ASSERT_TRUE(MiniDb::IsOk(world.LoadCatalogFromString(CatalogJson)));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+
+   MiniDb::LineEditor editor;
+   ASSERT_TRUE(MiniDb::IsOk(editor.OnStationClicked(world, 3)));
+   ASSERT_TRUE(MiniDb::IsOk(editor.OnStationClicked(world, 4)));
+   ASSERT_TRUE(MiniDb::IsOk(editor.UndoDraft()));
+   ASSERT_TRUE(MiniDb::IsOk(editor.UndoDraft()));
+   EXPECT_FALSE(editor.IsDrafting());
+   EXPECT_TRUE(MiniDb::IsErr(editor.UndoDraft()));
+
+   ASSERT_TRUE(MiniDb::IsOk(editor.OnStationClicked(world, 0)));
+   EXPECT_TRUE(MiniDb::IsErr(editor.RedoDraft()));
+   ASSERT_EQ(editor.GetDraftStationIds().size(), 1u);
+   EXPECT_EQ(editor.GetDraftStationIds()[0], 0u);
 }

@@ -35,6 +35,7 @@ The game opens on a start menu. The default station cap is 100 (enough for perfo
 - Click the end station of the selected line to extend it, or click the first station to close a loop
 - Drag a line onto a station to insert it between the two segment ends
 - Del deletes the selected line (or the line of an inspected train)
+- Ctrl+Z undoes the last station in a draft, Ctrl+Y restores it
 - Drag the train token (bottom left) onto an existing line to place a train at the drop point
 - Unconnected stations are listed below the inspector on the right; click a name to inspect it
 - `?` opens a short help popup

@@ -386,6 +386,19 @@ namespace MiniDb
          ReturnToMenu();
          return;
       }
+      if (keyPressed.control)
+      {
+         if (keyPressed.code == sf::Keyboard::Key::Z)
+         {
+            _lineEditor.UndoDraft();
+            return;
+         }
+         if (keyPressed.code == sf::Keyboard::Key::Y)
+         {
+            _lineEditor.RedoDraft();
+            return;
+         }
+      }
       if (keyPressed.code == sf::Keyboard::Key::Enter)
       {
          _lineEditor.Confirm(_world);

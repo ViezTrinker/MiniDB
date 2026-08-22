@@ -40,7 +40,7 @@ namespace MiniDb
 
          if (_draftStationIds.front() == stationId && _draftStationIds.size() >= MinimumLoopStations)
          {
-            _draftStationIds.push_back(stationId);
+            AppendDraftStation(stationId);
             return Confirm(world);
          }
 
@@ -52,7 +52,7 @@ namespace MiniDb
                stationId == pLine->stationIds.front() &&
                pLine->stationIds.size() >= MinimumLoopStations)
             {
-               _draftStationIds.push_back(stationId);
+               AppendDraftStation(stationId);
                return Confirm(world);
             }
          }
@@ -65,7 +65,7 @@ namespace MiniDb
             }
          }
 
-         _draftStationIds.push_back(stationId);
+         AppendDraftStation(stationId);
          return Result::Ok;
       }
 
@@ -75,14 +75,14 @@ namespace MiniDb
          if (pLine != nullptr && pLine->stationIds.back() == stationId)
          {
             _extendLineId = _selectedLineId;
-            _draftStationIds.push_back(stationId);
+            AppendDraftStation(stationId);
             return Result::Ok;
          }
       }
 
       _extendLineId = InvalidLineId;
       _draftStationIds.clear();
-      _draftStationIds.push_back(stationId);
+      AppendDraftStation(stationId);
       return Result::Ok;
    }
 
@@ -108,6 +108,7 @@ namespace MiniDb
          _selectedLineId = _extendLineId;
          _extendLineId = InvalidLineId;
          _draftStationIds.clear();
+         ClearRedo();
          return Result::Ok;
       }
 
@@ -120,6 +121,7 @@ namespace MiniDb
 
       _selectedLineId = lineId;
       _draftStationIds.clear();
+      ClearRedo();
       return Result::Ok;
    }
 
@@ -127,6 +129,7 @@ namespace MiniDb
    {
       _draftStationIds.clear();
       _extendLineId = InvalidLineId;
+      ClearRedo();
       return Result::Ok;
    }
 
@@ -135,6 +138,7 @@ namespace MiniDb
       _draftStationIds.clear();
       _extendLineId = InvalidLineId;
       _selectedLineId = InvalidLineId;
+      ClearRedo();
    }
 
    Result LineEditor::AddTrainToSelectedLine(World& world)
@@ -165,6 +169,54 @@ namespace MiniDb
       _selectedLineId = InvalidLineId;
       _extendLineId = InvalidLineId;
       return result;
+   }
+
+   void LineEditor::ClearRedo(void)
+   {
+      _redoStationIds.clear();
+      _redoExtendLineId = InvalidLineId;
+   }
+
+   void LineEditor::AppendDraftStation(StationId stationId)
+   {
+      _draftStationIds.push_back(stationId);
+      ClearRedo();
+   }
+
+   Result LineEditor::UndoDraft(void)
+   {
+      if (_draftStationIds.empty())
+      {
+         return Result::InvalidArgument;
+      }
+
+      if (_draftStationIds.size() == 1)
+      {
+         _redoExtendLineId = _extendLineId;
+         _extendLineId = InvalidLineId;
+      }
+
+      _redoStationIds.push_back(_draftStationIds.back());
+      _draftStationIds.pop_back();
+      return Result::Ok;
+   }
+
+   Result LineEditor::RedoDraft(void)
+   {
+      if (_redoStationIds.empty())
+      {
+         return Result::InvalidArgument;
+      }
+
+      if (_draftStationIds.empty())
+      {
+         _extendLineId = _redoExtendLineId;
+         _redoExtendLineId = InvalidLineId;
+      }
+
+      _draftStationIds.push_back(_redoStationIds.back());
+      _redoStationIds.pop_back();
+      return Result::Ok;
    }
 
    bool LineEditor::IsDrafting(void) const
