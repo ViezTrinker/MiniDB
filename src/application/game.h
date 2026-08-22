@@ -94,7 +94,7 @@ namespace MiniDb
       AppScreen _appScreen = AppScreen::Menu;
       HasActiveGame _hasActiveGame = HasActiveGame::No;
       SimulationPause _pause = SimulationPause::No;
-      float _timeScale = 4.0f;
+      float _timeScale = DefaultTimeScale;
       PanState _panState = PanState::No;
       HelpVisible _helpVisible = HelpVisible::No;
       TrainDrag _trainDrag = TrainDrag::No;

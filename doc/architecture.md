@@ -52,4 +52,4 @@ Functions that can fail return `enum class Result` (`core/result.h`). Use `IsErr
 
 ## Time
 
-`Game::Update` multiplies wall-clock delta by `_timeScale` (default `4`) and passes that to `World::Tick`. Pause sets the scaled delta to zero. Simulation constants such as train speed and passenger spawn rates are in simulation seconds, not wall-clock seconds.
+`Game::Update` multiplies wall-clock delta by `_timeScale` (default `1`) and passes that to `World::Tick`. Pause sets the scaled delta to zero. Simulation constants such as train speed and passenger spawn rates are in simulation seconds, not wall-clock seconds.

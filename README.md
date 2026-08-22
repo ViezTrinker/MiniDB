@@ -40,7 +40,7 @@ The game opens on a start menu. The default station cap is 100 (enough for perfo
 - Unconnected stations are listed below the inspector on the right; click a name to inspect it
 - `?` opens a short help popup
 - Mouse wheel zooms (station markers stay a constant pixel size), middle-mouse drag pans
-- Space pauses, `1` / `2` / `4` / `8` set simulation speed (default is 4x)
+- Space pauses, `1` / `2` / `4` / `8` set simulation speed (default is 1x)
 - F11 toggles fullscreen
 - Esc cancels a draft, or returns to the start menu
 

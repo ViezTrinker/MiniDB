@@ -38,7 +38,7 @@ namespace MiniDb
    inline constexpr float MapViewMarginKm = 40.0f;
    inline constexpr uint32_t DefaultWindowWidth = 1280;
    inline constexpr uint32_t DefaultWindowHeight = 720;
-   inline constexpr float DefaultTimeScale = 4.0f;
+   inline constexpr float DefaultTimeScale = 1.0f;
 
    inline constexpr float StationRadiusBasePixels = 6.0f;
    inline constexpr float StationRadiusMaxPixels = 10.0f;
