@@ -1,0 +1,818 @@
+/*!
+ *\file game.cpp
+ *\brief Window, input and real-time game loop.
+ */
+
+#include "application/game.h"
+
+#include <ctime>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <array>
+
+#include "core/constants.h"
+
+namespace MiniDb
+{
+   namespace
+   {
+      using PathCandidateList = std::array<std::string, 4>;
+
+      std::string DirectoryFromPath(std::string_view path)
+      {
+         const std::string text(path);
+         const size_t slashIndex = text.find_last_of("/\\");
+         if (slashIndex == std::string::npos)
+         {
+            return std::string(".");
+         }
+
+         return text.substr(0, slashIndex);
+      }
+
+      std::string FormatTime(float seconds)
+      {
+         if (seconds < 0.0f)
+         {
+            seconds = 0.0f;
+         }
+
+         const auto totalSeconds = static_cast<uint32_t>(seconds);
+         const uint32_t minutes = totalSeconds / 60u;
+         const uint32_t restSeconds = totalSeconds % 60u;
+         std::ostringstream stream;
+         if (minutes < 10u)
+         {
+            stream << "0";
+         }
+         stream << minutes << ":";
+         if (restSeconds < 10u)
+         {
+            stream << "0";
+         }
+         stream << restSeconds;
+         return stream.str();
+      }
+
+      float PixelDistanceSquared(sf::Vector2i left, sf::Vector2i right)
+      {
+         const auto deltaX = static_cast<float>(left.x - right.x);
+         const auto deltaY = static_cast<float>(left.y - right.y);
+         return (deltaX * deltaX) + (deltaY * deltaY);
+      }
+
+      bool IsValidInsertStation(const World& world, LineId lineId, StationId stationId)
+      {
+         if (stationId == InvalidStationId)
+         {
+            return false;
+         }
+
+         const Line* pLine = world.GetNetwork().FindLine(lineId);
+         if (pLine == nullptr)
+         {
+            return false;
+         }
+
+         return world.GetNetwork().StationIndexOnLine(*pLine, stationId) == InvalidIndex;
+      }
+   } // namespace
+
+   Game::Game(void) :
+      _world(static_cast<uint32_t>(std::time(nullptr))),
+      _timeScale(DefaultTimeScale)
+   {
+   }
+
+   bool Game::FileExists(std::string_view filePath) const
+   {
+      const std::string pathText(filePath);
+      std::ifstream file;
+      file.open(pathText);
+      return file.is_open();
+   }
+
+   std::string Game::ResolveDataFile(std::string_view executablePath, std::string_view fileName) const
+   {
+      const std::string executableDirectory = DirectoryFromPath(executablePath);
+      const PathCandidateList candidates = {
+         executableDirectory + "/data/" + std::string(fileName),
+         std::string("data/") + std::string(fileName),
+         std::string("../data/") + std::string(fileName),
+         std::string("../../data/") + std::string(fileName)
+      };
+
+      for (const std::string& candidate : candidates)
+      {
+         if (FileExists(candidate))
+         {
+            return candidate;
+         }
+      }
+
+      return candidates[0];
+   }
+
+   Result Game::LoadFont(void)
+   {
+      const PathCandidateList fontPaths = {
+         std::string("C:/Windows/Fonts/segoeui.ttf"),
+         std::string("C:/Windows/Fonts/arial.ttf"),
+         std::string("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"),
+         std::string("/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf")
+      };
+
+      for (const std::string& fontPath : fontPaths)
+      {
+         if (_font.openFromFile(fontPath))
+         {
+            return Result::Ok;
+         }
+      }
+
+      return Result::FileError;
+   }
+
+   Result Game::LoadSimulationData(std::string_view executablePath)
+   {
+      const std::string stationsPath = ResolveDataFile(executablePath, "stations.json");
+      const Result catalogResult = _world.LoadCatalogFromFile(stationsPath);
+      if (IsErr(catalogResult))
+      {
+         return catalogResult;
+      }
+
+      const std::string outlinePath = ResolveDataFile(executablePath, "germany.geojson");
+      const Result outlineResult = _renderer.LoadOutline(outlinePath);
+      if (IsErr(outlineResult))
+      {
+         return outlineResult;
+      }
+
+      return Result::Ok;
+   }
+
+   Result Game::Initialize(std::string_view executablePath)
+   {
+      const sf::VideoMode videoMode({DefaultWindowWidth, DefaultWindowHeight});
+      _window.create(videoMode, "MiniDB");
+      ConfigureWindow();
+
+      const Result fontResult = LoadFont();
+      if (IsErr(fontResult))
+      {
+         return fontResult;
+      }
+
+      const Result rendererResult = _renderer.Initialize(&_window, &_font);
+      if (IsErr(rendererResult))
+      {
+         return rendererResult;
+      }
+
+      _mainMenu.Initialize(&_window, &_font);
+
+      const Result dataResult = LoadSimulationData(executablePath);
+      if (IsErr(dataResult))
+      {
+         return dataResult;
+      }
+
+      _clock.restart();
+      return Result::Ok;
+   }
+
+   int32_t Game::Run(void)
+   {
+      while (_window.isOpen())
+      {
+         ProcessEvents();
+         const float deltaSeconds = _clock.restart().asSeconds();
+         Update(deltaSeconds);
+         Render();
+      }
+
+      return 0;
+   }
+
+   void Game::ProcessEvents(void)
+   {
+      _renderer.SyncWindowViews();
+      while (const std::optional<sf::Event> event = _window.pollEvent())
+      {
+         if (event->is<sf::Event::Closed>())
+         {
+            _window.close();
+            continue;
+         }
+
+         if (const sf::Event::Resized* pResized = event->getIf<sf::Event::Resized>())
+         {
+            _renderer.HandleResize(pResized->size.x, pResized->size.y);
+            continue;
+         }
+
+         if (const sf::Event::TextEntered* pTextEntered = event->getIf<sf::Event::TextEntered>())
+         {
+            HandleTextEntered(*pTextEntered);
+            continue;
+         }
+
+         if (const sf::Event::KeyPressed* pKeyPressed = event->getIf<sf::Event::KeyPressed>())
+         {
+            HandleKeyPressed(*pKeyPressed);
+            continue;
+         }
+
+         if (const sf::Event::MouseButtonPressed* pMousePressed = event->getIf<sf::Event::MouseButtonPressed>())
+         {
+            HandleMousePressed(*pMousePressed);
+            continue;
+         }
+
+         if (const sf::Event::MouseButtonReleased* pMouseReleased = event->getIf<sf::Event::MouseButtonReleased>())
+         {
+            HandleMouseReleased(*pMouseReleased);
+            continue;
+         }
+
+         if (const sf::Event::MouseMoved* pMouseMoved = event->getIf<sf::Event::MouseMoved>())
+         {
+            HandleMouseMoved(*pMouseMoved);
+            continue;
+         }
+
+         if (const sf::Event::MouseWheelScrolled* pMouseWheel = event->getIf<sf::Event::MouseWheelScrolled>())
+         {
+            HandleMouseWheel(*pMouseWheel);
+         }
+      }
+   }
+
+   void Game::ApplyMenuAction(MenuAction action)
+   {
+      if (action == MenuAction::Start)
+      {
+         StartNewGame();
+         return;
+      }
+      if (action == MenuAction::Resume)
+      {
+         _appScreen = AppScreen::Playing;
+         return;
+      }
+      if (action == MenuAction::Quit)
+      {
+         _window.close();
+      }
+   }
+
+   void Game::ResetPlayInput(void)
+   {
+      _lineEditor.Reset();
+      _pause = SimulationPause::No;
+      _timeScale = DefaultTimeScale;
+      _panState = PanState::No;
+      _helpVisible = HelpVisible::No;
+      _trainDrag = TrainDrag::No;
+      _lineDrag = LineDrag::No;
+      _lineGrabPending = LineGrabPending::No;
+      _dropTargetLineId = InvalidLineId;
+      _lineDragLineId = InvalidLineId;
+      _lineDragSegmentIndex = InvalidIndex;
+      _lineDragHoverStationId = InvalidStationId;
+      _unconnectedScrollPixels = 0.0f;
+      _inspectedStationId = InvalidStationId;
+      _inspectedTrainId = InvalidTrainId;
+   }
+
+   void Game::StartNewGame(void)
+   {
+      _world.ResetSimulation();
+      _world.SetMaxStationCount(_mainMenu.GetSelectedMaxStationCount());
+      const Result spawnResult = _world.SpawnInitialStations();
+      if (IsErr(spawnResult))
+      {
+         return;
+      }
+
+      ResetPlayInput();
+      _renderer.SetMapSidebar(MapSidebar::Visible);
+      _hasActiveGame = HasActiveGame::Yes;
+      _appScreen = AppScreen::Playing;
+   }
+
+   void Game::ReturnToMenu(void)
+   {
+      _trainDrag = TrainDrag::No;
+      _lineDrag = LineDrag::No;
+      _lineGrabPending = LineGrabPending::No;
+      _dropTargetLineId = InvalidLineId;
+      _lineDragHoverStationId = InvalidStationId;
+      _panState = PanState::No;
+      _helpVisible = HelpVisible::No;
+      _renderer.SetMapSidebar(MapSidebar::Hidden);
+      _appScreen = AppScreen::Menu;
+   }
+
+   void Game::ConfigureWindow(void)
+   {
+      _window.setFramerateLimit(60);
+      _window.setKeyRepeatEnabled(false);
+      const sf::Vector2u size = _window.getSize();
+      _renderer.HandleResize(size.x, size.y);
+   }
+
+   void Game::ToggleFullscreen(void)
+   {
+      if (_fullscreenMode == FullscreenMode::No)
+      {
+         _windowedSize = _window.getSize();
+         const sf::VideoMode desktopMode = sf::VideoMode::getDesktopMode();
+         _window.create(desktopMode, "MiniDB", sf::State::Fullscreen);
+         _fullscreenMode = FullscreenMode::Yes;
+      }
+      else
+      {
+         const sf::VideoMode windowedMode(_windowedSize);
+         _window.create(windowedMode, "MiniDB", sf::State::Windowed);
+         _fullscreenMode = FullscreenMode::No;
+      }
+
+      ConfigureWindow();
+      if (_appScreen == AppScreen::Playing)
+      {
+         _renderer.SetMapSidebar(MapSidebar::Visible);
+      }
+      else
+      {
+         _renderer.SetMapSidebar(MapSidebar::Hidden);
+      }
+   }
+
+   void Game::HandleKeyPressed(const sf::Event::KeyPressed& keyPressed)
+   {
+      if (keyPressed.code == sf::Keyboard::Key::F11)
+      {
+         ToggleFullscreen();
+         return;
+      }
+
+      if (_appScreen == AppScreen::Menu)
+      {
+         ApplyMenuAction(_mainMenu.HandleKeyPressed(
+            keyPressed,
+            _hasActiveGame,
+            _world.GetCatalogStationCount()));
+         return;
+      }
+
+      if (keyPressed.code == sf::Keyboard::Key::Escape)
+      {
+         if (_lineDrag == LineDrag::Yes || _lineGrabPending == LineGrabPending::Yes)
+         {
+            _lineDrag = LineDrag::No;
+            _lineGrabPending = LineGrabPending::No;
+            _lineDragHoverStationId = InvalidStationId;
+            return;
+         }
+         if (_lineEditor.IsDrafting())
+         {
+            _lineEditor.Cancel();
+            return;
+         }
+
+         ReturnToMenu();
+         return;
+      }
+      if (keyPressed.code == sf::Keyboard::Key::Enter)
+      {
+         _lineEditor.Confirm(_world);
+         return;
+      }
+      if (keyPressed.code == sf::Keyboard::Key::T)
+      {
+         _lineEditor.AddTrainToSelectedLine(_world);
+         return;
+      }
+      if (keyPressed.code == sf::Keyboard::Key::Delete)
+      {
+         if (_lineDrag == LineDrag::Yes || _lineGrabPending == LineGrabPending::Yes)
+         {
+            _lineEditor.SelectLine(_lineDragLineId);
+            _lineDrag = LineDrag::No;
+            _lineGrabPending = LineGrabPending::No;
+            _lineDragHoverStationId = InvalidStationId;
+         }
+
+         LineId lineId = _lineEditor.GetSelectedLineId();
+         if (lineId == InvalidLineId && _inspectedTrainId != InvalidTrainId)
+         {
+            const Train* pTrain = _world.FindTrain(_inspectedTrainId);
+            if (pTrain != nullptr)
+            {
+               lineId = pTrain->lineId;
+               _lineEditor.SelectLine(lineId);
+            }
+         }
+
+         const Result deleteResult = _lineEditor.DeleteSelectedLine(_world);
+         if (IsOk(deleteResult) && _world.FindTrain(_inspectedTrainId) == nullptr)
+         {
+            _inspectedTrainId = InvalidTrainId;
+         }
+         return;
+      }
+      if (keyPressed.code == sf::Keyboard::Key::Space)
+      {
+         if (_pause == SimulationPause::No)
+         {
+            _pause = SimulationPause::Yes;
+         }
+         else
+         {
+            _pause = SimulationPause::No;
+         }
+         return;
+      }
+      if (keyPressed.code == sf::Keyboard::Key::Num1)
+      {
+         _timeScale = 1.0f;
+         return;
+      }
+      if (keyPressed.code == sf::Keyboard::Key::Num2)
+      {
+         _timeScale = 2.0f;
+         return;
+      }
+      if (keyPressed.code == sf::Keyboard::Key::Num4)
+      {
+         _timeScale = 4.0f;
+         return;
+      }
+      if (keyPressed.code == sf::Keyboard::Key::Num8)
+      {
+         _timeScale = 8.0f;
+      }
+   }
+
+   void Game::HandleTextEntered(const sf::Event::TextEntered& textEntered)
+   {
+      if (_appScreen != AppScreen::Menu)
+      {
+         return;
+      }
+
+      _mainMenu.HandleTextEntered(textEntered.unicode);
+   }
+
+   void Game::HandleMousePressed(const sf::Event::MouseButtonPressed& mousePressed)
+   {
+      _lastMousePixel = mousePressed.position;
+      if (_appScreen == AppScreen::Menu)
+      {
+         if (mousePressed.button == sf::Mouse::Button::Left)
+         {
+            ApplyMenuAction(_mainMenu.HandleClick(
+               mousePressed.position,
+               _hasActiveGame,
+               _world.GetCatalogStationCount()));
+         }
+         return;
+      }
+
+      if (mousePressed.button == sf::Mouse::Button::Left)
+      {
+         if (_renderer.IsHelpButtonHit(mousePressed.position))
+         {
+            if (_helpVisible == HelpVisible::No)
+            {
+               _helpVisible = HelpVisible::Yes;
+            }
+            else
+            {
+               _helpVisible = HelpVisible::No;
+            }
+            return;
+         }
+
+         if (_renderer.IsTrainTokenHit(mousePressed.position))
+         {
+            _trainDrag = TrainDrag::Yes;
+            _dropTargetLineId = InvalidLineId;
+            _helpVisible = HelpVisible::No;
+            _lineDrag = LineDrag::No;
+            _lineGrabPending = LineGrabPending::No;
+            return;
+         }
+
+         if (_renderer.IsUnconnectedPanelHit(mousePressed.position))
+         {
+            const StationId listedId = _renderer.HitTestUnconnectedRow(
+               _world,
+               _inspectedStationId,
+               _inspectedTrainId,
+               mousePressed.position,
+               _unconnectedScrollPixels);
+            if (listedId != InvalidStationId)
+            {
+               _inspectedStationId = listedId;
+               _inspectedTrainId = InvalidTrainId;
+               const StationRecord* pStation = _world.GetNetwork().FindStation(listedId);
+               if (pStation != nullptr)
+               {
+                  _renderer.CenterOn(pStation->position);
+               }
+            }
+            return;
+         }
+
+         if (!_renderer.IsPixelOnMap(mousePressed.position))
+         {
+            return;
+         }
+
+         const MapPoint mapPoint = _renderer.ScreenToMap(mousePressed.position);
+         const StationId stationId = _world.HitTestStation(mapPoint, _renderer.HitRadiusKm());
+         if (stationId != InvalidStationId)
+         {
+            _inspectedStationId = stationId;
+            _inspectedTrainId = InvalidTrainId;
+            _lineEditor.OnStationClicked(_world, stationId);
+            return;
+         }
+
+         const TrainId trainId = _world.HitTestTrain(mapPoint, _renderer.PixelsToKm(TrainHitRadiusPixels));
+         if (trainId != InvalidTrainId)
+         {
+            _inspectedTrainId = trainId;
+            _inspectedStationId = InvalidStationId;
+            const Train* pTrain = _world.FindTrain(trainId);
+            if (pTrain != nullptr)
+            {
+               _lineEditor.SelectLine(pTrain->lineId);
+            }
+            return;
+         }
+
+         _inspectedStationId = InvalidStationId;
+         _inspectedTrainId = InvalidTrainId;
+         _helpVisible = HelpVisible::No;
+         if (!_lineEditor.IsDrafting())
+         {
+            const LineSegmentHit hit = _world.FindNearestLineSegment(
+               mapPoint,
+               _renderer.PixelsToKm(LineDropHitPixels));
+            if (hit.lineId != InvalidLineId)
+            {
+               _lineGrabPending = LineGrabPending::Yes;
+               _lineDragLineId = hit.lineId;
+               _lineDragSegmentIndex = hit.segmentIndex;
+               _lineDragStartPixel = mousePressed.position;
+               _lineDragHoverStationId = InvalidStationId;
+            }
+         }
+         return;
+      }
+
+      if (mousePressed.button == sf::Mouse::Button::Right)
+      {
+         _lineEditor.Confirm(_world);
+         return;
+      }
+
+      if (mousePressed.button == sf::Mouse::Button::Middle)
+      {
+         _panState = PanState::Yes;
+      }
+   }
+
+   void Game::HandleMouseReleased(const sf::Event::MouseButtonReleased& mouseReleased)
+   {
+      if (_appScreen == AppScreen::Menu)
+      {
+         return;
+      }
+
+      if (mouseReleased.button == sf::Mouse::Button::Left && _trainDrag == TrainDrag::Yes)
+      {
+         const MapPoint mapPoint = _renderer.ScreenToMap(mouseReleased.position);
+         const LineId lineId = _world.FindNearestLine(mapPoint, _renderer.PixelsToKm(LineDropHitPixels));
+         if (lineId != InvalidLineId)
+         {
+            _world.AddTrainToLineAt(lineId, mapPoint);
+         }
+         _trainDrag = TrainDrag::No;
+         _dropTargetLineId = InvalidLineId;
+      }
+
+      if (mouseReleased.button == sf::Mouse::Button::Left &&
+         (_lineDrag == LineDrag::Yes || _lineGrabPending == LineGrabPending::Yes))
+      {
+         if (_lineDrag == LineDrag::Yes &&
+            IsValidInsertStation(_world, _lineDragLineId, _lineDragHoverStationId))
+         {
+            const Result insertResult = _world.InsertStationOnLine(
+               _lineDragLineId,
+               _lineDragSegmentIndex,
+               _lineDragHoverStationId);
+            if (IsOk(insertResult))
+            {
+               _lineEditor.SelectLine(_lineDragLineId);
+               _inspectedStationId = _lineDragHoverStationId;
+               _inspectedTrainId = InvalidTrainId;
+            }
+         }
+         else if (_lineGrabPending == LineGrabPending::Yes && _lineDrag == LineDrag::No)
+         {
+            _lineEditor.SelectLine(_lineDragLineId);
+         }
+
+         _lineDrag = LineDrag::No;
+         _lineGrabPending = LineGrabPending::No;
+         _lineDragHoverStationId = InvalidStationId;
+      }
+
+      if (mouseReleased.button == sf::Mouse::Button::Middle)
+      {
+         _panState = PanState::No;
+      }
+   }
+
+   void Game::HandleMouseMoved(const sf::Event::MouseMoved& mouseMoved)
+   {
+      if (_appScreen == AppScreen::Menu)
+      {
+         _lastMousePixel = mouseMoved.position;
+         return;
+      }
+
+      if (_trainDrag == TrainDrag::Yes)
+      {
+         const MapPoint mapPoint = _renderer.ScreenToMap(mouseMoved.position);
+         _dropTargetLineId = _world.FindNearestLine(mapPoint, _renderer.PixelsToKm(LineDropHitPixels));
+      }
+      else if (_lineGrabPending == LineGrabPending::Yes || _lineDrag == LineDrag::Yes)
+      {
+         const float startDistanceSquared = PixelDistanceSquared(_lineDragStartPixel, mouseMoved.position);
+         const float startThreshold = LineDragStartPixels * LineDragStartPixels;
+         if (_lineDrag == LineDrag::No && startDistanceSquared >= startThreshold)
+         {
+            _lineDrag = LineDrag::Yes;
+            _lineEditor.Cancel();
+            _lineEditor.SelectLine(_lineDragLineId);
+         }
+
+         const MapPoint mapPoint = _renderer.ScreenToMap(mouseMoved.position);
+         const StationId stationId = _world.HitTestStation(mapPoint, _renderer.HitRadiusKm());
+         if (IsValidInsertStation(_world, _lineDragLineId, stationId))
+         {
+            _lineDragHoverStationId = stationId;
+         }
+         else
+         {
+            _lineDragHoverStationId = InvalidStationId;
+         }
+      }
+      else if (_panState == PanState::Yes && _renderer.IsPixelOnMap(mouseMoved.position))
+      {
+         const sf::Vector2i pixelDelta = _lastMousePixel - mouseMoved.position;
+         const sf::Vector2f mapDelta = _renderer.PixelDeltaToMapDelta(pixelDelta);
+         _renderer.Pan(mapDelta);
+      }
+
+      _lastMousePixel = mouseMoved.position;
+   }
+
+   void Game::HandleMouseWheel(const sf::Event::MouseWheelScrolled& mouseWheel)
+   {
+      if (_appScreen == AppScreen::Menu)
+      {
+         return;
+      }
+
+      if (_renderer.IsUnconnectedPanelHit(mouseWheel.position))
+      {
+         _unconnectedScrollPixels -= mouseWheel.delta * UnconnectedRowHeightPixels * 2.0f;
+         _unconnectedScrollPixels = _renderer.ClampUnconnectedScroll(
+            _world,
+            _inspectedStationId,
+            _inspectedTrainId,
+            _unconnectedScrollPixels);
+         return;
+      }
+
+      if (!_renderer.IsPixelOnMap(mouseWheel.position))
+      {
+         return;
+      }
+
+      float factor = 1.0f;
+      if (mouseWheel.delta > 0.0f)
+      {
+         factor = 0.9f;
+      }
+      else if (mouseWheel.delta < 0.0f)
+      {
+         factor = 1.1f;
+      }
+
+      _renderer.ZoomAt(mouseWheel.position, factor);
+   }
+
+   void Game::Update(float deltaSeconds)
+   {
+      if (_appScreen == AppScreen::Menu)
+      {
+         return;
+      }
+
+      float clampedDelta = deltaSeconds;
+      if (clampedDelta > 0.05f)
+      {
+         clampedDelta = 0.05f;
+      }
+
+      float simulationDelta = 0.0f;
+      if (_pause == SimulationPause::No)
+      {
+         simulationDelta = clampedDelta * _timeScale;
+      }
+
+      _world.Tick(simulationDelta);
+   }
+
+   std::string Game::BuildHudText(void) const
+   {
+      std::ostringstream stream;
+      stream << "Time " << FormatTime(_world.GetSimulationTimeSeconds());
+      stream << "   Stations " << _world.GetNetwork().GetStations().size();
+      stream << "/" << _world.GetStationCap();
+      stream << "   Waiting " << _world.GetWaitingPassengerCount();
+      stream << "   Onboard " << _world.GetOnboardPassengerCount();
+      stream << "   Arrived " << _world.GetArrivedPassengerCount();
+      if (_pause == SimulationPause::Yes)
+      {
+         stream << "   PAUSED";
+      }
+      else
+      {
+         stream << "   " << static_cast<int32_t>(_timeScale) << "x";
+      }
+      return stream.str();
+   }
+
+   void Game::Render(void)
+   {
+      if (_appScreen == AppScreen::Menu)
+      {
+         _renderer.DrawMenuBackdrop();
+         _mainMenu.Draw(_hasActiveGame, _world.GetCatalogStationCount(), _lastMousePixel);
+         _window.display();
+         return;
+      }
+
+      const MapPoint hoverPoint = _renderer.ScreenToMap(_lastMousePixel);
+      StationId hoveredStationId = _world.HitTestStation(hoverPoint, _renderer.HitRadiusKm());
+      if (_lineDragHoverStationId != InvalidStationId)
+      {
+         hoveredStationId = _lineDragHoverStationId;
+      }
+      const std::string statusText = BuildHudText();
+      LineId highlightLineId = _lineEditor.GetSelectedLineId();
+      if (_trainDrag == TrainDrag::Yes)
+      {
+         highlightLineId = _dropTargetLineId;
+      }
+      else if (_lineDrag == LineDrag::Yes)
+      {
+         highlightLineId = _lineDragLineId;
+      }
+
+      LineDragPreview lineDragPreview;
+      lineDragPreview.lineId = _lineDragLineId;
+      lineDragPreview.segmentIndex = _lineDragSegmentIndex;
+      lineDragPreview.hoverStationId = _lineDragHoverStationId;
+      _unconnectedScrollPixels = _renderer.ClampUnconnectedScroll(
+         _world,
+         _inspectedStationId,
+         _inspectedTrainId,
+         _unconnectedScrollPixels);
+      _renderer.Draw(
+         _world,
+         _lineEditor.GetDraftStationIds(),
+         hoveredStationId,
+         _inspectedStationId,
+         _inspectedTrainId,
+         highlightLineId,
+         statusText,
+         _helpVisible,
+         _trainDrag,
+         _lineDrag,
+         lineDragPreview,
+         _unconnectedScrollPixels,
+         _lastMousePixel);
+      _window.display();
+   }
+} // namespace MiniDb

@@ -1,0 +1,7476 @@
+{
+  "stations": [
+    {
+      "cityName": "Berlin",
+      "stationName": "Berlin Hauptbahnhof",
+      "latitude": 52.5249,
+      "longitude": 13.3685,
+      "population": 3426354,
+      "id": 0
+    },
+    {
+      "cityName": "Hamburg",
+      "stationName": "Hamburg Central Station",
+      "latitude": 53.5528,
+      "longitude": 10.0064,
+      "population": 1973896,
+      "id": 1
+    },
+    {
+      "cityName": "Munich",
+      "stationName": "München Hauptbahnhof",
+      "latitude": 48.14049,
+      "longitude": 11.55783,
+      "population": 1505005,
+      "id": 2
+    },
+    {
+      "cityName": "Köln",
+      "stationName": "Köln Hauptbahnhof",
+      "latitude": 50.9429,
+      "longitude": 6.95801,
+      "population": 1024621,
+      "id": 3
+    },
+    {
+      "cityName": "Frankfurt am Main",
+      "stationName": "Frankfurt Hauptbahnhof",
+      "latitude": 50.10679,
+      "longitude": 8.66317,
+      "population": 650000,
+      "id": 4
+    },
+    {
+      "cityName": "Düsseldorf",
+      "stationName": "Düsseldorf Hauptbahnhof",
+      "latitude": 51.21968,
+      "longitude": 6.79419,
+      "population": 618685,
+      "id": 5
+    },
+    {
+      "cityName": "Stuttgart",
+      "stationName": "Stuttgart Hauptbahnhof",
+      "latitude": 48.78363,
+      "longitude": 9.18131,
+      "population": 612663,
+      "id": 6
+    },
+    {
+      "cityName": "Essen",
+      "stationName": "Essen Hauptbahnhof",
+      "latitude": 51.45097,
+      "longitude": 7.01365,
+      "population": 593085,
+      "id": 7
+    },
+    {
+      "cityName": "Dortmund",
+      "stationName": "Dortmund Hauptbahnhof",
+      "latitude": 51.51683,
+      "longitude": 7.45774,
+      "population": 588462,
+      "id": 8
+    },
+    {
+      "cityName": "Dresden",
+      "stationName": "Dresden Hauptbahnhof",
+      "latitude": 51.04046,
+      "longitude": 13.73145,
+      "population": 564904,
+      "id": 9
+    },
+    {
+      "cityName": "Bremen",
+      "stationName": "Hauptbahnhof Bremen",
+      "latitude": 53.08319,
+      "longitude": 8.81358,
+      "population": 546501,
+      "id": 10
+    },
+    {
+      "cityName": "Nuremberg",
+      "stationName": "Fürth (Bay)Hbf",
+      "latitude": 49.46971,
+      "longitude": 10.98999,
+      "population": 515543,
+      "id": 11
+    },
+    {
+      "cityName": "Hannover",
+      "stationName": "Hannover Hauptbahnhof",
+      "latitude": 52.37658,
+      "longitude": 9.74105,
+      "population": 515140,
+      "id": 12
+    },
+    {
+      "cityName": "Leipzig",
+      "stationName": "Leipzig Markt",
+      "latitude": 51.34064,
+      "longitude": 12.37461,
+      "population": 504971,
+      "id": 13
+    },
+    {
+      "cityName": "Duisburg",
+      "stationName": "Duisburg Hauptbahnhof",
+      "latitude": 51.42953,
+      "longitude": 6.77505,
+      "population": 504358,
+      "id": 14
+    },
+    {
+      "cityName": "Bochum",
+      "stationName": "Bochum Hbf",
+      "latitude": 51.47915,
+      "longitude": 7.22403,
+      "population": 385729,
+      "id": 15
+    },
+    {
+      "cityName": "Wuppertal",
+      "stationName": "Wuppertal Hauptbahnhof",
+      "latitude": 51.2547,
+      "longitude": 7.15002,
+      "population": 360797,
+      "id": 16
+    },
+    {
+      "cityName": "Bielefeld",
+      "stationName": "Bielefeld Railway Station",
+      "latitude": 52.02917,
+      "longitude": 8.53316,
+      "population": 331906,
+      "id": 17
+    },
+    {
+      "cityName": "Bonn",
+      "stationName": "Bonn Central Station",
+      "latitude": 50.7322,
+      "longitude": 7.0961,
+      "population": 330579,
+      "id": 18
+    },
+    {
+      "cityName": "Münster",
+      "stationName": "Münster (Westfalen) Hbf",
+      "latitude": 51.95712,
+      "longitude": 7.63591,
+      "population": 308258,
+      "id": 19
+    },
+    {
+      "cityName": "Mannheim",
+      "stationName": "Mannheim Hauptbahnhof",
+      "latitude": 49.47979,
+      "longitude": 8.46951,
+      "population": 307960,
+      "id": 20
+    },
+    {
+      "cityName": "Augsburg",
+      "stationName": "Augsburg Hauptbahnhof",
+      "latitude": 48.36556,
+      "longitude": 10.88639,
+      "population": 301105,
+      "id": 21
+    },
+    {
+      "cityName": "Wiesbaden",
+      "stationName": "Wiesbaden Central Station",
+      "latitude": 50.06944,
+      "longitude": 8.24333,
+      "population": 288850,
+      "id": 22
+    },
+    {
+      "cityName": "Karlsruhe",
+      "stationName": "Karlsruhe Hauptbahnhof",
+      "latitude": 48.99368,
+      "longitude": 8.40113,
+      "population": 283799,
+      "id": 23
+    },
+    {
+      "cityName": "Gelsenkirchen",
+      "stationName": "Gelsenkirchen Hauptbahnhof",
+      "latitude": 51.50434,
+      "longitude": 7.10251,
+      "population": 270028,
+      "id": 24
+    },
+    {
+      "cityName": "Aachen",
+      "stationName": "Aachen Hauptbahnhof",
+      "latitude": 50.76811,
+      "longitude": 6.0909,
+      "population": 265208,
+      "id": 25
+    },
+    {
+      "cityName": "Mönchengladbach",
+      "stationName": "Mönchengladbach Hbf",
+      "latitude": 51.19658,
+      "longitude": 6.44611,
+      "population": 261742,
+      "id": 26
+    },
+    {
+      "cityName": "Kiel",
+      "stationName": "Hauptbahnhof Kiel",
+      "latitude": 54.3145,
+      "longitude": 10.13166,
+      "population": 252668,
+      "id": 27
+    },
+    {
+      "cityName": "Chemnitz",
+      "stationName": "Chemnitz Hbf (Bahnhofstraße)",
+      "latitude": 50.83822,
+      "longitude": 12.92919,
+      "population": 247220,
+      "id": 28
+    },
+    {
+      "cityName": "Braunschweig",
+      "stationName": "Braunschweig Hauptbahnhof",
+      "latitude": 52.25253,
+      "longitude": 10.53943,
+      "population": 244715,
+      "id": 29
+    },
+    {
+      "cityName": "Magdeburg",
+      "stationName": "Magdeburg Hbf",
+      "latitude": 52.13035,
+      "longitude": 11.62689,
+      "population": 244329,
+      "id": 30
+    },
+    {
+      "cityName": "Krefeld",
+      "stationName": "Krefeld",
+      "latitude": 51.32569,
+      "longitude": 6.56994,
+      "population": 237984,
+      "id": 31
+    },
+    {
+      "cityName": "Halle (Saale)",
+      "stationName": "Halle (Saale)Hbf",
+      "latitude": 51.47751,
+      "longitude": 11.98709,
+      "population": 237865,
+      "id": 32
+    },
+    {
+      "cityName": "Freiburg",
+      "stationName": "Freiburg Railway Station",
+      "latitude": 47.99777,
+      "longitude": 7.84164,
+      "population": 237460,
+      "id": 33
+    },
+    {
+      "cityName": "Mainz",
+      "stationName": "Bahnhof Mainz Römisches Theater",
+      "latitude": 49.99339,
+      "longitude": 8.27817,
+      "population": 222889,
+      "id": 34
+    },
+    {
+      "cityName": "Oberhausen",
+      "stationName": "Oberhausen Hauptbahnhof",
+      "latitude": 51.47425,
+      "longitude": 6.85345,
+      "population": 219176,
+      "id": 35
+    },
+    {
+      "cityName": "Erfurt",
+      "stationName": "Erfurt Central Station",
+      "latitude": 50.97237,
+      "longitude": 11.03765,
+      "population": 218793,
+      "id": 36
+    },
+    {
+      "cityName": "Lübeck",
+      "stationName": "Lübeck Central Station",
+      "latitude": 53.86727,
+      "longitude": 10.66909,
+      "population": 212207,
+      "id": 37
+    },
+    {
+      "cityName": "Hagen",
+      "stationName": "Hagen Railway Station",
+      "latitude": 51.36299,
+      "longitude": 7.46079,
+      "population": 198972,
+      "id": 38
+    },
+    {
+      "cityName": "Rostock",
+      "stationName": "Rostock Hauptbahnhof",
+      "latitude": 54.07815,
+      "longitude": 12.13132,
+      "population": 198293,
+      "id": 39
+    },
+    {
+      "cityName": "Kassel",
+      "stationName": "Kassel",
+      "latitude": 51.31829,
+      "longitude": 9.48896,
+      "population": 197230,
+      "id": 40
+    },
+    {
+      "cityName": "Potsdam",
+      "stationName": "Potsdam Hauptbahnhof",
+      "latitude": 52.39171,
+      "longitude": 13.06674,
+      "population": 184754,
+      "id": 41
+    },
+    {
+      "cityName": "Saarbrücken",
+      "stationName": "Saarbrücken Hauptbahnhof",
+      "latitude": 49.24075,
+      "longitude": 6.99121,
+      "population": 182971,
+      "id": 42
+    },
+    {
+      "cityName": "Hamm",
+      "stationName": "Bahnhof Hamm",
+      "latitude": 51.67841,
+      "longitude": 7.80931,
+      "population": 178967,
+      "id": 43
+    },
+    {
+      "cityName": "Herne",
+      "stationName": "Wanne-Eickel Hbf",
+      "latitude": 51.53126,
+      "longitude": 7.16578,
+      "population": 172108,
+      "id": 44
+    },
+    {
+      "cityName": "Darmstadt",
+      "stationName": "Darmstadt Hauptbahnhof",
+      "latitude": 49.87237,
+      "longitude": 8.62972,
+      "population": 167029,
+      "id": 45
+    },
+    {
+      "cityName": "Osnabrück",
+      "stationName": "Osnabrück Railway Station",
+      "latitude": 52.27309,
+      "longitude": 8.06126,
+      "population": 166462,
+      "id": 46
+    },
+    {
+      "cityName": "Solingen",
+      "stationName": "Solingen Hauptbahnhof",
+      "latitude": 51.16056,
+      "longitude": 7.00417,
+      "population": 164359,
+      "id": 47
+    },
+    {
+      "cityName": "Ludwigshafen am Rhein",
+      "stationName": "Ludwigshafen (Rh)Hbf",
+      "latitude": 49.47799,
+      "longitude": 8.4334,
+      "population": 163196,
+      "id": 48
+    },
+    {
+      "cityName": "Oldenburg",
+      "stationName": "Oldenburg (Oldb)",
+      "latitude": 53.14432,
+      "longitude": 8.22271,
+      "population": 159218,
+      "id": 49
+    },
+    {
+      "cityName": "Regensburg",
+      "stationName": "Regensburg Hauptbahnhof",
+      "latitude": 49.01218,
+      "longitude": 12.10028,
+      "population": 151389,
+      "id": 50
+    },
+    {
+      "cityName": "Heidelberg",
+      "stationName": "Heidelberg Railway Station",
+      "latitude": 49.40391,
+      "longitude": 8.67572,
+      "population": 143345,
+      "id": 51
+    },
+    {
+      "cityName": "Paderborn",
+      "stationName": "Paderborn Hbf",
+      "latitude": 51.71298,
+      "longitude": 8.74051,
+      "population": 142161,
+      "id": 52
+    },
+    {
+      "cityName": "Würzburg",
+      "stationName": "Würzburg Süd",
+      "latitude": 49.78836,
+      "longitude": 9.94384,
+      "population": 133731,
+      "id": 53
+    },
+    {
+      "cityName": "Wolfsburg",
+      "stationName": "Wolfsburg Central Station",
+      "latitude": 52.42946,
+      "longitude": 10.78724,
+      "population": 123064,
+      "id": 54
+    },
+    {
+      "cityName": "Recklinghausen",
+      "stationName": "Recklinghausen Hauptbahnhof",
+      "latitude": 51.61653,
+      "longitude": 7.20327,
+      "population": 122438,
+      "id": 55
+    },
+    {
+      "cityName": "Göttingen",
+      "stationName": "Göttingen Railway Station",
+      "latitude": 51.53699,
+      "longitude": 9.92486,
+      "population": 122149,
+      "id": 56
+    },
+    {
+      "cityName": "Heilbronn",
+      "stationName": "Heilbronn Hauptbahnhof/Willy-Brandt-Pl.",
+      "latitude": 49.14259,
+      "longitude": 9.20836,
+      "population": 120733,
+      "id": 57
+    },
+    {
+      "cityName": "Ingolstadt",
+      "stationName": "Ingolstadt Hbf",
+      "latitude": 48.74454,
+      "longitude": 11.43734,
+      "population": 120658,
+      "id": 58
+    },
+    {
+      "cityName": "Ulm",
+      "stationName": "Ulm Hauptbahnhof",
+      "latitude": 48.39947,
+      "longitude": 9.98331,
+      "population": 120451,
+      "id": 59
+    },
+    {
+      "cityName": "Pforzheim",
+      "stationName": "Pforzheim Hbf",
+      "latitude": 48.89415,
+      "longitude": 8.7031,
+      "population": 119313,
+      "id": 60
+    },
+    {
+      "cityName": "Bremerhaven",
+      "stationName": "Hauptbahnhof Bremerhaven",
+      "latitude": 53.53493,
+      "longitude": 8.59954,
+      "population": 118610,
+      "id": 61
+    },
+    {
+      "cityName": "Remscheid",
+      "stationName": "Remscheid Hauptbahnhof",
+      "latitude": 51.17725,
+      "longitude": 7.19993,
+      "population": 117118,
+      "id": 62
+    },
+    {
+      "cityName": "Reutlingen",
+      "stationName": "Reutlingen Hbf",
+      "latitude": 48.49608,
+      "longitude": 9.20912,
+      "population": 112627,
+      "id": 63
+    },
+    {
+      "cityName": "Koblenz",
+      "stationName": "Koblenz Hauptbahnhof",
+      "latitude": 50.35107,
+      "longitude": 7.58868,
+      "population": 107319,
+      "id": 64
+    },
+    {
+      "cityName": "Siegen",
+      "stationName": "Siegen station",
+      "latitude": 50.87598,
+      "longitude": 8.017,
+      "population": 107242,
+      "id": 65
+    },
+    {
+      "cityName": "Salzgitter",
+      "stationName": "Salzgitter-Watenstedt",
+      "latitude": 52.15017,
+      "longitude": 10.4074,
+      "population": 104970,
+      "id": 66
+    },
+    {
+      "cityName": "Jena",
+      "stationName": "Jena Paradiesbahnhof",
+      "latitude": 50.92492,
+      "longitude": 11.58731,
+      "population": 104712,
+      "id": 67
+    },
+    {
+      "cityName": "Gera",
+      "stationName": "Gera Hbf",
+      "latitude": 50.88342,
+      "longitude": 12.07709,
+      "population": 104659,
+      "id": 68
+    },
+    {
+      "cityName": "Hildesheim",
+      "stationName": "Hildesheim Hbf",
+      "latitude": 52.16063,
+      "longitude": 9.9535,
+      "population": 103052,
+      "id": 69
+    },
+    {
+      "cityName": "Erlangen",
+      "stationName": "Erlangen",
+      "latitude": 49.59589,
+      "longitude": 11.00191,
+      "population": 102675,
+      "id": 70
+    },
+    {
+      "cityName": "Trier",
+      "stationName": "Trier Hbf",
+      "latitude": 49.75685,
+      "longitude": 6.65245,
+      "population": 100129,
+      "id": 71
+    },
+    {
+      "cityName": "Zwickau",
+      "stationName": "Zwickau (Sachs)Hbf",
+      "latitude": 50.71467,
+      "longitude": 12.47472,
+      "population": 98796,
+      "id": 72
+    },
+    {
+      "cityName": "Kaiserslautern",
+      "stationName": "Kaiserslautern Central Station",
+      "latitude": 49.4361,
+      "longitude": 7.76875,
+      "population": 98732,
+      "id": 73
+    },
+    {
+      "cityName": "Schwerin",
+      "stationName": "Schwerin Hauptbahnhof",
+      "latitude": 53.63492,
+      "longitude": 11.40763,
+      "population": 96641,
+      "id": 74
+    },
+    {
+      "cityName": "Gütersloh",
+      "stationName": "Gütersloh Railway Station",
+      "latitude": 51.90833,
+      "longitude": 8.38695,
+      "population": 96180,
+      "id": 75
+    },
+    {
+      "cityName": "Düren",
+      "stationName": "Düren",
+      "latitude": 50.80952,
+      "longitude": 6.48245,
+      "population": 93440,
+      "id": 76
+    },
+    {
+      "cityName": "Tübingen",
+      "stationName": "Tübingen Hbf",
+      "latitude": 48.51581,
+      "longitude": 9.05541,
+      "population": 92322,
+      "id": 77
+    },
+    {
+      "cityName": "Iserlohn",
+      "stationName": "Bahnhof Iserlohn-Ost",
+      "latitude": 51.37083,
+      "longitude": 7.71111,
+      "population": 91811,
+      "id": 78
+    },
+    {
+      "cityName": "Marl",
+      "stationName": "Recklinghausen Hauptbahnhof",
+      "latitude": 51.61653,
+      "longitude": 7.20327,
+      "population": 91398,
+      "id": 79
+    },
+    {
+      "cityName": "Gießen",
+      "stationName": "Gießen Oswaldsgarten",
+      "latitude": 50.58835,
+      "longitude": 8.66914,
+      "population": 89179,
+      "id": 80
+    },
+    {
+      "cityName": "Hanau am Main",
+      "stationName": "Hanau Hbf",
+      "latitude": 50.12095,
+      "longitude": 8.929,
+      "population": 88648,
+      "id": 81
+    },
+    {
+      "cityName": "Flensburg",
+      "stationName": "Flensburg",
+      "latitude": 54.77404,
+      "longitude": 9.43653,
+      "population": 85838,
+      "id": 82
+    },
+    {
+      "cityName": "Cottbus",
+      "stationName": "Cottbus",
+      "latitude": 51.75096,
+      "longitude": 14.32416,
+      "population": 84754,
+      "id": 83
+    },
+    {
+      "cityName": "Wilhelmshaven",
+      "stationName": "Wilhelmshaven Hbf",
+      "latitude": 53.51879,
+      "longitude": 8.1149,
+      "population": 84393,
+      "id": 84
+    },
+    {
+      "cityName": "Minden",
+      "stationName": "Minden (Westf)",
+      "latitude": 52.29014,
+      "longitude": 8.93473,
+      "population": 82879,
+      "id": 85
+    },
+    {
+      "cityName": "Norderstedt",
+      "stationName": "Moorbekhalle",
+      "latitude": 53.71715,
+      "longitude": 9.99174,
+      "population": 82844,
+      "id": 86
+    },
+    {
+      "cityName": "Villingen-Schwenningen",
+      "stationName": "Zollhaus (Villingen-Schwenningen)",
+      "latitude": 48.04089,
+      "longitude": 8.506,
+      "population": 81770,
+      "id": 87
+    },
+    {
+      "cityName": "Konstanz",
+      "stationName": "Konstanz Station",
+      "latitude": 47.65875,
+      "longitude": 9.17731,
+      "population": 81275,
+      "id": 88
+    },
+    {
+      "cityName": "Worms",
+      "stationName": "Worms Hbf",
+      "latitude": 49.63494,
+      "longitude": 8.35645,
+      "population": 81099,
+      "id": 89
+    },
+    {
+      "cityName": "Neumünster",
+      "stationName": "Bahnhof Neumünster",
+      "latitude": 54.07585,
+      "longitude": 9.97981,
+      "population": 80196,
+      "id": 90
+    },
+    {
+      "cityName": "Dorsten",
+      "stationName": "Dorsten",
+      "latitude": 51.65827,
+      "longitude": 6.9705,
+      "population": 79981,
+      "id": 91
+    },
+    {
+      "cityName": "Lüdenscheid",
+      "stationName": "Lüdenscheid",
+      "latitude": 51.22035,
+      "longitude": 7.62872,
+      "population": 79386,
+      "id": 92
+    },
+    {
+      "cityName": "Marburg an der Lahn",
+      "stationName": "Marburg (Lahn)",
+      "latitude": 50.81927,
+      "longitude": 8.77501,
+      "population": 78895,
+      "id": 93
+    },
+    {
+      "cityName": "Rheine",
+      "stationName": "Rheine",
+      "latitude": 52.2763,
+      "longitude": 7.43426,
+      "population": 76491,
+      "id": 94
+    },
+    {
+      "cityName": "Arnsberg",
+      "stationName": "Arnsberg (Westf)",
+      "latitude": 51.40566,
+      "longitude": 8.06796,
+      "population": 74879,
+      "id": 95
+    },
+    {
+      "cityName": "Bocholt",
+      "stationName": "Bocholt",
+      "latitude": 51.83412,
+      "longitude": 6.62043,
+      "population": 73943,
+      "id": 96
+    },
+    {
+      "cityName": "Detmold",
+      "stationName": "Detmold",
+      "latitude": 51.94074,
+      "longitude": 8.87286,
+      "population": 73680,
+      "id": 97
+    },
+    {
+      "cityName": "Bayreuth",
+      "stationName": "Bayreuth Hbf",
+      "latitude": 49.94962,
+      "longitude": 11.57999,
+      "population": 72940,
+      "id": 98
+    },
+    {
+      "cityName": "Landshut",
+      "stationName": "Landshut Hbf",
+      "latitude": 48.54709,
+      "longitude": 12.13604,
+      "population": 71863,
+      "id": 99
+    },
+    {
+      "cityName": "Lüneburg",
+      "stationName": "Lüneburg",
+      "latitude": 53.24966,
+      "longitude": 10.41989,
+      "population": 71260,
+      "id": 100
+    },
+    {
+      "cityName": "Celle",
+      "stationName": "Celle",
+      "latitude": 52.62118,
+      "longitude": 10.06271,
+      "population": 71010,
+      "id": 101
+    },
+    {
+      "cityName": "Bamberg",
+      "stationName": "Bahnhof Bamberg",
+      "latitude": 49.9006,
+      "longitude": 10.899,
+      "population": 70047,
+      "id": 102
+    },
+    {
+      "cityName": "Aschaffenburg",
+      "stationName": "Aschaffenburg Hbf",
+      "latitude": 49.98056,
+      "longitude": 9.1437,
+      "population": 68551,
+      "id": 103
+    },
+    {
+      "cityName": "Neubrandenburg",
+      "stationName": "Neubrandenburg",
+      "latitude": 53.56183,
+      "longitude": 13.26146,
+      "population": 68082,
+      "id": 104
+    },
+    {
+      "cityName": "Dessau",
+      "stationName": "Dessau Hbf",
+      "latitude": 51.83987,
+      "longitude": 12.23494,
+      "population": 67747,
+      "id": 105
+    },
+    {
+      "cityName": "Lippstadt",
+      "stationName": "Bahnhof Lippstadt",
+      "latitude": 51.66885,
+      "longitude": 8.34924,
+      "population": 67219,
+      "id": 106
+    },
+    {
+      "cityName": "Aalen",
+      "stationName": "Bahnhof Aalen",
+      "latitude": 48.84102,
+      "longitude": 10.09616,
+      "population": 67085,
+      "id": 107
+    },
+    {
+      "cityName": "Neuwied",
+      "stationName": "Neuwied",
+      "latitude": 50.43147,
+      "longitude": 7.47313,
+      "population": 66805,
+      "id": 108
+    },
+    {
+      "cityName": "Unna",
+      "stationName": "Unna",
+      "latitude": 51.53898,
+      "longitude": 7.69286,
+      "population": 66734,
+      "id": 109
+    },
+    {
+      "cityName": "Plauen",
+      "stationName": "Plauen (Vogtl) Mitte",
+      "latitude": 50.49358,
+      "longitude": 12.14778,
+      "population": 66412,
+      "id": 110
+    },
+    {
+      "cityName": "Weimar",
+      "stationName": "Weimar Berkaer Bf",
+      "latitude": 50.98063,
+      "longitude": 11.31369,
+      "population": 64727,
+      "id": 111
+    },
+    {
+      "cityName": "Kerpen",
+      "stationName": "Sindorf",
+      "latitude": 50.90371,
+      "longitude": 6.68111,
+      "population": 64226,
+      "id": 112
+    },
+    {
+      "cityName": "Fulda",
+      "stationName": "Fulda Railway Station",
+      "latitude": 50.55418,
+      "longitude": 9.68565,
+      "population": 63760,
+      "id": 113
+    },
+    {
+      "cityName": "Bergheim",
+      "stationName": "Bergheim (Erft)",
+      "latitude": 50.95171,
+      "longitude": 6.6463,
+      "population": 63558,
+      "id": 114
+    },
+    {
+      "cityName": "Wesel",
+      "stationName": "Wesel Feldmark",
+      "latitude": 51.67666,
+      "longitude": 6.61631,
+      "population": 61685,
+      "id": 115
+    },
+    {
+      "cityName": "Kempten (Allgäu)",
+      "stationName": "Kempten (Allgäu)Hbf",
+      "latitude": 47.71175,
+      "longitude": 10.31761,
+      "population": 61399,
+      "id": 116
+    },
+    {
+      "cityName": "Schwäbisch Gmünd",
+      "stationName": "Schwäbsch Gmünd station",
+      "latitude": 48.80109,
+      "longitude": 9.78857,
+      "population": 61216,
+      "id": 117
+    },
+    {
+      "cityName": "Rosenheim",
+      "stationName": "Rosenheim Railway Station",
+      "latitude": 47.85012,
+      "longitude": 12.11998,
+      "population": 60167,
+      "id": 118
+    },
+    {
+      "cityName": "Brandenburg an der Havel",
+      "stationName": "Brandenburg Hbf",
+      "latitude": 52.40055,
+      "longitude": 12.56614,
+      "population": 59826,
+      "id": 119
+    },
+    {
+      "cityName": "Offenburg",
+      "stationName": "Offenburg",
+      "latitude": 48.47648,
+      "longitude": 7.94672,
+      "population": 59238,
+      "id": 120
+    },
+    {
+      "cityName": "Langenfeld",
+      "stationName": "Solingen Hauptbahnhof",
+      "latitude": 51.16056,
+      "longitude": 7.00417,
+      "population": 59112,
+      "id": 121
+    },
+    {
+      "cityName": "Stralsund",
+      "stationName": "Stralsund Hauptbahnhof",
+      "latitude": 54.30754,
+      "longitude": 13.07789,
+      "population": 58976,
+      "id": 122
+    },
+    {
+      "cityName": "Hameln",
+      "stationName": "Hameln",
+      "latitude": 52.10185,
+      "longitude": 9.37591,
+      "population": 58666,
+      "id": 123
+    },
+    {
+      "cityName": "Friedrichshafen",
+      "stationName": "Friedrichshafen Stadt",
+      "latitude": 47.65322,
+      "longitude": 9.4739,
+      "population": 58403,
+      "id": 124
+    },
+    {
+      "cityName": "Göppingen",
+      "stationName": "Göppingen",
+      "latitude": 48.70003,
+      "longitude": 9.65197,
+      "population": 58040,
+      "id": 125
+    },
+    {
+      "cityName": "Görlitz",
+      "stationName": "Görlitz",
+      "latitude": 51.14677,
+      "longitude": 14.97908,
+      "population": 57751,
+      "id": 126
+    },
+    {
+      "cityName": "Frankfurt (Oder)",
+      "stationName": "Frankfurt (Oder) Railway Station",
+      "latitude": 52.33642,
+      "longitude": 14.5465,
+      "population": 57107,
+      "id": 127
+    },
+    {
+      "cityName": "Baden-Baden",
+      "stationName": "Baden Baden Railway Station",
+      "latitude": 48.79033,
+      "longitude": 8.19134,
+      "population": 56881,
+      "id": 128
+    },
+    {
+      "cityName": "Ahlen",
+      "stationName": "Ahlen (Westf)",
+      "latitude": 51.76106,
+      "longitude": 7.89549,
+      "population": 55280,
+      "id": 129
+    },
+    {
+      "cityName": "Bad Salzuflen",
+      "stationName": "Bad Salzuflen",
+      "latitude": 52.08163,
+      "longitude": 8.74043,
+      "population": 54899,
+      "id": 130
+    },
+    {
+      "cityName": "Euskirchen",
+      "stationName": "Euskirchen",
+      "latitude": 50.65776,
+      "longitude": 6.79219,
+      "population": 54889,
+      "id": 131
+    },
+    {
+      "cityName": "Schweinfurt",
+      "stationName": "Schweinfurt Hauptbahnhof",
+      "latitude": 50.03559,
+      "longitude": 10.21212,
+      "population": 54012,
+      "id": 132
+    },
+    {
+      "cityName": "Neustadt an der Weinstraße",
+      "stationName": "Neustadt (Weinstr)Hbf",
+      "latitude": 49.34955,
+      "longitude": 8.14076,
+      "population": 53984,
+      "id": 133
+    },
+    {
+      "cityName": "Gummersbach",
+      "stationName": "Gummersbach",
+      "latitude": 51.02363,
+      "longitude": 7.56631,
+      "population": 53131,
+      "id": 134
+    },
+    {
+      "cityName": "Nordhorn",
+      "stationName": "Haltepunkt Hestrup",
+      "latitude": 52.38165,
+      "longitude": 7.1423,
+      "population": 52803,
+      "id": 135
+    },
+    {
+      "cityName": "Universitäts- und Hansestadt Greifswald",
+      "stationName": "Greifswald Süd",
+      "latitude": 54.07654,
+      "longitude": 13.39651,
+      "population": 52731,
+      "id": 136
+    },
+    {
+      "cityName": "Cuxhaven",
+      "stationName": "Cuxhaven",
+      "latitude": 53.8609,
+      "longitude": 8.70343,
+      "population": 52677,
+      "id": 137
+    },
+    {
+      "cityName": "Wetzlar",
+      "stationName": "Wetzlar",
+      "latitude": 50.56563,
+      "longitude": 8.50382,
+      "population": 52656,
+      "id": 138
+    },
+    {
+      "cityName": "Menden",
+      "stationName": "Menden (Sauerland)Süd",
+      "latitude": 51.42833,
+      "longitude": 7.8078,
+      "population": 52452,
+      "id": 139
+    },
+    {
+      "cityName": "Emden",
+      "stationName": "Emden Hbf",
+      "latitude": 53.36925,
+      "longitude": 7.19712,
+      "population": 51526,
+      "id": 140
+    },
+    {
+      "cityName": "Neu-Ulm",
+      "stationName": "Ulm Hauptbahnhof",
+      "latitude": 48.39947,
+      "longitude": 9.98331,
+      "population": 51389,
+      "id": 141
+    },
+    {
+      "cityName": "Lingen",
+      "stationName": "Lingen (Ems)",
+      "latitude": 52.51987,
+      "longitude": 7.32173,
+      "population": 51310,
+      "id": 142
+    },
+    {
+      "cityName": "Erftstadt",
+      "stationName": "Erftstadt",
+      "latitude": 50.80722,
+      "longitude": 6.83361,
+      "population": 51207,
+      "id": 143
+    },
+    {
+      "cityName": "Lahr",
+      "stationName": "Lahr (Schwarzw)",
+      "latitude": 48.34044,
+      "longitude": 7.83473,
+      "population": 50775,
+      "id": 144
+    },
+    {
+      "cityName": "Ibbenbueren",
+      "stationName": "Ibbenbüren",
+      "latitude": 52.27687,
+      "longitude": 7.72149,
+      "population": 50577,
+      "id": 145
+    },
+    {
+      "cityName": "Passau",
+      "stationName": "Passau Hauptbahnhof",
+      "latitude": 48.57402,
+      "longitude": 13.45006,
+      "population": 50560,
+      "id": 146
+    },
+    {
+      "cityName": "Gronau",
+      "stationName": "Gronau (Westf)",
+      "latitude": 52.21511,
+      "longitude": 7.02244,
+      "population": 50547,
+      "id": 147
+    },
+    {
+      "cityName": "Speyer",
+      "stationName": "Speyer Hbf",
+      "latitude": 49.32412,
+      "longitude": 8.42795,
+      "population": 50343,
+      "id": 148
+    },
+    {
+      "cityName": "Heidenheim an der Brenz",
+      "stationName": "Heidenheim",
+      "latitude": 48.68017,
+      "longitude": 10.15664,
+      "population": 50067,
+      "id": 149
+    },
+    {
+      "cityName": "Peine",
+      "stationName": "Peine",
+      "latitude": 52.31894,
+      "longitude": 10.23214,
+      "population": 49953,
+      "id": 150
+    },
+    {
+      "cityName": "Neunkirchen",
+      "stationName": "Neunkirchen (Saar)Hbf",
+      "latitude": 49.35329,
+      "longitude": 7.17666,
+      "population": 49843,
+      "id": 151
+    },
+    {
+      "cityName": "Bad Oeynhausen",
+      "stationName": "Bad Oeynhausen",
+      "latitude": 52.2054,
+      "longitude": 8.79652,
+      "population": 49513,
+      "id": 152
+    },
+    {
+      "cityName": "Hof",
+      "stationName": "Hof Hbf",
+      "latitude": 50.30774,
+      "longitude": 11.92307,
+      "population": 49239,
+      "id": 153
+    },
+    {
+      "cityName": "Kleve",
+      "stationName": "Bahnhof Kleve",
+      "latitude": 51.78908,
+      "longitude": 6.14616,
+      "population": 49072,
+      "id": 154
+    },
+    {
+      "cityName": "Ravensburg",
+      "stationName": "Ravensburg Railway Station",
+      "latitude": 47.78433,
+      "longitude": 9.6061,
+      "population": 48825,
+      "id": 155
+    },
+    {
+      "cityName": "Elmshorn",
+      "stationName": "Elmshorn",
+      "latitude": 53.75462,
+      "longitude": 9.65926,
+      "population": 48703,
+      "id": 156
+    },
+    {
+      "cityName": "Soest",
+      "stationName": "Bahnhof Soest",
+      "latitude": 51.5781,
+      "longitude": 8.10451,
+      "population": 48037,
+      "id": 157
+    },
+    {
+      "cityName": "Rastatt",
+      "stationName": "Rastatt",
+      "latitude": 48.86048,
+      "longitude": 8.21562,
+      "population": 47906,
+      "id": 158
+    },
+    {
+      "cityName": "Bruchsal",
+      "stationName": "Bruchsal Tunnelstr.",
+      "latitude": 49.11955,
+      "longitude": 8.59438,
+      "population": 47784,
+      "id": 159
+    },
+    {
+      "cityName": "Singen",
+      "stationName": "Singen (Hohentwiel)",
+      "latitude": 47.75844,
+      "longitude": 8.84038,
+      "population": 47621,
+      "id": 160
+    },
+    {
+      "cityName": "Dülmen",
+      "stationName": "Dülmen",
+      "latitude": 51.82768,
+      "longitude": 7.29577,
+      "population": 47495,
+      "id": 161
+    },
+    {
+      "cityName": "Lörrach",
+      "stationName": "Lörrach Hbf",
+      "latitude": 47.61405,
+      "longitude": 7.66542,
+      "population": 47002,
+      "id": 162
+    },
+    {
+      "cityName": "Albstadt",
+      "stationName": "Albstadt-Ebingen",
+      "latitude": 48.21029,
+      "longitude": 9.02696,
+      "population": 46950,
+      "id": 163
+    },
+    {
+      "cityName": "Gotha",
+      "stationName": "Gotha",
+      "latitude": 50.93907,
+      "longitude": 10.71257,
+      "population": 46615,
+      "id": 164
+    },
+    {
+      "cityName": "Melle",
+      "stationName": "Melle",
+      "latitude": 52.20926,
+      "longitude": 8.34322,
+      "population": 46436,
+      "id": 165
+    },
+    {
+      "cityName": "Bünde",
+      "stationName": "Bünde (Westf)",
+      "latitude": 52.20208,
+      "longitude": 8.57388,
+      "population": 46365,
+      "id": 166
+    },
+    {
+      "cityName": "Böblingen",
+      "stationName": "Böblingen Südbf",
+      "latitude": 48.67724,
+      "longitude": 9.01051,
+      "population": 46282,
+      "id": 167
+    },
+    {
+      "cityName": "Rheda-Wiedenbrück",
+      "stationName": "Rheda-Wiedenbrück",
+      "latitude": 51.85702,
+      "longitude": 8.28665,
+      "population": 46123,
+      "id": 168
+    },
+    {
+      "cityName": "Hansestadt Stade",
+      "stationName": "Stade",
+      "latitude": 53.59617,
+      "longitude": 9.47742,
+      "population": 45634,
+      "id": 169
+    },
+    {
+      "cityName": "Wismar",
+      "stationName": "Wismar",
+      "latitude": 53.89657,
+      "longitude": 11.46943,
+      "population": 45255,
+      "id": 170
+    },
+    {
+      "cityName": "Amberg",
+      "stationName": "Amberg",
+      "latitude": 49.44762,
+      "longitude": 11.8629,
+      "population": 44737,
+      "id": 171
+    },
+    {
+      "cityName": "Neustadt am Rübenberge",
+      "stationName": "Neustadt am Rübenberge",
+      "latitude": 52.50332,
+      "longitude": 9.45528,
+      "population": 44668,
+      "id": 172
+    },
+    {
+      "cityName": "Homburg",
+      "stationName": "Homburg (Saar)Hbf",
+      "latitude": 49.32808,
+      "longitude": 7.33704,
+      "population": 44607,
+      "id": 173
+    },
+    {
+      "cityName": "Straubing",
+      "stationName": "Straubing",
+      "latitude": 48.87698,
+      "longitude": 12.57409,
+      "population": 44580,
+      "id": 174
+    },
+    {
+      "cityName": "Memmingen",
+      "stationName": "Memmingen",
+      "latitude": 47.98585,
+      "longitude": 10.18663,
+      "population": 44192,
+      "id": 175
+    },
+    {
+      "cityName": "Lehrte",
+      "stationName": "Lehrte",
+      "latitude": 52.37672,
+      "longitude": 9.9746,
+      "population": 43920,
+      "id": 176
+    },
+    {
+      "cityName": "Nordhausen",
+      "stationName": "Nordhausen Bahnhofsplatz",
+      "latitude": 51.49395,
+      "longitude": 10.78932,
+      "population": 43912,
+      "id": 177
+    },
+    {
+      "cityName": "Freiberg",
+      "stationName": "Freiberg (Sachs)",
+      "latitude": 50.90872,
+      "longitude": 13.34414,
+      "population": 43670,
+      "id": 178
+    },
+    {
+      "cityName": "Pirmasens",
+      "stationName": "Hauptbahnhof Pirmasens",
+      "latitude": 49.20563,
+      "longitude": 7.59846,
+      "population": 43582,
+      "id": 179
+    },
+    {
+      "cityName": "Goslar",
+      "stationName": "Goslar",
+      "latitude": 51.91157,
+      "longitude": 10.42144,
+      "population": 43560,
+      "id": 180
+    },
+    {
+      "cityName": "Bietigheim-Bissingen",
+      "stationName": "Bahnhof Bietigheim-Bissingen",
+      "latitude": 48.94853,
+      "longitude": 9.13689,
+      "population": 43556,
+      "id": 181
+    },
+    {
+      "cityName": "Suhl",
+      "stationName": "Suhl",
+      "latitude": 50.60515,
+      "longitude": 10.68283,
+      "population": 43509,
+      "id": 182
+    },
+    {
+      "cityName": "Weinheim",
+      "stationName": "Bahnhof Weinheim",
+      "latitude": 49.5535,
+      "longitude": 8.66579,
+      "population": 43325,
+      "id": 183
+    },
+    {
+      "cityName": "Rodgau",
+      "stationName": "Rodgau-Jügesheim",
+      "latitude": 50.02598,
+      "longitude": 8.87896,
+      "population": 43315,
+      "id": 184
+    },
+    {
+      "cityName": "Bad Kreuznach",
+      "stationName": "Bad Kreuznach",
+      "latitude": 49.8424,
+      "longitude": 7.86644,
+      "population": 43213,
+      "id": 185
+    },
+    {
+      "cityName": "Monheim am Rhein",
+      "stationName": "Solingen Hauptbahnhof",
+      "latitude": 51.16056,
+      "longitude": 7.00417,
+      "population": 43038,
+      "id": 186
+    },
+    {
+      "cityName": "Gifhorn",
+      "stationName": "Gifhorn Stadt",
+      "latitude": 52.47977,
+      "longitude": 10.54294,
+      "population": 43000,
+      "id": 187
+    },
+    {
+      "cityName": "Rottenburg",
+      "stationName": "Tübingen Hbf",
+      "latitude": 48.51581,
+      "longitude": 9.05541,
+      "population": 42721,
+      "id": 188
+    },
+    {
+      "cityName": "Freising",
+      "stationName": "Freising Station",
+      "latitude": 48.39557,
+      "longitude": 11.74476,
+      "population": 42570,
+      "id": 189
+    },
+    {
+      "cityName": "Weiden",
+      "stationName": "Weiden (Oberpf)",
+      "latitude": 49.67049,
+      "longitude": 12.15385,
+      "population": 42550,
+      "id": 190
+    },
+    {
+      "cityName": "Kaufbeuren",
+      "stationName": "Kaufbeuren",
+      "latitude": 47.87543,
+      "longitude": 10.6295,
+      "population": 42505,
+      "id": 191
+    },
+    {
+      "cityName": "Nettetal",
+      "stationName": "Breyell",
+      "latitude": 51.29462,
+      "longitude": 6.24117,
+      "population": 42417,
+      "id": 192
+    },
+    {
+      "cityName": "Eberswalde",
+      "stationName": "Eberswalde Hauptbahnhof",
+      "latitude": 52.8337,
+      "longitude": 13.79716,
+      "population": 41980,
+      "id": 193
+    },
+    {
+      "cityName": "Bautzen",
+      "stationName": "Bautzen",
+      "latitude": 51.1731,
+      "longitude": 14.42873,
+      "population": 41972,
+      "id": 194
+    },
+    {
+      "cityName": "Lemgo",
+      "stationName": "Lemgo",
+      "latitude": 52.0224,
+      "longitude": 8.8947,
+      "population": 41943,
+      "id": 195
+    },
+    {
+      "cityName": "Coburg",
+      "stationName": "Coburg",
+      "latitude": 50.2631,
+      "longitude": 10.95737,
+      "population": 41901,
+      "id": 196
+    },
+    {
+      "cityName": "Schorndorf",
+      "stationName": "Schorndorf",
+      "latitude": 48.80715,
+      "longitude": 9.52631,
+      "population": 41647,
+      "id": 197
+    },
+    {
+      "cityName": "Landau in der Pfalz",
+      "stationName": "Landau (Pfalz)Hbf",
+      "latitude": 49.19774,
+      "longitude": 8.1262,
+      "population": 41612,
+      "id": 198
+    },
+    {
+      "cityName": "Heinsberg",
+      "stationName": "Heinsberg (Rheinl)",
+      "latitude": 51.06504,
+      "longitude": 6.09888,
+      "population": 41505,
+      "id": 199
+    },
+    {
+      "cityName": "Seevetal",
+      "stationName": "Bahnhof Hittfeld",
+      "latitude": 53.40385,
+      "longitude": 9.97482,
+      "population": 41266,
+      "id": 200
+    },
+    {
+      "cityName": "Wunstorf",
+      "stationName": "Wunstorf",
+      "latitude": 52.42222,
+      "longitude": 9.45098,
+      "population": 41211,
+      "id": 201
+    },
+    {
+      "cityName": "Bensheim",
+      "stationName": "Bensheim",
+      "latitude": 49.68133,
+      "longitude": 8.61672,
+      "population": 41124,
+      "id": 202
+    },
+    {
+      "cityName": "Borken",
+      "stationName": "Borken (Westf)",
+      "latitude": 51.84896,
+      "longitude": 6.86528,
+      "population": 40876,
+      "id": 203
+    },
+    {
+      "cityName": "Buchholz in der Nordheide",
+      "stationName": "Buchholz (Nordheide)",
+      "latitude": 53.32468,
+      "longitude": 9.87627,
+      "population": 40849,
+      "id": 204
+    },
+    {
+      "cityName": "Oranienburg",
+      "stationName": "Oranienburg",
+      "latitude": 52.75365,
+      "longitude": 13.24961,
+      "population": 40793,
+      "id": 205
+    },
+    {
+      "cityName": "Eisenach",
+      "stationName": "Eisenach West",
+      "latitude": 50.9789,
+      "longitude": 10.30474,
+      "population": 40747,
+      "id": 206
+    },
+    {
+      "cityName": "Pinneberg",
+      "stationName": "Pinneberg",
+      "latitude": 53.65529,
+      "longitude": 9.79761,
+      "population": 40577,
+      "id": 207
+    },
+    {
+      "cityName": "Pirna",
+      "stationName": "Pirna",
+      "latitude": 50.9627,
+      "longitude": 13.92894,
+      "population": 40322,
+      "id": 208
+    },
+    {
+      "cityName": "Aurich",
+      "stationName": "Bahnhof Abelitz",
+      "latitude": 53.465,
+      "longitude": 7.28545,
+      "population": 40319,
+      "id": 209
+    },
+    {
+      "cityName": "Nürtingen",
+      "stationName": "Nürtingen",
+      "latitude": 48.628,
+      "longitude": 9.34265,
+      "population": 40210,
+      "id": 210
+    },
+    {
+      "cityName": "Kirchheim unter Teck",
+      "stationName": "Kirchheim (Teck) Süd",
+      "latitude": 48.64008,
+      "longitude": 9.45207,
+      "population": 40206,
+      "id": 211
+    },
+    {
+      "cityName": "Hückelhoven",
+      "stationName": "Hückelhoven-Baal",
+      "latitude": 51.03346,
+      "longitude": 6.27415,
+      "population": 39828,
+      "id": 212
+    },
+    {
+      "cityName": "Dachau",
+      "stationName": "Dachau Stadt",
+      "latitude": 48.26641,
+      "longitude": 11.43986,
+      "population": 39740,
+      "id": 213
+    },
+    {
+      "cityName": "Halberstadt",
+      "stationName": "Halberstadt",
+      "latitude": 51.89931,
+      "longitude": 11.07345,
+      "population": 39729,
+      "id": 214
+    },
+    {
+      "cityName": "Kehl",
+      "stationName": "Kehl",
+      "latitude": 48.57645,
+      "longitude": 7.80624,
+      "population": 39584,
+      "id": 215
+    },
+    {
+      "cityName": "Neumarkt in der Oberpfalz",
+      "stationName": "Neumarkt (Oberpf)",
+      "latitude": 49.27322,
+      "longitude": 11.45699,
+      "population": 39557,
+      "id": 216
+    },
+    {
+      "cityName": "Löhne",
+      "stationName": "Löhne (Westf)",
+      "latitude": 52.19665,
+      "longitude": 8.7135,
+      "population": 39521,
+      "id": 217
+    },
+    {
+      "cityName": "Kamp-Lintfort",
+      "stationName": "Bahnhof Millingen",
+      "latitude": 51.55996,
+      "longitude": 6.55673,
+      "population": 39490,
+      "id": 218
+    },
+    {
+      "cityName": "Ilmenau",
+      "stationName": "Ilmenau",
+      "latitude": 50.68448,
+      "longitude": 10.92309,
+      "population": 38834,
+      "id": 219
+    },
+    {
+      "cityName": "Backnang",
+      "stationName": "Backnang",
+      "latitude": 48.94268,
+      "longitude": 9.42599,
+      "population": 38818,
+      "id": 220
+    },
+    {
+      "cityName": "Warendorf",
+      "stationName": "Warendorf",
+      "latitude": 51.95009,
+      "longitude": 7.98446,
+      "population": 38707,
+      "id": 221
+    },
+    {
+      "cityName": "Altenburg",
+      "stationName": "Altenburg",
+      "latitude": 50.99665,
+      "longitude": 12.44402,
+      "population": 38568,
+      "id": 222
+    },
+    {
+      "cityName": "Saarlouis",
+      "stationName": "Saarlouis Hbf",
+      "latitude": 49.32783,
+      "longitude": 6.75017,
+      "population": 38333,
+      "id": 223
+    },
+    {
+      "cityName": "Buxtehude",
+      "stationName": "Buxtehude",
+      "latitude": 53.47047,
+      "longitude": 9.68804,
+      "population": 38192,
+      "id": 224
+    },
+    {
+      "cityName": "Ahaus",
+      "stationName": "Ahaus",
+      "latitude": 52.08168,
+      "longitude": 7.01645,
+      "population": 38165,
+      "id": 225
+    },
+    {
+      "cityName": "Haltern am See",
+      "stationName": "Haltern am See",
+      "latitude": 51.73767,
+      "longitude": 7.18437,
+      "population": 38142,
+      "id": 226
+    },
+    {
+      "cityName": "Mühlhausen",
+      "stationName": "Mühlhausen (Thür)",
+      "latitude": 51.20919,
+      "longitude": 10.47404,
+      "population": 38108,
+      "id": 227
+    },
+    {
+      "cityName": "Weißenfels",
+      "stationName": "Weißenfels",
+      "latitude": 51.20461,
+      "longitude": 11.97093,
+      "population": 37929,
+      "id": 228
+    },
+    {
+      "cityName": "Beckum",
+      "stationName": "Neubeckum",
+      "latitude": 51.80195,
+      "longitude": 8.02136,
+      "population": 37814,
+      "id": 229
+    },
+    {
+      "cityName": "Stendal",
+      "stationName": "Stendal",
+      "latitude": 52.59472,
+      "longitude": 11.85441,
+      "population": 37722,
+      "id": 230
+    },
+    {
+      "cityName": "Hemer",
+      "stationName": "Bahnhof Iserlohn-Ost",
+      "latitude": 51.37083,
+      "longitude": 7.71111,
+      "population": 37502,
+      "id": 231
+    },
+    {
+      "cityName": "Falkensee",
+      "stationName": "Falkensee",
+      "latitude": 52.55977,
+      "longitude": 13.08964,
+      "population": 37468,
+      "id": 232
+    },
+    {
+      "cityName": "Sinsheim",
+      "stationName": "Sinsheim (Elsenz) Hbf",
+      "latitude": 49.25035,
+      "longitude": 8.8751,
+      "population": 37036,
+      "id": 233
+    },
+    {
+      "cityName": "Coesfeld",
+      "stationName": "Coesfeld (Westf)",
+      "latitude": 51.93943,
+      "longitude": 7.16388,
+      "population": 36631,
+      "id": 234
+    },
+    {
+      "cityName": "Bitterfeld-Wolfen",
+      "stationName": "Bitterfeld",
+      "latitude": 51.62286,
+      "longitude": 12.31685,
+      "population": 36592,
+      "id": 235
+    },
+    {
+      "cityName": "Schwäbisch Hall",
+      "stationName": "Schwäbisch Hall",
+      "latitude": 49.10821,
+      "longitude": 9.73336,
+      "population": 36543,
+      "id": 236
+    },
+    {
+      "cityName": "Porta Westfalica",
+      "stationName": "Bahnhof Porta Westfalica",
+      "latitude": 52.24358,
+      "longitude": 8.92042,
+      "population": 36364,
+      "id": 237
+    },
+    {
+      "cityName": "Crailsheim",
+      "stationName": "Crailsheim",
+      "latitude": 49.13787,
+      "longitude": 10.06433,
+      "population": 35755,
+      "id": 238
+    },
+    {
+      "cityName": "Voerde",
+      "stationName": "Voerde (Niederrhein)",
+      "latitude": 51.59754,
+      "longitude": 6.68881,
+      "population": 35661,
+      "id": 239
+    },
+    {
+      "cityName": "Emsdetten",
+      "stationName": "Emsdetten",
+      "latitude": 52.17675,
+      "longitude": 7.53153,
+      "population": 35582,
+      "id": 240
+    },
+    {
+      "cityName": "Zweibrücken",
+      "stationName": "Zweibrücken Hbf",
+      "latitude": 49.24681,
+      "longitude": 7.35664,
+      "population": 35221,
+      "id": 241
+    },
+    {
+      "cityName": "Lage",
+      "stationName": "Lage (Lippe)",
+      "latitude": 51.99174,
+      "longitude": 8.8012,
+      "population": 35054,
+      "id": 242
+    },
+    {
+      "cityName": "Uelzen",
+      "stationName": "Bahnhof Uelzen",
+      "latitude": 52.96998,
+      "longitude": 10.55331,
+      "population": 34996,
+      "id": 243
+    },
+    {
+      "cityName": "Wedel",
+      "stationName": "Wedel",
+      "latitude": 53.58182,
+      "longitude": 9.70496,
+      "population": 34912,
+      "id": 244
+    },
+    {
+      "cityName": "Bernau bei Berlin",
+      "stationName": "Bernau (b Berlin)",
+      "latitude": 52.67583,
+      "longitude": 13.59229,
+      "population": 34866,
+      "id": 245
+    },
+    {
+      "cityName": "Tuttlingen",
+      "stationName": "Tuttlingen Zentrum",
+      "latitude": 47.98562,
+      "longitude": 8.80944,
+      "population": 34847,
+      "id": 246
+    },
+    {
+      "cityName": "Rheinfelden",
+      "stationName": "Rheinfelden (Baden)",
+      "latitude": 47.55692,
+      "longitude": 7.78421,
+      "population": 34674,
+      "id": 247
+    },
+    {
+      "cityName": "Steinfurt",
+      "stationName": "Steinfurt-Burgsteinfurt",
+      "latitude": 52.14738,
+      "longitude": 7.32934,
+      "population": 34601,
+      "id": 248
+    },
+    {
+      "cityName": "Balingen",
+      "stationName": "Balingen (Württ)",
+      "latitude": 48.27847,
+      "longitude": 8.85031,
+      "population": 34414,
+      "id": 249
+    },
+    {
+      "cityName": "Meppen",
+      "stationName": "Meppen",
+      "latitude": 52.69602,
+      "longitude": 7.29802,
+      "population": 34198,
+      "id": 250
+    },
+    {
+      "cityName": "Herrenberg",
+      "stationName": "Herrenberg",
+      "latitude": 48.59399,
+      "longitude": 8.86266,
+      "population": 34192,
+      "id": 251
+    },
+    {
+      "cityName": "Papenburg",
+      "stationName": "Papenburg (Ems)",
+      "latitude": 53.08971,
+      "longitude": 7.38671,
+      "population": 34117,
+      "id": 252
+    },
+    {
+      "cityName": "Geldern",
+      "stationName": "Bahnhof Geldern",
+      "latitude": 51.51323,
+      "longitude": 6.31941,
+      "population": 34013,
+      "id": 253
+    },
+    {
+      "cityName": "Jülich",
+      "stationName": "Jülich Bahnhof",
+      "latitude": 50.91903,
+      "longitude": 6.36809,
+      "population": 33911,
+      "id": 254
+    },
+    {
+      "cityName": "Leer",
+      "stationName": "Leer (Ostfriesl)",
+      "latitude": 53.23165,
+      "longitude": 7.46528,
+      "population": 33886,
+      "id": 255
+    },
+    {
+      "cityName": "Limburg an der Lahn",
+      "stationName": "Limburg (Lahn)",
+      "latitude": 50.38412,
+      "longitude": 8.06234,
+      "population": 33820,
+      "id": 256
+    },
+    {
+      "cityName": "Schwedt (Oder)",
+      "stationName": "Schwedt (Oder)",
+      "latitude": 53.06307,
+      "longitude": 14.29051,
+      "population": 33730,
+      "id": 257
+    },
+    {
+      "cityName": "Goch",
+      "stationName": "Bahnhof Goch",
+      "latitude": 51.68192,
+      "longitude": 6.16058,
+      "population": 33706,
+      "id": 258
+    },
+    {
+      "cityName": "Fürstenwalde",
+      "stationName": "Fürstenwalde (Spree)",
+      "latitude": 52.36686,
+      "longitude": 14.05964,
+      "population": 33539,
+      "id": 259
+    },
+    {
+      "cityName": "Fürstenfeldbruck",
+      "stationName": "Bahnhof Fürstenfeldbruck",
+      "latitude": 48.17209,
+      "longitude": 11.26212,
+      "population": 33533,
+      "id": 260
+    },
+    {
+      "cityName": "Erding",
+      "stationName": "Erding",
+      "latitude": 48.30346,
+      "longitude": 11.91206,
+      "population": 33519,
+      "id": 261
+    },
+    {
+      "cityName": "Itzehoe",
+      "stationName": "Itzehoe",
+      "latitude": 53.92387,
+      "longitude": 9.51029,
+      "population": 33047,
+      "id": 262
+    },
+    {
+      "cityName": "Achim",
+      "stationName": "Achim",
+      "latitude": 53.01599,
+      "longitude": 9.03045,
+      "population": 32870,
+      "id": 263
+    },
+    {
+      "cityName": "Höxter",
+      "stationName": "Höxter-Lüchtringen",
+      "latitude": 51.79087,
+      "longitude": 9.42718,
+      "population": 32713,
+      "id": 264
+    },
+    {
+      "cityName": "Winsen",
+      "stationName": "Winsen (Luhe)",
+      "latitude": 53.35384,
+      "longitude": 10.20769,
+      "population": 32662,
+      "id": 265
+    },
+    {
+      "cityName": "Nienburg",
+      "stationName": "Nienburg (Weser)",
+      "latitude": 52.64557,
+      "longitude": 9.21775,
+      "population": 32629,
+      "id": 266
+    },
+    {
+      "cityName": "Königs Wusterhausen",
+      "stationName": "Königs Wusterhausen",
+      "latitude": 52.29664,
+      "longitude": 13.63147,
+      "population": 32513,
+      "id": 267
+    },
+    {
+      "cityName": "Biberach an der Riß",
+      "stationName": "Biberach (Riß)",
+      "latitude": 48.10184,
+      "longitude": 9.79313,
+      "population": 32333,
+      "id": 268
+    },
+    {
+      "cityName": "Weil am Rhein",
+      "stationName": "Lörrach Hbf",
+      "latitude": 47.61405,
+      "longitude": 7.66542,
+      "population": 32236,
+      "id": 269
+    },
+    {
+      "cityName": "Meschede",
+      "stationName": "Meschede",
+      "latitude": 51.3496,
+      "longitude": 8.27905,
+      "population": 32224,
+      "id": 270
+    },
+    {
+      "cityName": "Rheinberg",
+      "stationName": "Bahnhof Millingen",
+      "latitude": 51.55996,
+      "longitude": 6.55673,
+      "population": 32188,
+      "id": 271
+    },
+    {
+      "cityName": "Wernigerode",
+      "stationName": "Wernigerode Westerntor",
+      "latitude": 51.83396,
+      "longitude": 10.78026,
+      "population": 32167,
+      "id": 272
+    },
+    {
+      "cityName": "Werl",
+      "stationName": "Werl",
+      "latitude": 51.55807,
+      "longitude": 7.91414,
+      "population": 32149,
+      "id": 273
+    },
+    {
+      "cityName": "Bernburg",
+      "stationName": "Bernburg",
+      "latitude": 51.79612,
+      "longitude": 11.75145,
+      "population": 32113,
+      "id": 274
+    },
+    {
+      "cityName": "Eisenhüttenstadt",
+      "stationName": "Eisenhüttenstadt",
+      "latitude": 52.14798,
+      "longitude": 14.65844,
+      "population": 32052,
+      "id": 275
+    },
+    {
+      "cityName": "Neuruppin",
+      "stationName": "Neuruppin Rheinsberger Tor",
+      "latitude": 52.92968,
+      "longitude": 12.81052,
+      "population": 31901,
+      "id": 276
+    },
+    {
+      "cityName": "Ansbach",
+      "stationName": "Ansbach",
+      "latitude": 49.29803,
+      "longitude": 10.57824,
+      "population": 31839,
+      "id": 277
+    },
+    {
+      "cityName": "Emmerich",
+      "stationName": "Emmerich Railway Station",
+      "latitude": 51.83409,
+      "longitude": 6.25678,
+      "population": 31829,
+      "id": 278
+    },
+    {
+      "cityName": "Radolfzell",
+      "stationName": "Radolfzell",
+      "latitude": 47.73587,
+      "longitude": 8.96898,
+      "population": 31734,
+      "id": 279
+    },
+    {
+      "cityName": "Osterholz-Scharmbeck",
+      "stationName": "Osterholz-Scharmbeck",
+      "latitude": 53.22278,
+      "longitude": 8.79743,
+      "population": 31405,
+      "id": 280
+    },
+    {
+      "cityName": "Güstrow",
+      "stationName": "Güstrow",
+      "latitude": 53.80057,
+      "longitude": 12.17258,
+      "population": 31217,
+      "id": 281
+    },
+    {
+      "cityName": "Cloppenburg",
+      "stationName": "Cloppenburg",
+      "latitude": 52.844,
+      "longitude": 8.05576,
+      "population": 31177,
+      "id": 282
+    },
+    {
+      "cityName": "Ganderkesee",
+      "stationName": "Ganderkesee",
+      "latitude": 53.03525,
+      "longitude": 8.54278,
+      "population": 31141,
+      "id": 283
+    },
+    {
+      "cityName": "Merzig",
+      "stationName": "Merzig (Saar) Stadtmitte",
+      "latitude": 49.44348,
+      "longitude": 6.63523,
+      "population": 31118,
+      "id": 284
+    },
+    {
+      "cityName": "Deggendorf",
+      "stationName": "Deggendorf Hbf",
+      "latitude": 48.83944,
+      "longitude": 12.94973,
+      "population": 31081,
+      "id": 285
+    },
+    {
+      "cityName": "Burgdorf",
+      "stationName": "Burgdorf",
+      "latitude": 52.44871,
+      "longitude": 10.00284,
+      "population": 31051,
+      "id": 286
+    },
+    {
+      "cityName": "Northeim",
+      "stationName": "Northeim (Han)",
+      "latitude": 51.70314,
+      "longitude": 9.98662,
+      "population": 30894,
+      "id": 287
+    },
+    {
+      "cityName": "Hoyerswerda",
+      "stationName": "Hoyerswerda",
+      "latitude": 51.43279,
+      "longitude": 14.23141,
+      "population": 30759,
+      "id": 288
+    },
+    {
+      "cityName": "Bad Hersfeld",
+      "stationName": "Bad Hersfeld",
+      "latitude": 50.86963,
+      "longitude": 9.71618,
+      "population": 30725,
+      "id": 289
+    },
+    {
+      "cityName": "Andernach",
+      "stationName": "Bahnhof Andernach",
+      "latitude": 50.43464,
+      "longitude": 7.40491,
+      "population": 30408,
+      "id": 290
+    },
+    {
+      "cityName": "Bad Nauheim",
+      "stationName": "Bad Nauheim",
+      "latitude": 50.3679,
+      "longitude": 8.74933,
+      "population": 30291,
+      "id": 291
+    },
+    {
+      "cityName": "Bretten",
+      "stationName": "Bretten Stadtmitte",
+      "latitude": 49.03399,
+      "longitude": 8.70281,
+      "population": 30274,
+      "id": 292
+    },
+    {
+      "cityName": "Ahrensburg",
+      "stationName": "Ahrensburg",
+      "latitude": 53.66862,
+      "longitude": 10.23522,
+      "population": 30103,
+      "id": 293
+    },
+    {
+      "cityName": "Rietberg",
+      "stationName": "Bahnhof Varensell",
+      "latitude": 51.87512,
+      "longitude": 8.45537,
+      "population": 30055,
+      "id": 294
+    },
+    {
+      "cityName": "Wittenberg",
+      "stationName": "Lutherstadt Wittenberg Hbf",
+      "latitude": 51.86781,
+      "longitude": 12.66229,
+      "population": 30000,
+      "id": 295
+    },
+    {
+      "cityName": "Winnenden",
+      "stationName": "Winnenden",
+      "latitude": 48.87958,
+      "longitude": 9.39229,
+      "population": 29876,
+      "id": 296
+    },
+    {
+      "cityName": "Springe",
+      "stationName": "Springe",
+      "latitude": 52.21515,
+      "longitude": 9.55624,
+      "population": 29828,
+      "id": 297
+    },
+    {
+      "cityName": "Einbeck",
+      "stationName": "Einbeck Salzderhelden",
+      "latitude": 51.79817,
+      "longitude": 9.92277,
+      "population": 29751,
+      "id": 298
+    },
+    {
+      "cityName": "Vechta",
+      "stationName": "Vechta",
+      "latitude": 52.7289,
+      "longitude": 8.28037,
+      "population": 29729,
+      "id": 299
+    },
+    {
+      "cityName": "Naumburg",
+      "stationName": "Naumburg (Saale)Hbf",
+      "latitude": 51.16307,
+      "longitude": 11.79698,
+      "population": 29722,
+      "id": 300
+    },
+    {
+      "cityName": "Gaggenau",
+      "stationName": "Gaggenau Mercedes-Benz Werk",
+      "latitude": 48.79804,
+      "longitude": 8.32748,
+      "population": 29529,
+      "id": 301
+    },
+    {
+      "cityName": "Geesthacht",
+      "stationName": "Bahnhof Börnsen",
+      "latitude": 53.4691,
+      "longitude": 10.27756,
+      "population": 29487,
+      "id": 302
+    },
+    {
+      "cityName": "Riesa",
+      "stationName": "Riesa Railway Station",
+      "latitude": 51.30984,
+      "longitude": 13.28801,
+      "population": 29373,
+      "id": 303
+    },
+    {
+      "cityName": "Oelde",
+      "stationName": "Oelde",
+      "latitude": 51.82911,
+      "longitude": 8.1426,
+      "population": 29297,
+      "id": 304
+    },
+    {
+      "cityName": "Idar-Oberstein",
+      "stationName": "Idar-Oberstein",
+      "latitude": 49.69937,
+      "longitude": 7.32123,
+      "population": 29158,
+      "id": 305
+    },
+    {
+      "cityName": "Blankenfelde-Mahlow",
+      "stationName": "Blankenfelde (Teltow-Fläming)",
+      "latitude": 52.33721,
+      "longitude": 13.41598,
+      "population": 29129,
+      "id": 306
+    },
+    {
+      "cityName": "Senftenberg",
+      "stationName": "Senftenberg",
+      "latitude": 51.52694,
+      "longitude": 14.0039,
+      "population": 28988,
+      "id": 307
+    },
+    {
+      "cityName": "Vaihingen an der Enz",
+      "stationName": "Vaihingen (Enz)",
+      "latitude": 48.94812,
+      "longitude": 8.95763,
+      "population": 28798,
+      "id": 308
+    },
+    {
+      "cityName": "Köthen",
+      "stationName": "Köthen",
+      "latitude": 51.75193,
+      "longitude": 11.98936,
+      "population": 28710,
+      "id": 309
+    },
+    {
+      "cityName": "Geislingen an der Steige",
+      "stationName": "Geislingen (Steige)West",
+      "latitude": 48.63077,
+      "longitude": 9.82191,
+      "population": 28655,
+      "id": 310
+    },
+    {
+      "cityName": "Bühl",
+      "stationName": "Bühl (Baden)",
+      "latitude": 48.69668,
+      "longitude": 8.1293,
+      "population": 28608,
+      "id": 311
+    },
+    {
+      "cityName": "Warstein",
+      "stationName": "Bestwig",
+      "latitude": 51.36191,
+      "longitude": 8.39784,
+      "population": 28532,
+      "id": 312
+    },
+    {
+      "cityName": "Meissen",
+      "stationName": "Meißen Altstadt",
+      "latitude": 51.1593,
+      "longitude": 13.4734,
+      "population": 28492,
+      "id": 313
+    },
+    {
+      "cityName": "Unterschleißheim",
+      "stationName": "Unterschleißheim",
+      "latitude": 48.2737,
+      "longitude": 11.56863,
+      "population": 28482,
+      "id": 314
+    },
+    {
+      "cityName": "Neuburg an der Donau",
+      "stationName": "Neuburg (Donau)",
+      "latitude": 48.72722,
+      "longitude": 11.17837,
+      "population": 28370,
+      "id": 315
+    },
+    {
+      "cityName": "Geilenkirchen",
+      "stationName": "Bahnhof Geilenkirchen",
+      "latitude": 50.96115,
+      "longitude": 6.12457,
+      "population": 28334,
+      "id": 316
+    },
+    {
+      "cityName": "Zeitz",
+      "stationName": "Zeitz",
+      "latitude": 51.05645,
+      "longitude": 12.13149,
+      "population": 28328,
+      "id": 317
+    },
+    {
+      "cityName": "Rendsburg",
+      "stationName": "Rendsburg",
+      "latitude": 54.30226,
+      "longitude": 9.67113,
+      "population": 28323,
+      "id": 318
+    },
+    {
+      "cityName": "Schwandorf in Bayern",
+      "stationName": "Schwandorf",
+      "latitude": 49.32614,
+      "longitude": 12.10422,
+      "population": 28235,
+      "id": 319
+    },
+    {
+      "cityName": "Bramsche",
+      "stationName": "Bramsche",
+      "latitude": 52.41088,
+      "longitude": 7.97501,
+      "population": 28220,
+      "id": 320
+    },
+    {
+      "cityName": "Plettenberg",
+      "stationName": "Plettenberg",
+      "latitude": 51.23193,
+      "longitude": 7.86891,
+      "population": 28206,
+      "id": 321
+    },
+    {
+      "cityName": "Kelkheim",
+      "stationName": "Kelkheim",
+      "latitude": 50.13728,
+      "longitude": 8.44766,
+      "population": 28175,
+      "id": 322
+    },
+    {
+      "cityName": "Lennestadt",
+      "stationName": "Lennestadt-Meggen",
+      "latitude": 51.12245,
+      "longitude": 8.06578,
+      "population": 28102,
+      "id": 323
+    },
+    {
+      "cityName": "Lohne",
+      "stationName": "Lohne (Oldb)",
+      "latitude": 52.66533,
+      "longitude": 8.22929,
+      "population": 28089,
+      "id": 324
+    },
+    {
+      "cityName": "Kevelaer",
+      "stationName": "Bahnhof Kevelaer",
+      "latitude": 51.58102,
+      "longitude": 6.25242,
+      "population": 28064,
+      "id": 325
+    },
+    {
+      "cityName": "Saalfeld",
+      "stationName": "Saalfeld (Saale)",
+      "latitude": 50.65032,
+      "longitude": 11.37499,
+      "population": 28023,
+      "id": 326
+    },
+    {
+      "cityName": "Baesweiler",
+      "stationName": "Eschweiler Hbf",
+      "latitude": 50.81353,
+      "longitude": 6.25194,
+      "population": 27834,
+      "id": 327
+    },
+    {
+      "cityName": "Bad Neuenahr-Ahrweiler",
+      "stationName": "Ahrweiler",
+      "latitude": 50.54654,
+      "longitude": 7.10707,
+      "population": 27823,
+      "id": 328
+    },
+    {
+      "cityName": "Ehingen",
+      "stationName": "Ehingen (Donau)",
+      "latitude": 48.28568,
+      "longitude": 9.72434,
+      "population": 27764,
+      "id": 329
+    },
+    {
+      "cityName": "Sundern",
+      "stationName": "Bahnhof Sanssouci",
+      "latitude": 51.3535,
+      "longitude": 7.87884,
+      "population": 27654,
+      "id": 330
+    },
+    {
+      "cityName": "Kulmbach",
+      "stationName": "Kulmbach",
+      "latitude": 50.10982,
+      "longitude": 11.45189,
+      "population": 27565,
+      "id": 331
+    },
+    {
+      "cityName": "Selm",
+      "stationName": "Lünen Hbf",
+      "latitude": 51.61713,
+      "longitude": 7.52949,
+      "population": 27540,
+      "id": 332
+    },
+    {
+      "cityName": "Mechernich",
+      "stationName": "Mechernich",
+      "latitude": 50.59137,
+      "longitude": 6.6423,
+      "population": 27537,
+      "id": 333
+    },
+    {
+      "cityName": "Grimma",
+      "stationName": "Grimma",
+      "latitude": 51.22944,
+      "longitude": 12.71389,
+      "population": 27529,
+      "id": 334
+    },
+    {
+      "cityName": "Friedberg",
+      "stationName": "Friedberg (Hess)",
+      "latitude": 50.33261,
+      "longitude": 8.76206,
+      "population": 27484,
+      "id": 335
+    },
+    {
+      "cityName": "Hamminkeln",
+      "stationName": "Bahnhof Hamminkeln",
+      "latitude": 51.73531,
+      "longitude": 6.60164,
+      "population": 27433,
+      "id": 336
+    },
+    {
+      "cityName": "Overath",
+      "stationName": "Bahnhof Overath",
+      "latitude": 50.93287,
+      "longitude": 7.28876,
+      "population": 27203,
+      "id": 337
+    },
+    {
+      "cityName": "Rathenow",
+      "stationName": "Rathenow",
+      "latitude": 52.59964,
+      "longitude": 12.35484,
+      "population": 27115,
+      "id": 338
+    },
+    {
+      "cityName": "Petershagen",
+      "stationName": "Petershagen-Lahde",
+      "latitude": 52.36803,
+      "longitude": 9.00981,
+      "population": 27090,
+      "id": 339
+    },
+    {
+      "cityName": "Wangen",
+      "stationName": "Wangen (Allgäu)",
+      "latitude": 47.68923,
+      "longitude": 9.83057,
+      "population": 27045,
+      "id": 340
+    },
+    {
+      "cityName": "Brilon",
+      "stationName": "Bahnhof Brilon Stadt",
+      "latitude": 51.39785,
+      "longitude": 8.57486,
+      "population": 27030,
+      "id": 341
+    },
+    {
+      "cityName": "Landsberg am Lech",
+      "stationName": "Landsberg (Lech)",
+      "latitude": 48.04727,
+      "longitude": 10.8717,
+      "population": 27017,
+      "id": 342
+    },
+    {
+      "cityName": "Verden",
+      "stationName": "Bahnhof Verden (Aller)",
+      "latitude": 52.9208,
+      "longitude": 9.23779,
+      "population": 26924,
+      "id": 343
+    },
+    {
+      "cityName": "Sankt Wendel",
+      "stationName": "Neunkirchen (Saar)Hbf",
+      "latitude": 49.35329,
+      "longitude": 7.17666,
+      "population": 26904,
+      "id": 344
+    },
+    {
+      "cityName": "Rösrath",
+      "stationName": "Rösrath",
+      "latitude": 50.90155,
+      "longitude": 7.18266,
+      "population": 26868,
+      "id": 345
+    },
+    {
+      "cityName": "Lübbecke",
+      "stationName": "Lübbecke (Westf)",
+      "latitude": 52.30634,
+      "longitude": 8.60573,
+      "population": 26815,
+      "id": 346
+    },
+    {
+      "cityName": "Achern",
+      "stationName": "Achern",
+      "latitude": 48.63399,
+      "longitude": 8.06532,
+      "population": 26733,
+      "id": 347
+    },
+    {
+      "cityName": "Strausberg",
+      "stationName": "Strausberg Stadt",
+      "latitude": 52.57698,
+      "longitude": 13.88813,
+      "population": 26649,
+      "id": 348
+    },
+    {
+      "cityName": "Lauf an der Pegnitz",
+      "stationName": "Lauf (rechts Pegnitz)",
+      "latitude": 49.51255,
+      "longitude": 11.27783,
+      "population": 26403,
+      "id": 349
+    },
+    {
+      "cityName": "Espelkamp",
+      "stationName": "Espelkamp",
+      "latitude": 52.37869,
+      "longitude": 8.61336,
+      "population": 26378,
+      "id": 350
+    },
+    {
+      "cityName": "Bingen am Rhein",
+      "stationName": "Bingen (Rhein) Hbf",
+      "latitude": 49.96873,
+      "longitude": 7.88426,
+      "population": 26339,
+      "id": 351
+    },
+    {
+      "cityName": "Wiehl",
+      "stationName": "Dieringhausen",
+      "latitude": 50.98542,
+      "longitude": 7.54248,
+      "population": 26291,
+      "id": 352
+    },
+    {
+      "cityName": "Rheinbach",
+      "stationName": "Rheinbach",
+      "latitude": 50.62921,
+      "longitude": 6.94751,
+      "population": 26262,
+      "id": 353
+    },
+    {
+      "cityName": "Schmallenberg",
+      "stationName": "Bahnhof Aue-Wingeshausen",
+      "latitude": 51.05168,
+      "longitude": 8.29058,
+      "population": 26132,
+      "id": 354
+    },
+    {
+      "cityName": "Hennigsdorf",
+      "stationName": "Hennigsdorf (b Berlin)",
+      "latitude": 52.63826,
+      "longitude": 13.20545,
+      "population": 26122,
+      "id": 355
+    },
+    {
+      "cityName": "Garmisch-Partenkirchen",
+      "stationName": "Garmisch-Partenkirchen",
+      "latitude": 47.49145,
+      "longitude": 11.09701,
+      "population": 26022,
+      "id": 356
+    },
+    {
+      "cityName": "Delitzsch",
+      "stationName": "Delitzsch unt Bf",
+      "latitude": 51.52523,
+      "longitude": 12.34522,
+      "population": 25895,
+      "id": 357
+    },
+    {
+      "cityName": "Olpe",
+      "stationName": "Olpe",
+      "latitude": 51.02774,
+      "longitude": 7.84145,
+      "population": 25686,
+      "id": 358
+    },
+    {
+      "cityName": "Arnstadt",
+      "stationName": "Arnstadt Hbf",
+      "latitude": 50.84194,
+      "longitude": 10.94826,
+      "population": 25678,
+      "id": 359
+    },
+    {
+      "cityName": "Horb am Neckar",
+      "stationName": "Horb",
+      "latitude": 48.44147,
+      "longitude": 8.68898,
+      "population": 25651,
+      "id": 360
+    },
+    {
+      "cityName": "Aschersleben",
+      "stationName": "Aschersleben",
+      "latitude": 51.75712,
+      "longitude": 11.46569,
+      "population": 25647,
+      "id": 361
+    },
+    {
+      "cityName": "Rinteln",
+      "stationName": "Rinteln",
+      "latitude": 52.19894,
+      "longitude": 9.07781,
+      "population": 25602,
+      "id": 362
+    },
+    {
+      "cityName": "Übach-Palenberg",
+      "stationName": "Bahnhof Übach-Palenberg",
+      "latitude": 50.92375,
+      "longitude": 6.09711,
+      "population": 25544,
+      "id": 363
+    },
+    {
+      "cityName": "Helmstedt",
+      "stationName": "Helmstedt",
+      "latitude": 52.22209,
+      "longitude": 11.01055,
+      "population": 25515,
+      "id": 364
+    },
+    {
+      "cityName": "Rottweil",
+      "stationName": "Rottweil",
+      "latitude": 48.1653,
+      "longitude": 8.6393,
+      "population": 25510,
+      "id": 365
+    },
+    {
+      "cityName": "Heppenheim an der Bergstrasse",
+      "stationName": "Heppenheim (Bergstr)",
+      "latitude": 49.64155,
+      "longitude": 8.63338,
+      "population": 25442,
+      "id": 366
+    },
+    {
+      "cityName": "Zittau",
+      "stationName": "Zittau Hp",
+      "latitude": 50.89867,
+      "longitude": 14.81698,
+      "population": 25286,
+      "id": 367
+    },
+    {
+      "cityName": "Reinbek",
+      "stationName": "Reinbek",
+      "latitude": 53.50846,
+      "longitude": 10.25351,
+      "population": 25261,
+      "id": 368
+    },
+    {
+      "cityName": "Wolfen",
+      "stationName": "Wolfen (Bitterfeld)",
+      "latitude": 51.66116,
+      "longitude": 12.27956,
+      "population": 25251,
+      "id": 369
+    },
+    {
+      "cityName": "Varel",
+      "stationName": "Varel (Oldb)",
+      "latitude": 53.3991,
+      "longitude": 8.15019,
+      "population": 25212,
+      "id": 370
+    },
+    {
+      "cityName": "Butzbach",
+      "stationName": "Butzbach",
+      "latitude": 50.43116,
+      "longitude": 8.66952,
+      "population": 25156,
+      "id": 371
+    },
+    {
+      "cityName": "Mosbach",
+      "stationName": "Mosbach (Baden)",
+      "latitude": 49.35256,
+      "longitude": 9.14366,
+      "population": 25106,
+      "id": 372
+    },
+    {
+      "cityName": "Roth",
+      "stationName": "Lohgarten-Roth",
+      "latitude": 49.24357,
+      "longitude": 11.09595,
+      "population": 25083,
+      "id": 373
+    },
+    {
+      "cityName": "Hannoversch Münden",
+      "stationName": "Hann Münden",
+      "latitude": 51.41258,
+      "longitude": 9.65827,
+      "population": 25073,
+      "id": 374
+    },
+    {
+      "cityName": "Hattersheim",
+      "stationName": "Hattersheim (Main)",
+      "latitude": 50.06788,
+      "longitude": 8.48964,
+      "population": 25035,
+      "id": 375
+    },
+    {
+      "cityName": "Ellwangen",
+      "stationName": "Ellwangen",
+      "latitude": 48.96412,
+      "longitude": 10.12968,
+      "population": 25001,
+      "id": 376
+    },
+    {
+      "cityName": "Ingelheim am Rhein",
+      "stationName": "Bingen (Rhein) Hbf",
+      "latitude": 49.96873,
+      "longitude": 7.88426,
+      "population": 24998,
+      "id": 377
+    },
+    {
+      "cityName": "Burg bei Magdeburg",
+      "stationName": "Burg (Magdeburg)",
+      "latitude": 52.27441,
+      "longitude": 11.84036,
+      "population": 24958,
+      "id": 378
+    },
+    {
+      "cityName": "Bedburg",
+      "stationName": "Bedburg (Erft)",
+      "latitude": 50.98748,
+      "longitude": 6.57261,
+      "population": 24937,
+      "id": 379
+    },
+    {
+      "cityName": "Wertheim",
+      "stationName": "Wertheim",
+      "latitude": 49.76203,
+      "longitude": 9.51309,
+      "population": 24869,
+      "id": 380
+    },
+    {
+      "cityName": "Rudolstadt",
+      "stationName": "Rudolstadt (Thür)",
+      "latitude": 50.718,
+      "longitude": 11.33916,
+      "population": 24852,
+      "id": 381
+    },
+    {
+      "cityName": "Attendorn",
+      "stationName": "Attendorn",
+      "latitude": 51.12464,
+      "longitude": 7.90849,
+      "population": 24773,
+      "id": 382
+    },
+    {
+      "cityName": "Norden",
+      "stationName": "Norden",
+      "latitude": 53.5882,
+      "longitude": 7.21891,
+      "population": 24767,
+      "id": 383
+    },
+    {
+      "cityName": "Waldkraiburg",
+      "stationName": "Bahnhof Waldkraiburg",
+      "latitude": 48.2028,
+      "longitude": 12.40784,
+      "population": 24676,
+      "id": 384
+    },
+    {
+      "cityName": "Lindau",
+      "stationName": "Lindau Hbf",
+      "latitude": 47.54434,
+      "longitude": 9.68047,
+      "population": 24518,
+      "id": 385
+    },
+    {
+      "cityName": "Korbach",
+      "stationName": "Korbach",
+      "latitude": 51.27871,
+      "longitude": 8.87323,
+      "population": 24481,
+      "id": 386
+    },
+    {
+      "cityName": "Walsrode",
+      "stationName": "Bahnhof Walsrode",
+      "latitude": 52.86488,
+      "longitude": 9.60095,
+      "population": 24448,
+      "id": 387
+    },
+    {
+      "cityName": "Friedrichsdorf",
+      "stationName": "Friedrichsdorf (Taunus)",
+      "latitude": 50.25249,
+      "longitude": 8.64478,
+      "population": 24435,
+      "id": 388
+    },
+    {
+      "cityName": "Bad Oldesloe",
+      "stationName": "Bad Oldesloe",
+      "latitude": 53.80528,
+      "longitude": 10.38283,
+      "population": 24322,
+      "id": 389
+    },
+    {
+      "cityName": "Warburg",
+      "stationName": "Warburg (Westf)",
+      "latitude": 51.49295,
+      "longitude": 9.16385,
+      "population": 24317,
+      "id": 390
+    },
+    {
+      "cityName": "Syke",
+      "stationName": "Syke",
+      "latitude": 52.91616,
+      "longitude": 8.80979,
+      "population": 24274,
+      "id": 391
+    },
+    {
+      "cityName": "Ludwigsfelde",
+      "stationName": "Ludwigsfelde",
+      "latitude": 52.2981,
+      "longitude": 13.26732,
+      "population": 24164,
+      "id": 392
+    },
+    {
+      "cityName": "Greiz",
+      "stationName": "Greiz",
+      "latitude": 50.65329,
+      "longitude": 12.19452,
+      "population": 24147,
+      "id": 393
+    },
+    {
+      "cityName": "Schleswig",
+      "stationName": "Schleswig",
+      "latitude": 54.49946,
+      "longitude": 9.53814,
+      "population": 24114,
+      "id": 394
+    },
+    {
+      "cityName": "Lüdinghausen",
+      "stationName": "Lüdinghausen",
+      "latitude": 51.76239,
+      "longitude": 7.43131,
+      "population": 24094,
+      "id": 395
+    },
+    {
+      "cityName": "Olching",
+      "stationName": "Olching",
+      "latitude": 48.20999,
+      "longitude": 11.3356,
+      "population": 23978,
+      "id": 396
+    },
+    {
+      "cityName": "Starnberg",
+      "stationName": "Starnberg Nord",
+      "latitude": 48.00597,
+      "longitude": 11.34739,
+      "population": 23940,
+      "id": 397
+    },
+    {
+      "cityName": "Sonneberg",
+      "stationName": "Sonneberg (Thür)Hbf",
+      "latitude": 50.35508,
+      "longitude": 11.16885,
+      "population": 23908,
+      "id": 398
+    },
+    {
+      "cityName": "Freudenstadt",
+      "stationName": "Freudenstadt Hbf",
+      "latitude": 48.46032,
+      "longitude": 8.4288,
+      "population": 23868,
+      "id": 399
+    },
+    {
+      "cityName": "Döbeln",
+      "stationName": "Limmritz (Sachs)",
+      "latitude": 51.11789,
+      "longitude": 13.04974,
+      "population": 23819,
+      "id": 400
+    },
+    {
+      "cityName": "Weingarten",
+      "stationName": "Weingarten Berg",
+      "latitude": 47.81685,
+      "longitude": 9.61688,
+      "population": 23802,
+      "id": 401
+    },
+    {
+      "cityName": "Calw",
+      "stationName": "Calw",
+      "latitude": 48.71468,
+      "longitude": 8.74185,
+      "population": 23740,
+      "id": 402
+    },
+    {
+      "cityName": "Wipperfürth",
+      "stationName": "Marienheide",
+      "latitude": 51.07977,
+      "longitude": 7.53087,
+      "population": 23723,
+      "id": 403
+    },
+    {
+      "cityName": "Weilheim",
+      "stationName": "Weilheim (Oberbay)",
+      "latitude": 47.84536,
+      "longitude": 11.14286,
+      "population": 23378,
+      "id": 404
+    },
+    {
+      "cityName": "Geretsried",
+      "stationName": "Wolfratshausen",
+      "latitude": 47.91442,
+      "longitude": 11.4272,
+      "population": 23364,
+      "id": 405
+    },
+    {
+      "cityName": "Sangerhausen",
+      "stationName": "Sangerhausen",
+      "latitude": 51.47989,
+      "longitude": 11.29452,
+      "population": 23347,
+      "id": 406
+    },
+    {
+      "cityName": "Pfaffenhofen an der Ilm",
+      "stationName": "Pfaffenhofen (Ilm)",
+      "latitude": 48.52243,
+      "longitude": 11.51188,
+      "population": 23192,
+      "id": 407
+    },
+    {
+      "cityName": "Staßfurt",
+      "stationName": "Staßfurt",
+      "latitude": 51.85126,
+      "longitude": 11.5879,
+      "population": 23181,
+      "id": 408
+    },
+    {
+      "cityName": "Quedlinburg",
+      "stationName": "Thale Hbf",
+      "latitude": 51.74605,
+      "longitude": 11.03105,
+      "population": 23139,
+      "id": 409
+    },
+    {
+      "cityName": "Annaberg-Buchholz",
+      "stationName": "Annaberg-Buchholz unterer Bf",
+      "latitude": 50.57861,
+      "longitude": 12.99831,
+      "population": 23092,
+      "id": 410
+    },
+    {
+      "cityName": "Stadthagen",
+      "stationName": "Stadthagen",
+      "latitude": 52.33284,
+      "longitude": 9.18943,
+      "population": 23076,
+      "id": 411
+    },
+    {
+      "cityName": "Sehnde",
+      "stationName": "Sehnde",
+      "latitude": 52.31808,
+      "longitude": 9.96253,
+      "population": 23060,
+      "id": 412
+    },
+    {
+      "cityName": "Dillenburg",
+      "stationName": "Dillenburg",
+      "latitude": 50.73488,
+      "longitude": 8.29409,
+      "population": 22974,
+      "id": 413
+    },
+    {
+      "cityName": "Bad Harzburg",
+      "stationName": "Bad Harzburg",
+      "latitude": 51.88812,
+      "longitude": 10.55544,
+      "population": 22954,
+      "id": 414
+    },
+    {
+      "cityName": "Nagold",
+      "stationName": "Nagold Stadtmitte",
+      "latitude": 48.55127,
+      "longitude": 8.7285,
+      "population": 22912,
+      "id": 415
+    },
+    {
+      "cityName": "Duderstadt",
+      "stationName": "Bodenrode",
+      "latitude": 51.39353,
+      "longitude": 10.20855,
+      "population": 22910,
+      "id": 416
+    },
+    {
+      "cityName": "Forst",
+      "stationName": "Forst (Lausitz)",
+      "latitude": 51.73888,
+      "longitude": 14.63763,
+      "population": 22843,
+      "id": 417
+    },
+    {
+      "cityName": "Öhringen",
+      "stationName": "Öhringen Hbf",
+      "latitude": 49.20321,
+      "longitude": 9.50271,
+      "population": 22765,
+      "id": 418
+    },
+    {
+      "cityName": "Kapellen",
+      "stationName": "Bahnhof Geldern",
+      "latitude": 51.51323,
+      "longitude": 6.31941,
+      "population": 22711,
+      "id": 419
+    },
+    {
+      "cityName": "Lengerich",
+      "stationName": "Lengerich (Westf)",
+      "latitude": 52.17578,
+      "longitude": 7.87846,
+      "population": 22697,
+      "id": 420
+    },
+    {
+      "cityName": "Haren",
+      "stationName": "Bahnhof Haren (Ems)",
+      "latitude": 52.78515,
+      "longitude": 7.30133,
+      "population": 22545,
+      "id": 421
+    },
+    {
+      "cityName": "Rees",
+      "stationName": "Bahnhof Empel-Rees",
+      "latitude": 51.79808,
+      "longitude": 6.41709,
+      "population": 22544,
+      "id": 422
+    },
+    {
+      "cityName": "Reichenbach/Vogtland",
+      "stationName": "Reichenbach (Vogtl) ob Bf",
+      "latitude": 50.62778,
+      "longitude": 12.29312,
+      "population": 22530,
+      "id": 423
+    },
+    {
+      "cityName": "Eisleben Lutherstadt",
+      "stationName": "Lutherstadt Eisleben",
+      "latitude": 51.51819,
+      "longitude": 11.5508,
+      "population": 22505,
+      "id": 424
+    },
+    {
+      "cityName": "Bad Mergentheim",
+      "stationName": "Bad Mergentheim",
+      "latitude": 49.49365,
+      "longitude": 9.77166,
+      "population": 22472,
+      "id": 425
+    },
+    {
+      "cityName": "Vreden",
+      "stationName": "Ahaus",
+      "latitude": 52.08168,
+      "longitude": 7.01645,
+      "population": 22412,
+      "id": 426
+    },
+    {
+      "cityName": "Büdingen",
+      "stationName": "Büdingen (Oberhess)",
+      "latitude": 50.28887,
+      "longitude": 9.1026,
+      "population": 22411,
+      "id": 427
+    },
+    {
+      "cityName": "Waldshut-Tiengen",
+      "stationName": "Waldshut",
+      "latitude": 47.62137,
+      "longitude": 8.21953,
+      "population": 22404,
+      "id": 428
+    },
+    {
+      "cityName": "Leutkirch",
+      "stationName": "Leutkirch",
+      "latitude": 47.82617,
+      "longitude": 10.01584,
+      "population": 22362,
+      "id": 429
+    },
+    {
+      "cityName": "Eislingen",
+      "stationName": "Eislingen (Fils)",
+      "latitude": 48.69649,
+      "longitude": 9.70515,
+      "population": 22325,
+      "id": 430
+    },
+    {
+      "cityName": "Neustrelitz",
+      "stationName": "Neustrelitz Hbf",
+      "latitude": 53.35925,
+      "longitude": 13.0746,
+      "population": 22291,
+      "id": 431
+    },
+    {
+      "cityName": "Büren",
+      "stationName": "Bahnhof Ringelstein",
+      "latitude": 51.50026,
+      "longitude": 8.57115,
+      "population": 22263,
+      "id": 432
+    },
+    {
+      "cityName": "Rotenburg",
+      "stationName": "Rotenburg (Wümme)",
+      "latitude": 53.11235,
+      "longitude": 9.3901,
+      "population": 22139,
+      "id": 433
+    },
+    {
+      "cityName": "Elsdorf",
+      "stationName": "Paffendorf",
+      "latitude": 50.96169,
+      "longitude": 6.607,
+      "population": 21967,
+      "id": 434
+    },
+    {
+      "cityName": "Soltau",
+      "stationName": "Bahnhof Soltau (Han)",
+      "latitude": 52.98317,
+      "longitude": 9.83131,
+      "population": 21945,
+      "id": 435
+    },
+    {
+      "cityName": "Marsberg",
+      "stationName": "Marsberg",
+      "latitude": 51.46289,
+      "longitude": 8.8549,
+      "population": 21914,
+      "id": 436
+    },
+    {
+      "cityName": "Seesen",
+      "stationName": "Seesen",
+      "latitude": 51.88726,
+      "longitude": 10.1739,
+      "population": 21909,
+      "id": 437
+    },
+    {
+      "cityName": "Westerstede",
+      "stationName": "Westerstede-Ocholt",
+      "latitude": 53.20217,
+      "longitude": 7.88647,
+      "population": 21902,
+      "id": 438
+    },
+    {
+      "cityName": "Hohen Neuendorf",
+      "stationName": "Hohen Neuendorf West",
+      "latitude": 52.6724,
+      "longitude": 13.27134,
+      "population": 21893,
+      "id": 439
+    },
+    {
+      "cityName": "Gelnhausen",
+      "stationName": "Gelnhausen",
+      "latitude": 50.19634,
+      "longitude": 9.18928,
+      "population": 21881,
+      "id": 440
+    },
+    {
+      "cityName": "Sondershausen",
+      "stationName": "Sondershausen",
+      "latitude": 51.37005,
+      "longitude": 10.84919,
+      "population": 21802,
+      "id": 441
+    },
+    {
+      "cityName": "Lindlar",
+      "stationName": "Engelskirchen",
+      "latitude": 50.98672,
+      "longitude": 7.40768,
+      "population": 21665,
+      "id": 442
+    },
+    {
+      "cityName": "Bad Pyrmont",
+      "stationName": "Bahnhof Bad Pyrmont",
+      "latitude": 51.97446,
+      "longitude": 9.27278,
+      "population": 21629,
+      "id": 443
+    },
+    {
+      "cityName": "Luckenwalde",
+      "stationName": "Luckenwalde",
+      "latitude": 52.09059,
+      "longitude": 13.16041,
+      "population": 21616,
+      "id": 444
+    },
+    {
+      "cityName": "Guben",
+      "stationName": "Guben",
+      "latitude": 51.9572,
+      "longitude": 14.70678,
+      "population": 21608,
+      "id": 445
+    },
+    {
+      "cityName": "Xanten",
+      "stationName": "Xanten",
+      "latitude": 51.65967,
+      "longitude": 6.44529,
+      "population": 21587,
+      "id": 446
+    },
+    {
+      "cityName": "Meiningen",
+      "stationName": "Bahnhof Meiningen",
+      "latitude": 50.57387,
+      "longitude": 10.42084,
+      "population": 21580,
+      "id": 447
+    },
+    {
+      "cityName": "Eckernförde",
+      "stationName": "Eckernförde",
+      "latitude": 54.4676,
+      "longitude": 9.83512,
+      "population": 21563,
+      "id": 448
+    },
+    {
+      "cityName": "Dillingen",
+      "stationName": "Saarlouis Hbf",
+      "latitude": 49.32783,
+      "longitude": 6.75017,
+      "population": 21526,
+      "id": 449
+    },
+    {
+      "cityName": "Waren",
+      "stationName": "Waren (Müritz)",
+      "latitude": 53.52151,
+      "longitude": 12.68068,
+      "population": 21470,
+      "id": 450
+    },
+    {
+      "cityName": "Stadtallendorf",
+      "stationName": "Stadtallendorf",
+      "latitude": 50.82543,
+      "longitude": 9.01528,
+      "population": 21425,
+      "id": 451
+    },
+    {
+      "cityName": "Kitzingen",
+      "stationName": "Kitzingen",
+      "latitude": 49.7325,
+      "longitude": 10.15521,
+      "population": 21387,
+      "id": 452
+    },
+    {
+      "cityName": "Auerbach",
+      "stationName": "Auerbach (V) unt Bf",
+      "latitude": 50.51172,
+      "longitude": 12.39142,
+      "population": 21358,
+      "id": 453
+    },
+    {
+      "cityName": "Wittmund",
+      "stationName": "Wittmund",
+      "latitude": 53.57987,
+      "longitude": 7.78883,
+      "population": 21355,
+      "id": 454
+    },
+    {
+      "cityName": "Lichtenfels",
+      "stationName": "Bahnhof Lichtenfels",
+      "latitude": 50.14606,
+      "longitude": 11.05979,
+      "population": 21336,
+      "id": 455
+    },
+    {
+      "cityName": "Bad Kissingen",
+      "stationName": "Bad Kissingen",
+      "latitude": 50.19155,
+      "longitude": 10.07989,
+      "population": 21328,
+      "id": 456
+    },
+    {
+      "cityName": "Sonthofen",
+      "stationName": "Sonthofen",
+      "latitude": 47.51324,
+      "longitude": 10.27234,
+      "population": 21285,
+      "id": 457
+    },
+    {
+      "cityName": "Groß-Umstadt",
+      "stationName": "Groß-Umstadt Mitte",
+      "latitude": 49.86521,
+      "longitude": 8.92417,
+      "population": 21245,
+      "id": 458
+    },
+    {
+      "cityName": "Traunreut",
+      "stationName": "Traunreut",
+      "latitude": 47.96507,
+      "longitude": 12.58977,
+      "population": 21244,
+      "id": 459
+    },
+    {
+      "cityName": "Eschwege",
+      "stationName": "Bahnhof Eschwege West",
+      "latitude": 51.19276,
+      "longitude": 9.99613,
+      "population": 21191,
+      "id": 460
+    },
+    {
+      "cityName": "Eppingen",
+      "stationName": "Eppingen",
+      "latitude": 49.136,
+      "longitude": 8.91466,
+      "population": 21179,
+      "id": 461
+    },
+    {
+      "cityName": "Zerbst",
+      "stationName": "Zerbst/Anhalt",
+      "latitude": 51.95382,
+      "longitude": 12.08893,
+      "population": 21124,
+      "id": 462
+    },
+    {
+      "cityName": "Hansestadt Salzwedel",
+      "stationName": "Bahnhof Salzwedel",
+      "latitude": 52.85825,
+      "longitude": 11.16138,
+      "population": 21058,
+      "id": 463
+    },
+    {
+      "cityName": "Aichach",
+      "stationName": "Aichach",
+      "latitude": 48.46112,
+      "longitude": 11.12272,
+      "population": 21042,
+      "id": 464
+    },
+    {
+      "cityName": "Holzminden",
+      "stationName": "Holzminden",
+      "latitude": 51.82027,
+      "longitude": 9.45374,
+      "population": 20998,
+      "id": 465
+    },
+    {
+      "cityName": "Versmold",
+      "stationName": "Dissen-Bad Rothenfelde",
+      "latitude": 52.11192,
+      "longitude": 8.1853,
+      "population": 20996,
+      "id": 466
+    },
+    {
+      "cityName": "Germersheim",
+      "stationName": "Germersheim Süd/Nolte",
+      "latitude": 49.20834,
+      "longitude": 8.37375,
+      "population": 20972,
+      "id": 467
+    },
+    {
+      "cityName": "Prenzlau",
+      "stationName": "Prenzlau",
+      "latitude": 53.32161,
+      "longitude": 13.86653,
+      "population": 20899,
+      "id": 468
+    },
+    {
+      "cityName": "Sömmerda",
+      "stationName": "Sömmerda",
+      "latitude": 51.16519,
+      "longitude": 11.12753,
+      "population": 20853,
+      "id": 469
+    },
+    {
+      "cityName": "Husum",
+      "stationName": "Husum",
+      "latitude": 54.47211,
+      "longitude": 9.05545,
+      "population": 20841,
+      "id": 470
+    },
+    {
+      "cityName": "Engelskirchen",
+      "stationName": "Engelskirchen",
+      "latitude": 50.98672,
+      "longitude": 7.40768,
+      "population": 20786,
+      "id": 471
+    },
+    {
+      "cityName": "Haßloch",
+      "stationName": "Neustadt (Weinstr)Hbf",
+      "latitude": 49.34955,
+      "longitude": 8.14076,
+      "population": 20779,
+      "id": 472
+    },
+    {
+      "cityName": "Hiddenhausen",
+      "stationName": "Hiddenhausen-Schweicheln",
+      "latitude": 52.15844,
+      "longitude": 8.66824,
+      "population": 20771,
+      "id": 473
+    },
+    {
+      "cityName": "Bad Berleburg",
+      "stationName": "Bad Berleburg",
+      "latitude": 51.0512,
+      "longitude": 8.39411,
+      "population": 20757,
+      "id": 474
+    },
+    {
+      "cityName": "Ennigerloh",
+      "stationName": "Neubeckum",
+      "latitude": 51.80195,
+      "longitude": 8.02136,
+      "population": 20713,
+      "id": 475
+    },
+    {
+      "cityName": "Edewecht",
+      "stationName": "Bad Zwischenahn",
+      "latitude": 53.18255,
+      "longitude": 8.00312,
+      "population": 20658,
+      "id": 476
+    },
+    {
+      "cityName": "Stadtlohn",
+      "stationName": "Ahaus",
+      "latitude": 52.08168,
+      "longitude": 7.01645,
+      "population": 20602,
+      "id": 477
+    },
+    {
+      "cityName": "Geseke",
+      "stationName": "Geseke",
+      "latitude": 51.64523,
+      "longitude": 8.51029,
+      "population": 20602,
+      "id": 478
+    },
+    {
+      "cityName": "Heide",
+      "stationName": "Heide (Holst)",
+      "latitude": 54.19356,
+      "longitude": 9.10103,
+      "population": 20599,
+      "id": 479
+    },
+    {
+      "cityName": "Bergneustadt",
+      "stationName": "Gummersbach",
+      "latitude": 51.02363,
+      "longitude": 7.56631,
+      "population": 20567,
+      "id": 480
+    },
+    {
+      "cityName": "Herborn",
+      "stationName": "Herborn (Dillkr)",
+      "latitude": 50.6844,
+      "longitude": 8.30814,
+      "population": 20473,
+      "id": 481
+    },
+    {
+      "cityName": "Nottuln",
+      "stationName": "Nottuln-Appelhülsen",
+      "latitude": 51.89214,
+      "longitude": 7.42633,
+      "population": 20427,
+      "id": 482
+    },
+    {
+      "cityName": "Oberkirch",
+      "stationName": "Oberkirch",
+      "latitude": 48.52903,
+      "longitude": 8.07689,
+      "population": 20375,
+      "id": 483
+    },
+    {
+      "cityName": "Senden",
+      "stationName": "Nottuln-Appelhülsen",
+      "latitude": 51.89214,
+      "longitude": 7.42633,
+      "population": 20363,
+      "id": 484
+    },
+    {
+      "cityName": "Nördlingen",
+      "stationName": "Nördlingen",
+      "latitude": 48.85084,
+      "longitude": 10.49786,
+      "population": 20352,
+      "id": 485
+    },
+    {
+      "cityName": "Haldensleben I",
+      "stationName": "Haldensleben",
+      "latitude": 52.28503,
+      "longitude": 11.40611,
+      "population": 20294,
+      "id": 486
+    },
+    {
+      "cityName": "Haiger",
+      "stationName": "Haiger Obertor",
+      "latitude": 50.74121,
+      "longitude": 8.20196,
+      "population": 20218,
+      "id": 487
+    },
+    {
+      "cityName": "Zülpich",
+      "stationName": "Zülpich",
+      "latitude": 50.69817,
+      "longitude": 6.66248,
+      "population": 20208,
+      "id": 488
+    },
+    {
+      "cityName": "Giengen an der Brenz",
+      "stationName": "Giengen (Brenz)",
+      "latitude": 48.62002,
+      "longitude": 10.23699,
+      "population": 20201,
+      "id": 489
+    },
+    {
+      "cityName": "Blieskastel",
+      "stationName": "Zweibrücken Hbf",
+      "latitude": 49.24681,
+      "longitude": 7.35664,
+      "population": 20197,
+      "id": 490
+    },
+    {
+      "cityName": "Waghäusel",
+      "stationName": "Speyer Hbf",
+      "latitude": 49.32412,
+      "longitude": 8.42795,
+      "population": 20178,
+      "id": 491
+    },
+    {
+      "cityName": "Wittenberge",
+      "stationName": "Wittenberge",
+      "latitude": 53.00312,
+      "longitude": 11.76287,
+      "population": 20171,
+      "id": 492
+    },
+    {
+      "cityName": "Neu Wulmstorf",
+      "stationName": "Neu Wulmstorf",
+      "latitude": 53.47308,
+      "longitude": 9.78896,
+      "population": 20150,
+      "id": 493
+    },
+    {
+      "cityName": "Hessisch Oldendorf",
+      "stationName": "Hessisch Oldendorf",
+      "latitude": 52.16687,
+      "longitude": 9.24361,
+      "population": 20129,
+      "id": 494
+    },
+    {
+      "cityName": "Kürten",
+      "stationName": "Remscheid Hauptbahnhof",
+      "latitude": 51.17725,
+      "longitude": 7.19993,
+      "population": 20103,
+      "id": 495
+    },
+    {
+      "cityName": "Schwanewede",
+      "stationName": "Klinikum Bremen-Nord/Beckedorf",
+      "latitude": 53.18525,
+      "longitude": 8.59521,
+      "population": 20015,
+      "id": 496
+    },
+    {
+      "cityName": "Wandlitz",
+      "stationName": "Wandlitz",
+      "latitude": 52.74482,
+      "longitude": 13.46615,
+      "population": 19888,
+      "id": 497
+    },
+    {
+      "cityName": "Bad Waldsee",
+      "stationName": "Bad Waldsee",
+      "latitude": 47.92524,
+      "longitude": 9.75227,
+      "population": 19840,
+      "id": 498
+    },
+    {
+      "cityName": "Eitorf",
+      "stationName": "Eitorf",
+      "latitude": 50.77362,
+      "longitude": 7.44733,
+      "population": 19761,
+      "id": 499
+    },
+    {
+      "cityName": "Günzburg",
+      "stationName": "Günzburg",
+      "latitude": 48.46034,
+      "longitude": 10.27866,
+      "population": 19737,
+      "id": 500
+    },
+    {
+      "cityName": "Schmalkalden",
+      "stationName": "Hauptbahnhof Schmalkalden",
+      "latitude": 50.72021,
+      "longitude": 10.44081,
+      "population": 19553,
+      "id": 501
+    },
+    {
+      "cityName": "Bad Driburg",
+      "stationName": "Bad Driburg (Westf)",
+      "latitude": 51.73032,
+      "longitude": 9.03081,
+      "population": 19553,
+      "id": 502
+    },
+    {
+      "cityName": "Waldbröl",
+      "stationName": "Schladern (Sieg)",
+      "latitude": 50.80701,
+      "longitude": 7.59226,
+      "population": 19533,
+      "id": 503
+    },
+    {
+      "cityName": "Lebach",
+      "stationName": "Lebach",
+      "latitude": 49.40833,
+      "longitude": 6.90723,
+      "population": 19468,
+      "id": 504
+    },
+    {
+      "cityName": "Ochtrup",
+      "stationName": "Ochtrup",
+      "latitude": 52.20162,
+      "longitude": 7.18404,
+      "population": 19441,
+      "id": 505
+    },
+    {
+      "cityName": "Mayen",
+      "stationName": "Mayen West",
+      "latitude": 50.32837,
+      "longitude": 7.21389,
+      "population": 19414,
+      "id": 506
+    },
+    {
+      "cityName": "Hechingen",
+      "stationName": "Hechingen Landesbahn",
+      "latitude": 48.35905,
+      "longitude": 8.96815,
+      "population": 19400,
+      "id": 507
+    },
+    {
+      "cityName": "Schopfheim",
+      "stationName": "Schopfheim",
+      "latitude": 47.64797,
+      "longitude": 7.82267,
+      "population": 19386,
+      "id": 508
+    },
+    {
+      "cityName": "Sulzbach-Rosenberg",
+      "stationName": "Sulzbach-Rosenberg",
+      "latitude": 49.49948,
+      "longitude": 11.73928,
+      "population": 19379,
+      "id": 509
+    },
+    {
+      "cityName": "Puchheim",
+      "stationName": "Puchheim",
+      "latitude": 48.17218,
+      "longitude": 11.35306,
+      "population": 19357,
+      "id": 510
+    },
+    {
+      "cityName": "Weil der Stadt",
+      "stationName": "Weil der Stadt",
+      "latitude": 48.75548,
+      "longitude": 8.87281,
+      "population": 19338,
+      "id": 511
+    },
+    {
+      "cityName": "Schwalmstadt",
+      "stationName": "Schwalmstadt-Wiera",
+      "latitude": 50.88194,
+      "longitude": 9.13642,
+      "population": 19279,
+      "id": 512
+    },
+    {
+      "cityName": "Bremervörde",
+      "stationName": "Bremervörde",
+      "latitude": 53.48295,
+      "longitude": 9.14025,
+      "population": 19268,
+      "id": 513
+    },
+    {
+      "cityName": "Gauting",
+      "stationName": "Gauting",
+      "latitude": 48.07066,
+      "longitude": 11.37615,
+      "population": 19216,
+      "id": 514
+    },
+    {
+      "cityName": "Schneverdingen",
+      "stationName": "Bahnhof Schneverdingen",
+      "latitude": 53.11066,
+      "longitude": 9.79886,
+      "population": 19199,
+      "id": 515
+    },
+    {
+      "cityName": "Parchim",
+      "stationName": "Parchim",
+      "latitude": 53.43032,
+      "longitude": 11.83127,
+      "population": 19161,
+      "id": 516
+    },
+    {
+      "cityName": "Alfeld",
+      "stationName": "Alfeld (Leine)",
+      "latitude": 51.98142,
+      "longitude": 9.81778,
+      "population": 19138,
+      "id": 517
+    },
+    {
+      "cityName": "Gröbenzell",
+      "stationName": "Gröbenzell",
+      "latitude": 48.19492,
+      "longitude": 11.37411,
+      "population": 19110,
+      "id": 518
+    },
+    {
+      "cityName": "Laupheim",
+      "stationName": "Laupheim Stadt",
+      "latitude": 48.2333,
+      "longitude": 9.87839,
+      "population": 19012,
+      "id": 519
+    },
+    {
+      "cityName": "Lauchhammer",
+      "stationName": "Lauchhammer",
+      "latitude": 51.47455,
+      "longitude": 13.74314,
+      "population": 18990,
+      "id": 520
+    },
+    {
+      "cityName": "Finsterwalde",
+      "stationName": "Finsterwalde (Niederlausitz)",
+      "latitude": 51.637,
+      "longitude": 13.71039,
+      "population": 18922,
+      "id": 521
+    },
+    {
+      "cityName": "Oschersleben",
+      "stationName": "Oschersleben (Bode)",
+      "latitude": 52.03073,
+      "longitude": 11.22684,
+      "population": 18859,
+      "id": 522
+    },
+    {
+      "cityName": "Borna",
+      "stationName": "Borna (Leipzig)",
+      "latitude": 51.11793,
+      "longitude": 12.48629,
+      "population": 18806,
+      "id": 523
+    },
+    {
+      "cityName": "Dingolfing",
+      "stationName": "Dingolfing",
+      "latitude": 48.64161,
+      "longitude": 12.48687,
+      "population": 18805,
+      "id": 524
+    },
+    {
+      "cityName": "Torgau",
+      "stationName": "Torgau",
+      "latitude": 51.56304,
+      "longitude": 12.99113,
+      "population": 18746,
+      "id": 525
+    },
+    {
+      "cityName": "Dillingen an der Donau",
+      "stationName": "Dillingen (Donau)",
+      "latitude": 48.58125,
+      "longitude": 10.48917,
+      "population": 18734,
+      "id": 526
+    },
+    {
+      "cityName": "Bad Münder am Deister",
+      "stationName": "Bahnhof Bad Münder (Deister)",
+      "latitude": 52.17791,
+      "longitude": 9.468,
+      "population": 18726,
+      "id": 527
+    },
+    {
+      "cityName": "Schwalbach",
+      "stationName": "Saarlouis Hbf",
+      "latitude": 49.32783,
+      "longitude": 6.75017,
+      "population": 18708,
+      "id": 528
+    },
+    {
+      "cityName": "Bad Dürkheim",
+      "stationName": "Bad Dürkheim",
+      "latitude": 49.46063,
+      "longitude": 8.1707,
+      "population": 18698,
+      "id": 529
+    },
+    {
+      "cityName": "Sachsenheim",
+      "stationName": "Sachsenheim",
+      "latitude": 48.96129,
+      "longitude": 9.06316,
+      "population": 18594,
+      "id": 530
+    },
+    {
+      "cityName": "Schramberg",
+      "stationName": "Schiltach Mitte",
+      "latitude": 48.29128,
+      "longitude": 8.34477,
+      "population": 18565,
+      "id": 531
+    },
+    {
+      "cityName": "Aue",
+      "stationName": "Aue (Sachs)",
+      "latitude": 50.59168,
+      "longitude": 12.69852,
+      "population": 18554,
+      "id": 532
+    },
+    {
+      "cityName": "Marktoberdorf",
+      "stationName": "Marktoberdorf",
+      "latitude": 47.77922,
+      "longitude": 10.61423,
+      "population": 18505,
+      "id": 533
+    },
+    {
+      "cityName": "Illingen",
+      "stationName": "Neunkirchen (Saar)Hbf",
+      "latitude": 49.35329,
+      "longitude": 7.17666,
+      "population": 18488,
+      "id": 534
+    },
+    {
+      "cityName": "Mölln",
+      "stationName": "Mölln (Lauenb)",
+      "latitude": 53.62441,
+      "longitude": 10.68321,
+      "population": 18469,
+      "id": 535
+    },
+    {
+      "cityName": "Wadgassen",
+      "stationName": "Saarlouis Hbf",
+      "latitude": 49.32783,
+      "longitude": 6.75017,
+      "population": 18464,
+      "id": 536
+    },
+    {
+      "cityName": "Traunstein",
+      "stationName": "Traunstein",
+      "latitude": 47.86973,
+      "longitude": 12.6388,
+      "population": 18422,
+      "id": 537
+    },
+    {
+      "cityName": "Löbau",
+      "stationName": "Löbau (Sachs)",
+      "latitude": 51.09945,
+      "longitude": 14.67194,
+      "population": 18374,
+      "id": 538
+    },
+    {
+      "cityName": "Donauwörth",
+      "stationName": "Donauwörth",
+      "latitude": 48.71403,
+      "longitude": 10.77144,
+      "population": 18364,
+      "id": 539
+    },
+    {
+      "cityName": "Weißenburg in Bayern",
+      "stationName": "Weißenburg (Bay)",
+      "latitude": 49.02967,
+      "longitude": 10.96539,
+      "population": 18345,
+      "id": 540
+    },
+    {
+      "cityName": "Burghausen",
+      "stationName": "Burghausen",
+      "latitude": 48.1742,
+      "longitude": 12.82818,
+      "population": 18263,
+      "id": 541
+    },
+    {
+      "cityName": "Neufahrn bei Freising",
+      "stationName": "Neufahrn",
+      "latitude": 48.32115,
+      "longitude": 11.66059,
+      "population": 18255,
+      "id": 542
+    },
+    {
+      "cityName": "Kronach",
+      "stationName": "Kronach",
+      "latitude": 50.23961,
+      "longitude": 11.32011,
+      "population": 18248,
+      "id": 543
+    },
+    {
+      "cityName": "Nidda",
+      "stationName": "Nidda",
+      "latitude": 50.41145,
+      "longitude": 8.99888,
+      "population": 18241,
+      "id": 544
+    },
+    {
+      "cityName": "Alzey",
+      "stationName": "Alzey",
+      "latitude": 49.7502,
+      "longitude": 8.10975,
+      "population": 18241,
+      "id": 545
+    },
+    {
+      "cityName": "Buchen in Odenwald",
+      "stationName": "Buchen (Odenw)",
+      "latitude": 49.52353,
+      "longitude": 9.32718,
+      "population": 18226,
+      "id": 546
+    },
+    {
+      "cityName": "Marktredwitz",
+      "stationName": "Marktredwitz",
+      "latitude": 50.0046,
+      "longitude": 12.08258,
+      "population": 18204,
+      "id": 547
+    },
+    {
+      "cityName": "Großenhain",
+      "stationName": "Großenhain Cottbuser Bahnhof",
+      "latitude": 51.29167,
+      "longitude": 13.52389,
+      "population": 18183,
+      "id": 548
+    },
+    {
+      "cityName": "Tettnang",
+      "stationName": "Kehlen",
+      "latitude": 47.68303,
+      "longitude": 9.54818,
+      "population": 18135,
+      "id": 549
+    },
+    {
+      "cityName": "Wildeshausen",
+      "stationName": "Wildeshausen",
+      "latitude": 52.89782,
+      "longitude": 8.43142,
+      "population": 18114,
+      "id": 550
+    },
+    {
+      "cityName": "Müllheim",
+      "stationName": "Müllheim (Baden)",
+      "latitude": 47.80974,
+      "longitude": 7.59933,
+      "population": 18097,
+      "id": 551
+    },
+    {
+      "cityName": "Eppelborn",
+      "stationName": "Bubach",
+      "latitude": 49.41102,
+      "longitude": 6.94821,
+      "population": 18079,
+      "id": 552
+    },
+    {
+      "cityName": "Bad Wildungen",
+      "stationName": "Bad Wildungen",
+      "latitude": 51.11962,
+      "longitude": 9.13609,
+      "population": 18037,
+      "id": 553
+    },
+    {
+      "cityName": "Uetersen",
+      "stationName": "Tornesch",
+      "latitude": 53.69734,
+      "longitude": 9.71485,
+      "population": 17921,
+      "id": 554
+    },
+    {
+      "cityName": "Bad Saulgau",
+      "stationName": "Bad Saulgau",
+      "latitude": 48.01359,
+      "longitude": 9.50108,
+      "population": 17911,
+      "id": 555
+    },
+    {
+      "cityName": "Wittlich",
+      "stationName": "Wittlich Hbf",
+      "latitude": 49.97312,
+      "longitude": 6.94356,
+      "population": 17887,
+      "id": 556
+    },
+    {
+      "cityName": "Sinzig",
+      "stationName": "Bahnhof Sinzig",
+      "latitude": 50.54681,
+      "longitude": 7.25805,
+      "population": 17880,
+      "id": 557
+    },
+    {
+      "cityName": "Brakel",
+      "stationName": "Brakel (Höxter)",
+      "latitude": 51.71216,
+      "longitude": 9.1832,
+      "population": 17808,
+      "id": 558
+    },
+    {
+      "cityName": "Bexbach",
+      "stationName": "Neunkirchen (Saar)Hbf",
+      "latitude": 49.35329,
+      "longitude": 7.17666,
+      "population": 17793,
+      "id": 559
+    },
+    {
+      "cityName": "Munster",
+      "stationName": "Munster (Örtze)",
+      "latitude": 52.99331,
+      "longitude": 10.09649,
+      "population": 17746,
+      "id": 560
+    },
+    {
+      "cityName": "Frankenberg",
+      "stationName": "Frankenberg-Goßberg",
+      "latitude": 51.065,
+      "longitude": 8.79933,
+      "population": 17635,
+      "id": 561
+    },
+    {
+      "cityName": "Templin",
+      "stationName": "Templin Stadt",
+      "latitude": 53.11706,
+      "longitude": 13.50869,
+      "population": 17634,
+      "id": 562
+    },
+    {
+      "cityName": "Mühldorf",
+      "stationName": "Mühldorf (Oberbay)",
+      "latitude": 48.24821,
+      "longitude": 12.51964,
+      "population": 17622,
+      "id": 563
+    },
+    {
+      "cityName": "Schmelz",
+      "stationName": "Saarlouis Hbf",
+      "latitude": 49.32783,
+      "longitude": 6.75017,
+      "population": 17596,
+      "id": 564
+    },
+    {
+      "cityName": "Renningen",
+      "stationName": "Renningen",
+      "latitude": 48.77512,
+      "longitude": 8.93235,
+      "population": 17442,
+      "id": 565
+    },
+    {
+      "cityName": "Bad Tölz",
+      "stationName": "Bad Tölz",
+      "latitude": 47.76058,
+      "longitude": 11.57394,
+      "population": 17434,
+      "id": 566
+    },
+    {
+      "cityName": "Nümbrecht",
+      "stationName": "Dieringhausen",
+      "latitude": 50.98542,
+      "longitude": 7.54248,
+      "population": 17427,
+      "id": 567
+    },
+    {
+      "cityName": "Moosburg",
+      "stationName": "Moosburg",
+      "latitude": 48.47033,
+      "longitude": 11.93038,
+      "population": 17363,
+      "id": 568
+    },
+    {
+      "cityName": "Wittstock",
+      "stationName": "Wittstock (Dosse)",
+      "latitude": 53.16062,
+      "longitude": 12.47891,
+      "population": 17361,
+      "id": 569
+    },
+    {
+      "cityName": "Cham",
+      "stationName": "Cham (Oberpf)",
+      "latitude": 49.22187,
+      "longitude": 12.65683,
+      "population": 17314,
+      "id": 570
+    },
+    {
+      "cityName": "Michelstadt",
+      "stationName": "Michelstadt",
+      "latitude": 49.68486,
+      "longitude": 9.00145,
+      "population": 17279,
+      "id": 571
+    },
+    {
+      "cityName": "Schlüchtern",
+      "stationName": "Schlüchtern",
+      "latitude": 50.34118,
+      "longitude": 9.51004,
+      "population": 17260,
+      "id": 572
+    },
+    {
+      "cityName": "Heilbad Heiligenstadt",
+      "stationName": "Heilbad Heiligenstadt",
+      "latitude": 51.37707,
+      "longitude": 10.12384,
+      "population": 17230,
+      "id": 573
+    },
+    {
+      "cityName": "Wolfratshausen",
+      "stationName": "Wolfratshausen",
+      "latitude": 47.91442,
+      "longitude": 11.4272,
+      "population": 17191,
+      "id": 574
+    },
+    {
+      "cityName": "Zossen",
+      "stationName": "Zossen",
+      "latitude": 52.21892,
+      "longitude": 13.43857,
+      "population": 17138,
+      "id": 575
+    },
+    {
+      "cityName": "Selb",
+      "stationName": "Selb Stadt",
+      "latitude": 50.17422,
+      "longitude": 12.12631,
+      "population": 17132,
+      "id": 576
+    },
+    {
+      "cityName": "Gescher",
+      "stationName": "Rosendahl-Holtwick",
+      "latitude": 51.99839,
+      "longitude": 7.12257,
+      "population": 17115,
+      "id": 577
+    },
+    {
+      "cityName": "Eutin",
+      "stationName": "Eutin",
+      "latitude": 54.13534,
+      "longitude": 10.61012,
+      "population": 16984,
+      "id": 578
+    },
+    {
+      "cityName": "Kamenz",
+      "stationName": "Kamenz (Sachs)",
+      "latitude": 51.27378,
+      "longitude": 14.09219,
+      "population": 16918,
+      "id": 579
+    },
+    {
+      "cityName": "Bad Reichenhall",
+      "stationName": "Bad Reichenhall",
+      "latitude": 47.73117,
+      "longitude": 12.88182,
+      "population": 16910,
+      "id": 580
+    },
+    {
+      "cityName": "Gilching",
+      "stationName": "Bahnhof Gilching-Argelsried",
+      "latitude": 48.10584,
+      "longitude": 11.29967,
+      "population": 16859,
+      "id": 581
+    },
+    {
+      "cityName": "Bad Arolsen",
+      "stationName": "Bad Arolsen",
+      "latitude": 51.3816,
+      "longitude": 8.99779,
+      "population": 16854,
+      "id": 582
+    },
+    {
+      "cityName": "Stockach",
+      "stationName": "Stockach NE",
+      "latitude": 47.85009,
+      "longitude": 9.00573,
+      "population": 16844,
+      "id": 583
+    },
+    {
+      "cityName": "Schneeberg",
+      "stationName": "Bad Schlema",
+      "latitude": 50.6189,
+      "longitude": 12.68023,
+      "population": 16784,
+      "id": 584
+    },
+    {
+      "cityName": "Diepholz",
+      "stationName": "Diepholz",
+      "latitude": 52.60477,
+      "longitude": 8.38033,
+      "population": 16783,
+      "id": 585
+    },
+    {
+      "cityName": "Holzkirchen",
+      "stationName": "Holzkirchen",
+      "latitude": 47.88438,
+      "longitude": 11.69723,
+      "population": 16770,
+      "id": 586
+    },
+    {
+      "cityName": "Bad Langensalza",
+      "stationName": "Bad Langensalza",
+      "latitude": 51.1017,
+      "longitude": 10.64067,
+      "population": 16717,
+      "id": 587
+    },
+    {
+      "cityName": "Marienberg",
+      "stationName": "Wolkenstein",
+      "latitude": 50.65274,
+      "longitude": 13.06497,
+      "population": 16716,
+      "id": 588
+    },
+    {
+      "cityName": "Vilshofen",
+      "stationName": "Vilshofen (Niederbay)",
+      "latitude": 48.62955,
+      "longitude": 13.19087,
+      "population": 16695,
+      "id": 589
+    },
+    {
+      "cityName": "Losheim",
+      "stationName": "Saarhölzbach",
+      "latitude": 49.51644,
+      "longitude": 6.6075,
+      "population": 16660,
+      "id": 590
+    },
+    {
+      "cityName": "Wassenberg",
+      "stationName": "Heinsberg Kreishaus",
+      "latitude": 51.06177,
+      "longitude": 6.10894,
+      "population": 16641,
+      "id": 591
+    },
+    {
+      "cityName": "Mittweida",
+      "stationName": "Mittweida",
+      "latitude": 50.98754,
+      "longitude": 12.95986,
+      "population": 16619,
+      "id": 592
+    },
+    {
+      "cityName": "Nauen",
+      "stationName": "Nauen",
+      "latitude": 52.6127,
+      "longitude": 12.88556,
+      "population": 16600,
+      "id": 593
+    },
+    {
+      "cityName": "Sigmaringen",
+      "stationName": "Sigmaringen",
+      "latitude": 48.08698,
+      "longitude": 9.22185,
+      "population": 16592,
+      "id": 594
+    },
+    {
+      "cityName": "Bad Säckingen",
+      "stationName": "Bad Säckingen",
+      "latitude": 47.55586,
+      "longitude": 7.94863,
+      "population": 16549,
+      "id": 595
+    },
+    {
+      "cityName": "Hohenstein-Ernstthal",
+      "stationName": "Hohenstein-Ernstthal",
+      "latitude": 50.79855,
+      "longitude": 12.70656,
+      "population": 16542,
+      "id": 596
+    },
+    {
+      "cityName": "Eilenburg",
+      "stationName": "Bahnhof Eilenburg",
+      "latitude": 51.45284,
+      "longitude": 12.6391,
+      "population": 16539,
+      "id": 597
+    },
+    {
+      "cityName": "Illertissen",
+      "stationName": "Illertissen",
+      "latitude": 48.22283,
+      "longitude": 10.09994,
+      "population": 16522,
+      "id": 598
+    },
+    {
+      "cityName": "Gunzenhausen",
+      "stationName": "Gunzenhausen",
+      "latitude": 49.12044,
+      "longitude": 10.75546,
+      "population": 16477,
+      "id": 599
+    },
+    {
+      "cityName": "Wadern",
+      "stationName": "Lebach",
+      "latitude": 49.40833,
+      "longitude": 6.90723,
+      "population": 16453,
+      "id": 600
+    },
+    {
+      "cityName": "Hofgeismar",
+      "stationName": "Hofgeismar",
+      "latitude": 51.49919,
+      "longitude": 9.39546,
+      "population": 16444,
+      "id": 601
+    },
+    {
+      "cityName": "Königslutter am Elm",
+      "stationName": "Königslutter",
+      "latitude": 52.25717,
+      "longitude": 10.81249,
+      "population": 16419,
+      "id": 602
+    },
+    {
+      "cityName": "Bad Salzungen",
+      "stationName": "Bad Salzungen",
+      "latitude": 50.81518,
+      "longitude": 10.23106,
+      "population": 16410,
+      "id": 603
+    },
+    {
+      "cityName": "Hünfeld",
+      "stationName": "Hünfeld",
+      "latitude": 50.67327,
+      "longitude": 9.76245,
+      "population": 16323,
+      "id": 604
+    },
+    {
+      "cityName": "Remagen",
+      "stationName": "Bahnhof Remagen",
+      "latitude": 50.57758,
+      "longitude": 7.23009,
+      "population": 16280,
+      "id": 605
+    },
+    {
+      "cityName": "Baiersbronn",
+      "stationName": "Freudenstadt Hbf",
+      "latitude": 48.46032,
+      "longitude": 8.4288,
+      "population": 16248,
+      "id": 606
+    },
+    {
+      "cityName": "Bassum",
+      "stationName": "Bassum",
+      "latitude": 52.84739,
+      "longitude": 8.73992,
+      "population": 16191,
+      "id": 607
+    },
+    {
+      "cityName": "Neuenhagen",
+      "stationName": "Neuenhagen (b Berlin)",
+      "latitude": 52.52045,
+      "longitude": 13.70049,
+      "population": 16170,
+      "id": 608
+    },
+    {
+      "cityName": "Brake (Unterweser)",
+      "stationName": "Brake (Unterweser)",
+      "latitude": 53.32882,
+      "longitude": 8.48135,
+      "population": 16150,
+      "id": 609
+    },
+    {
+      "cityName": "Schrobenhausen",
+      "stationName": "Schrobenhausen",
+      "latitude": 48.56527,
+      "longitude": 11.25924,
+      "population": 16143,
+      "id": 610
+    },
+    {
+      "cityName": "Rahden",
+      "stationName": "Rahden (Kr Lübbecke)",
+      "latitude": 52.4329,
+      "longitude": 8.62384,
+      "population": 16140,
+      "id": 611
+    },
+    {
+      "cityName": "Lohr am Main",
+      "stationName": "Lohr Bahnhof",
+      "latitude": 50.00441,
+      "longitude": 9.58071,
+      "population": 16127,
+      "id": 612
+    },
+    {
+      "cityName": "Brüggen",
+      "stationName": "Breyell",
+      "latitude": 51.29462,
+      "longitude": 6.24117,
+      "population": 16105,
+      "id": 613
+    },
+    {
+      "cityName": "Penzberg",
+      "stationName": "Penzberg",
+      "latitude": 47.74925,
+      "longitude": 11.37187,
+      "population": 16079,
+      "id": 614
+    },
+    {
+      "cityName": "Witzenhausen",
+      "stationName": "Witzenhausen Nord",
+      "latitude": 51.35156,
+      "longitude": 9.86308,
+      "population": 16055,
+      "id": 615
+    },
+    {
+      "cityName": "Bad Segeberg",
+      "stationName": "Bad Segeberg",
+      "latitude": 53.9338,
+      "longitude": 10.30816,
+      "population": 16052,
+      "id": 616
+    },
+    {
+      "cityName": "Damme",
+      "stationName": "Holdorf (Oldenburg)",
+      "latitude": 52.57545,
+      "longitude": 8.14064,
+      "population": 16024,
+      "id": 617
+    },
+    {
+      "cityName": "Oschatz",
+      "stationName": "Oschatz Körnerstr",
+      "latitude": 51.3001,
+      "longitude": 13.11165,
+      "population": 16000,
+      "id": 618
+    },
+    {
+      "cityName": "Beckingen",
+      "stationName": "Saarlouis Hbf",
+      "latitude": 49.32783,
+      "longitude": 6.75017,
+      "population": 15983,
+      "id": 619
+    },
+    {
+      "cityName": "Blankenburg",
+      "stationName": "Thale Hbf",
+      "latitude": 51.74605,
+      "longitude": 11.03105,
+      "population": 15963,
+      "id": 620
+    },
+    {
+      "cityName": "Uslar",
+      "stationName": "Uslar",
+      "latitude": 51.65448,
+      "longitude": 9.65524,
+      "population": 15951,
+      "id": 621
+    },
+    {
+      "cityName": "Hettstedt",
+      "stationName": "Hettstedt",
+      "latitude": 51.63694,
+      "longitude": 11.51323,
+      "population": 15949,
+      "id": 622
+    },
+    {
+      "cityName": "Alsfeld",
+      "stationName": "Alsfeld (Oberhess)",
+      "latitude": 50.75096,
+      "longitude": 9.2643,
+      "population": 15945,
+      "id": 623
+    },
+    {
+      "cityName": "Neustadt in Holstein",
+      "stationName": "Neustadt (Holst)",
+      "latitude": 54.104,
+      "longitude": 10.80849,
+      "population": 15930,
+      "id": 624
+    },
+    {
+      "cityName": "Freilassing",
+      "stationName": "Freilassing",
+      "latitude": 47.83692,
+      "longitude": 12.97719,
+      "population": 15909,
+      "id": 625
+    },
+    {
+      "cityName": "Bruckmühl",
+      "stationName": "Bruckmühl",
+      "latitude": 47.88087,
+      "longitude": 11.91527,
+      "population": 15851,
+      "id": 626
+    },
+    {
+      "cityName": "Olsberg",
+      "stationName": "Olsberg",
+      "latitude": 51.3605,
+      "longitude": 8.48421,
+      "population": 15814,
+      "id": 627
+    },
+    {
+      "cityName": "Schiffweiler",
+      "stationName": "Neunkirchen (Saar)Hbf",
+      "latitude": 49.35329,
+      "longitude": 7.17666,
+      "population": 15780,
+      "id": 628
+    },
+    {
+      "cityName": "Lubnjow",
+      "stationName": "Lübbenau (Spreewald)",
+      "latitude": 51.86217,
+      "longitude": 13.9609,
+      "population": 15778,
+      "id": 629
+    },
+    {
+      "cityName": "Bad Essen",
+      "stationName": "Bohmte",
+      "latitude": 52.36163,
+      "longitude": 8.30753,
+      "population": 15732,
+      "id": 630
+    },
+    {
+      "cityName": "Wendlingen am Neckar",
+      "stationName": "Wendlingen (Neckar)",
+      "latitude": 48.67296,
+      "longitude": 9.37301,
+      "population": 15728,
+      "id": 631
+    },
+    {
+      "cityName": "Kelheim",
+      "stationName": "Saal (Donau)",
+      "latitude": 48.90242,
+      "longitude": 11.93319,
+      "population": 15723,
+      "id": 632
+    },
+    {
+      "cityName": "Weener",
+      "stationName": "Weener",
+      "latitude": 53.16327,
+      "longitude": 7.34309,
+      "population": 15718,
+      "id": 633
+    },
+    {
+      "cityName": "Zeulenroda-Triebes",
+      "stationName": "Zeulenroda unt Bf",
+      "latitude": 50.65938,
+      "longitude": 12.01135,
+      "population": 15677,
+      "id": 634
+    },
+    {
+      "cityName": "Königstein im Taunus",
+      "stationName": "Königstein (Taunus)",
+      "latitude": 50.17792,
+      "longitude": 8.46869,
+      "population": 15661,
+      "id": 635
+    },
+    {
+      "cityName": "Eberbach",
+      "stationName": "Eberbach",
+      "latitude": 49.46577,
+      "longitude": 8.98415,
+      "population": 15624,
+      "id": 636
+    },
+    {
+      "cityName": "Füssen",
+      "stationName": "Füssen",
+      "latitude": 47.5705,
+      "longitude": 10.69781,
+      "population": 15608,
+      "id": 637
+    },
+    {
+      "cityName": "Marbach am Neckar",
+      "stationName": "Marbach (Neckar)",
+      "latitude": 48.94369,
+      "longitude": 9.26445,
+      "population": 15604,
+      "id": 638
+    },
+    {
+      "cityName": "Hude",
+      "stationName": "Hude",
+      "latitude": 53.10943,
+      "longitude": 8.46096,
+      "population": 15567,
+      "id": 639
+    },
+    {
+      "cityName": "Bad Bentheim",
+      "stationName": "Bad Bentheim",
+      "latitude": 52.30985,
+      "longitude": 7.15854,
+      "population": 15508,
+      "id": 640
+    },
+    {
+      "cityName": "Niederkrüchten",
+      "stationName": "Arsbeck",
+      "latitude": 51.15201,
+      "longitude": 6.20656,
+      "population": 15487,
+      "id": 641
+    },
+    {
+      "cityName": "Schwarzenberg",
+      "stationName": "Schwarzenberg Hp",
+      "latitude": 50.53237,
+      "longitude": 12.78645,
+      "population": 15475,
+      "id": 642
+    },
+    {
+      "cityName": "Angermünde",
+      "stationName": "Angermünde",
+      "latitude": 53.01522,
+      "longitude": 13.99636,
+      "population": 15453,
+      "id": 643
+    },
+    {
+      "cityName": "Bad Neustadt an der Saale",
+      "stationName": "Bad Neustadt (Saale)",
+      "latitude": 50.32813,
+      "longitude": 10.22613,
+      "population": 15434,
+      "id": 644
+    },
+    {
+      "cityName": "Clausthal-Zellerfeld",
+      "stationName": "Bahnhof Gittelde",
+      "latitude": 51.7873,
+      "longitude": 10.20295,
+      "population": 15345,
+      "id": 645
+    },
+    {
+      "cityName": "Ribnitz-Damgarten",
+      "stationName": "Ribnitz-Damgarten West",
+      "latitude": 54.23918,
+      "longitude": 12.43697,
+      "population": 15333,
+      "id": 646
+    },
+    {
+      "cityName": "Straelen",
+      "stationName": "Bahnhof Nieukerk",
+      "latitude": 51.45849,
+      "longitude": 6.37515,
+      "population": 15325,
+      "id": 647
+    },
+    {
+      "cityName": "Altdorf bei Nürnberg",
+      "stationName": "Altdorf (b Nürnberg)",
+      "latitude": 49.39001,
+      "longitude": 11.35353,
+      "population": 15312,
+      "id": 648
+    },
+    {
+      "cityName": "Lauda-Königshofen",
+      "stationName": "Lauda",
+      "latitude": 49.56538,
+      "longitude": 9.70951,
+      "population": 15278,
+      "id": 649
+    },
+    {
+      "cityName": "Neu-Anspach",
+      "stationName": "Neu-Anspach",
+      "latitude": 50.30096,
+      "longitude": 8.51473,
+      "population": 15276,
+      "id": 650
+    },
+    {
+      "cityName": "Karlstadt",
+      "stationName": "Karlstadt (Main)",
+      "latitude": 49.9629,
+      "longitude": 9.76815,
+      "population": 15272,
+      "id": 651
+    },
+    {
+      "cityName": "Beverungen",
+      "stationName": "Lauenförde-Beverungen",
+      "latitude": 51.65847,
+      "longitude": 9.39267,
+      "population": 15266,
+      "id": 652
+    },
+    {
+      "cityName": "Freiberg am Neckar",
+      "stationName": "Freiberg (Neckar)",
+      "latitude": 48.93011,
+      "longitude": 9.1978,
+      "population": 15235,
+      "id": 653
+    },
+    {
+      "cityName": "Wurzen",
+      "stationName": "Wurzen",
+      "latitude": 51.36442,
+      "longitude": 12.73897,
+      "population": 15233,
+      "id": 654
+    },
+    {
+      "cityName": "Much",
+      "stationName": "Bahnhof Overath",
+      "latitude": 50.93287,
+      "longitude": 7.28876,
+      "population": 15231,
+      "id": 655
+    },
+    {
+      "cityName": "Bad Laasphe",
+      "stationName": "Bad Laasphe",
+      "latitude": 50.92931,
+      "longitude": 8.42072,
+      "population": 15184,
+      "id": 656
+    },
+    {
+      "cityName": "Ascheberg",
+      "stationName": "Ascheberg (Westf)",
+      "latitude": 51.78299,
+      "longitude": 7.60075,
+      "population": 15184,
+      "id": 657
+    },
+    {
+      "cityName": "Künzelsau",
+      "stationName": "Waldenburg (Württemberg)",
+      "latitude": 49.20259,
+      "longitude": 9.65846,
+      "population": 15070,
+      "id": 658
+    },
+    {
+      "cityName": "Weißwasser",
+      "stationName": "Weißwasser (Oberlausitz)",
+      "latitude": 51.50544,
+      "longitude": 14.63803,
+      "population": 15002,
+      "id": 659
+    },
+    {
+      "cityName": "Homberg",
+      "stationName": "Singlis",
+      "latitude": 51.05861,
+      "longitude": 9.32377,
+      "population": 14903,
+      "id": 660
+    },
+    {
+      "cityName": "Bebra",
+      "stationName": "Bahnhof Bebra",
+      "latitude": 50.96925,
+      "longitude": 9.79794,
+      "population": 14839,
+      "id": 661
+    },
+    {
+      "cityName": "Schwarzenbek",
+      "stationName": "Schwarzenbek",
+      "latitude": 53.50373,
+      "longitude": 10.48474,
+      "population": 14832,
+      "id": 662
+    },
+    {
+      "cityName": "Neustadt bei Coburg",
+      "stationName": "Sonneberg (Thür)Hbf",
+      "latitude": 50.35508,
+      "longitude": 11.16885,
+      "population": 14824,
+      "id": 663
+    },
+    {
+      "cityName": "Fritzlar",
+      "stationName": "Fritzlar",
+      "latitude": 51.12522,
+      "longitude": 9.28209,
+      "population": 14814,
+      "id": 664
+    },
+    {
+      "cityName": "Zehdenick",
+      "stationName": "Zehdenick (Mark)",
+      "latitude": 52.97939,
+      "longitude": 13.31748,
+      "population": 14809,
+      "id": 665
+    },
+    {
+      "cityName": "Landau an der Isar",
+      "stationName": "Landau (Isar)",
+      "latitude": 48.68289,
+      "longitude": 12.69506,
+      "population": 14801,
+      "id": 666
+    },
+    {
+      "cityName": "Neustadt an der Donau",
+      "stationName": "Neustadt (Donau)",
+      "latitude": 48.80018,
+      "longitude": 11.7633,
+      "population": 14778,
+      "id": 667
+    },
+    {
+      "cityName": "Langwedel",
+      "stationName": "Langwedel",
+      "latitude": 52.97788,
+      "longitude": 9.19498,
+      "population": 14755,
+      "id": 668
+    },
+    {
+      "cityName": "Oberndorf",
+      "stationName": "Oberndorf (Neckar)",
+      "latitude": 48.29567,
+      "longitude": 8.57551,
+      "population": 14740,
+      "id": 669
+    },
+    {
+      "cityName": "Lubin",
+      "stationName": "Lübben (Spreewald)",
+      "latitude": 51.93974,
+      "longitude": 13.87718,
+      "population": 14713,
+      "id": 670
+    },
+    {
+      "cityName": "Anklam",
+      "stationName": "Anklam",
+      "latitude": 53.8561,
+      "longitude": 13.70183,
+      "population": 14694,
+      "id": 671
+    },
+    {
+      "cityName": "Pocking",
+      "stationName": "Pocking",
+      "latitude": 48.40622,
+      "longitude": 13.31316,
+      "population": 14646,
+      "id": 672
+    },
+    {
+      "cityName": "Plochingen",
+      "stationName": "Plochingen",
+      "latitude": 48.71308,
+      "longitude": 9.41081,
+      "population": 14611,
+      "id": 673
+    },
+    {
+      "cityName": "Winterberg",
+      "stationName": "Winterberg (Westf)",
+      "latitude": 51.19859,
+      "longitude": 8.53241,
+      "population": 14601,
+      "id": 674
+    },
+    {
+      "cityName": "Lauterbach",
+      "stationName": "Lauterbach (Hess)Nord",
+      "latitude": 50.64361,
+      "longitude": 9.40805,
+      "population": 14487,
+      "id": 675
+    },
+    {
+      "cityName": "Münsingen",
+      "stationName": "Münsingen",
+      "latitude": 48.40964,
+      "longitude": 9.49043,
+      "population": 14479,
+      "id": 676
+    },
+    {
+      "cityName": "Immenstadt im Allgäu",
+      "stationName": "Immenstadt",
+      "latitude": 47.5592,
+      "longitude": 10.214,
+      "population": 14431,
+      "id": 677
+    },
+    {
+      "cityName": "Isny",
+      "stationName": "Röthenbach (Allgäu)",
+      "latitude": 47.62062,
+      "longitude": 9.95354,
+      "population": 14424,
+      "id": 678
+    },
+    {
+      "cityName": "Kraichtal",
+      "stationName": "Münzesheim",
+      "latitude": 49.12608,
+      "longitude": 8.71601,
+      "population": 14416,
+      "id": 679
+    },
+    {
+      "cityName": "Markgröningen",
+      "stationName": "Tamm (Württ)",
+      "latitude": 48.9216,
+      "longitude": 9.12583,
+      "population": 14414,
+      "id": 680
+    },
+    {
+      "cityName": "Breisach am Rhein",
+      "stationName": "Breisach",
+      "latitude": 48.02692,
+      "longitude": 7.58935,
+      "population": 14367,
+      "id": 681
+    },
+    {
+      "cityName": "Murrhardt",
+      "stationName": "Murrhardt",
+      "latitude": 48.98276,
+      "longitude": 9.57777,
+      "population": 14331,
+      "id": 682
+    },
+    {
+      "cityName": "Bad Wurzach",
+      "stationName": "Bad Wurzach",
+      "latitude": 47.91026,
+      "longitude": 9.88974,
+      "population": 14323,
+      "id": 683
+    },
+    {
+      "cityName": "Pegnitz",
+      "stationName": "Pegnitz",
+      "latitude": 49.75834,
+      "longitude": 11.54755,
+      "population": 14279,
+      "id": 684
+    },
+    {
+      "cityName": "Sassenberg",
+      "stationName": "Warendorf",
+      "latitude": 51.95009,
+      "longitude": 7.98446,
+      "population": 14273,
+      "id": 685
+    },
+    {
+      "cityName": "Grünberg",
+      "stationName": "Grünberg (Oberhess)",
+      "latitude": 50.59659,
+      "longitude": 8.95993,
+      "population": 14233,
+      "id": 686
+    },
+    {
+      "cityName": "Barsinghausen",
+      "stationName": "Barsinghausen",
+      "latitude": 52.30489,
+      "longitude": 9.46711,
+      "population": 14200,
+      "id": 687
+    },
+    {
+      "cityName": "Bad Camberg",
+      "stationName": "Bad Camberg",
+      "latitude": 50.29643,
+      "longitude": 8.25504,
+      "population": 14195,
+      "id": 688
+    },
+    {
+      "cityName": "Grünstadt",
+      "stationName": "Grünstadt",
+      "latitude": 49.56438,
+      "longitude": 8.16796,
+      "population": 14169,
+      "id": 689
+    },
+    {
+      "cityName": "Schleiden",
+      "stationName": "Kall",
+      "latitude": 50.53849,
+      "longitude": 6.55728,
+      "population": 14160,
+      "id": 690
+    },
+    {
+      "cityName": "Wennigsen",
+      "stationName": "Wennigsen (Deister)",
+      "latitude": 52.27963,
+      "longitude": 9.57217,
+      "population": 14137,
+      "id": 691
+    },
+    {
+      "cityName": "Mindelheim",
+      "stationName": "Mindelheim",
+      "latitude": 48.04492,
+      "longitude": 10.50163,
+      "population": 14122,
+      "id": 692
+    },
+    {
+      "cityName": "Altes Lager",
+      "stationName": "Münsingen",
+      "latitude": 48.40964,
+      "longitude": 9.49043,
+      "population": 14092,
+      "id": 693
+    },
+    {
+      "cityName": "Bad Wörishofen",
+      "stationName": "Bad Wörishofen",
+      "latitude": 48.00571,
+      "longitude": 10.59788,
+      "population": 14028,
+      "id": 694
+    },
+    {
+      "cityName": "Münster",
+      "stationName": "Münster (b Dieburg)",
+      "latitude": 49.92368,
+      "longitude": 8.85389,
+      "population": 14018,
+      "id": 695
+    },
+    {
+      "cityName": "Melsungen",
+      "stationName": "Melsungen Bartenwetzerbrücke",
+      "latitude": 51.13218,
+      "longitude": 9.54884,
+      "population": 14004,
+      "id": 696
+    },
+    {
+      "cityName": "Mainburg",
+      "stationName": "Münchsmünster",
+      "latitude": 48.75834,
+      "longitude": 11.68741,
+      "population": 13959,
+      "id": 697
+    },
+    {
+      "cityName": "Bad Soden-Salmünster",
+      "stationName": "Bad Soden-Salmünster",
+      "latitude": 50.28074,
+      "longitude": 9.37205,
+      "population": 13953,
+      "id": 698
+    },
+    {
+      "cityName": "Brunsbüttel",
+      "stationName": "Sankt Margarethen Bahnhof",
+      "latitude": 53.91667,
+      "longitude": 9.25,
+      "population": 13950,
+      "id": 699
+    },
+    {
+      "cityName": "Grafing bei München",
+      "stationName": "Grafing Stadt",
+      "latitude": 48.04722,
+      "longitude": 11.96276,
+      "population": 13942,
+      "id": 700
+    },
+    {
+      "cityName": "Mahlow",
+      "stationName": "Mahlow",
+      "latitude": 52.36054,
+      "longitude": 13.40793,
+      "population": 13828,
+      "id": 701
+    },
+    {
+      "cityName": "Linnich",
+      "stationName": "Linnich Bhf",
+      "latitude": 50.98268,
+      "longitude": 6.27614,
+      "population": 13827,
+      "id": 702
+    },
+    {
+      "cityName": "Weilburg",
+      "stationName": "Weilburg",
+      "latitude": 50.48637,
+      "longitude": 8.26795,
+      "population": 13798,
+      "id": 703
+    },
+    {
+      "cityName": "Steinheim",
+      "stationName": "Steinheim (Westf)",
+      "latitude": 51.86818,
+      "longitude": 9.08845,
+      "population": 13797,
+      "id": 704
+    },
+    {
+      "cityName": "Biedenkopf",
+      "stationName": "Biedenkopf",
+      "latitude": 50.90911,
+      "longitude": 8.52999,
+      "population": 13788,
+      "id": 705
+    },
+    {
+      "cityName": "Erbach",
+      "stationName": "Erbach (Odenw)",
+      "latitude": 49.65671,
+      "longitude": 8.98983,
+      "population": 13771,
+      "id": 706
+    },
+    {
+      "cityName": "Zeulenroda",
+      "stationName": "Zeulenroda unt Bf",
+      "latitude": 50.65938,
+      "longitude": 12.01135,
+      "population": 13763,
+      "id": 707
+    },
+    {
+      "cityName": "Leinefelde-Worbis",
+      "stationName": "Leinefelde",
+      "latitude": 51.38875,
+      "longitude": 10.3293,
+      "population": 13740,
+      "id": 708
+    },
+    {
+      "cityName": "Rödental",
+      "stationName": "Rödental Mitte",
+      "latitude": 50.29574,
+      "longitude": 11.05067,
+      "population": 13712,
+      "id": 709
+    },
+    {
+      "cityName": "Großenkneten",
+      "stationName": "Bahnhof Großenkneten",
+      "latitude": 52.94494,
+      "longitude": 8.2412,
+      "population": 13698,
+      "id": 710
+    },
+    {
+      "cityName": "Bargteheide",
+      "stationName": "Bargteheide",
+      "latitude": 53.7282,
+      "longitude": 10.2691,
+      "population": 13640,
+      "id": 711
+    },
+    {
+      "cityName": "Ratzeburg",
+      "stationName": "Ratzeburg",
+      "latitude": 53.69821,
+      "longitude": 10.74063,
+      "population": 13623,
+      "id": 712
+    },
+    {
+      "cityName": "Saarwellingen",
+      "stationName": "Saarlouis Hbf",
+      "latitude": 49.32783,
+      "longitude": 6.75017,
+      "population": 13616,
+      "id": 713
+    },
+    {
+      "cityName": "Haßfurt",
+      "stationName": "Haßfurt",
+      "latitude": 50.03332,
+      "longitude": 10.51,
+      "population": 13562,
+      "id": 714
+    },
+    {
+      "cityName": "Schmölln",
+      "stationName": "Schmölln (Thür)",
+      "latitude": 50.89832,
+      "longitude": 12.3549,
+      "population": 13542,
+      "id": 715
+    },
+    {
+      "cityName": "Usingen",
+      "stationName": "Usingen",
+      "latitude": 50.33092,
+      "longitude": 8.52725,
+      "population": 13511,
+      "id": 716
+    },
+    {
+      "cityName": "Hatten",
+      "stationName": "Wüsting",
+      "latitude": 53.11812,
+      "longitude": 8.33725,
+      "population": 13499,
+      "id": 717
+    },
+    {
+      "cityName": "Dorfen",
+      "stationName": "Dorfen Bahnhof",
+      "latitude": 48.26705,
+      "longitude": 12.15969,
+      "population": 13487,
+      "id": 718
+    },
+    {
+      "cityName": "Pritzwalk",
+      "stationName": "Pritzwalk",
+      "latitude": 53.14576,
+      "longitude": 12.18452,
+      "population": 13485,
+      "id": 719
+    },
+    {
+      "cityName": "Bad Fallingbostel",
+      "stationName": "Bahnhof Bad Fallingbostel",
+      "latitude": 52.863,
+      "longitude": 9.70053,
+      "population": 13473,
+      "id": 720
+    },
+    {
+      "cityName": "Bergen auf Rügen",
+      "stationName": "Bahnhof Bergen auf Rügen",
+      "latitude": 54.42083,
+      "longitude": 13.41872,
+      "population": 13457,
+      "id": 721
+    },
+    {
+      "cityName": "Genthin",
+      "stationName": "Genthin",
+      "latitude": 52.40322,
+      "longitude": 12.1571,
+      "population": 13416,
+      "id": 722
+    },
+    {
+      "cityName": "Thale",
+      "stationName": "Thale Hbf",
+      "latitude": 51.74605,
+      "longitude": 11.03105,
+      "population": 13386,
+      "id": 723
+    },
+    {
+      "cityName": "Tostedt",
+      "stationName": "Bahnhof Tostedt",
+      "latitude": 53.27226,
+      "longitude": 9.73224,
+      "population": 13315,
+      "id": 724
+    },
+    {
+      "cityName": "Tauberbischofsheim",
+      "stationName": "Tauberbischofsheim",
+      "latitude": 49.62363,
+      "longitude": 9.65829,
+      "population": 13293,
+      "id": 725
+    },
+    {
+      "cityName": "Jüterbog",
+      "stationName": "Jüterbog",
+      "latitude": 51.99751,
+      "longitude": 13.05435,
+      "population": 13292,
+      "id": 726
+    },
+    {
+      "cityName": "Hessisch Lichtenau",
+      "stationName": "Melsungen-Röhrenfurth",
+      "latitude": 51.15438,
+      "longitude": 9.54837,
+      "population": 13291,
+      "id": 727
+    },
+    {
+      "cityName": "Wolfhagen",
+      "stationName": "Wolfhagen",
+      "latitude": 51.3317,
+      "longitude": 9.17862,
+      "population": 13266,
+      "id": 728
+    },
+    {
+      "cityName": "Schöningen",
+      "stationName": "Bahnhof Frellstedt",
+      "latitude": 52.21369,
+      "longitude": 10.91019,
+      "population": 13265,
+      "id": 729
+    },
+    {
+      "cityName": "Pfullendorf",
+      "stationName": "Pfullendorf",
+      "latitude": 47.92288,
+      "longitude": 9.25573,
+      "population": 13258,
+      "id": 730
+    },
+    {
+      "cityName": "Schwabmünchen",
+      "stationName": "Schwabmünchen",
+      "latitude": 48.17869,
+      "longitude": 10.76829,
+      "population": 13232,
+      "id": 731
+    },
+    {
+      "cityName": "Fehmarn",
+      "stationName": "Fehmarn-Burg",
+      "latitude": 54.44359,
+      "longitude": 11.18898,
+      "population": 13200,
+      "id": 732
+    },
+    {
+      "cityName": "Bad Bramstedt",
+      "stationName": "Bad Bramstedt",
+      "latitude": 53.92059,
+      "longitude": 9.89016,
+      "population": 13177,
+      "id": 733
+    },
+    {
+      "cityName": "Langelsheim",
+      "stationName": "Langelsheim",
+      "latitude": 51.93012,
+      "longitude": 10.34317,
+      "population": 13169,
+      "id": 734
+    },
+    {
+      "cityName": "Tholey",
+      "stationName": "Dirmingen",
+      "latitude": 49.41539,
+      "longitude": 7.01238,
+      "population": 13157,
+      "id": 735
+    },
+    {
+      "cityName": "Bohmte",
+      "stationName": "Bohmte",
+      "latitude": 52.36163,
+      "longitude": 8.30753,
+      "population": 13153,
+      "id": 736
+    },
+    {
+      "cityName": "Peißenberg",
+      "stationName": "Peißenberg",
+      "latitude": 47.7975,
+      "longitude": 11.06028,
+      "population": 13148,
+      "id": 737
+    },
+    {
+      "cityName": "Treuchtlingen",
+      "stationName": "Treuchtlingen",
+      "latitude": 48.96127,
+      "longitude": 10.90816,
+      "population": 13141,
+      "id": 738
+    },
+    {
+      "cityName": "Eichstätt",
+      "stationName": "Eichstätt Stadt",
+      "latitude": 48.8933,
+      "longitude": 11.1796,
+      "population": 13125,
+      "id": 739
+    },
+    {
+      "cityName": "Perleberg",
+      "stationName": "Perleberg",
+      "latitude": 53.07129,
+      "longitude": 11.85224,
+      "population": 13102,
+      "id": 740
+    },
+    {
+      "cityName": "Löningen",
+      "stationName": "Essen (Oldb)",
+      "latitude": 52.72388,
+      "longitude": 7.94544,
+      "population": 13096,
+      "id": 741
+    },
+    {
+      "cityName": "Bad Freienwalde",
+      "stationName": "Bad Freienwalde",
+      "latitude": 52.78993,
+      "longitude": 14.03575,
+      "population": 13075,
+      "id": 742
+    },
+    {
+      "cityName": "Velen",
+      "stationName": "Maria Veen",
+      "latitude": 51.83927,
+      "longitude": 7.09817,
+      "population": 13074,
+      "id": 743
+    },
+    {
+      "cityName": "Hilpoltstein",
+      "stationName": "Hilpoltstein",
+      "latitude": 49.18877,
+      "longitude": 11.18415,
+      "population": 13069,
+      "id": 744
+    },
+    {
+      "cityName": "Plön",
+      "stationName": "Bahnhof Plön",
+      "latitude": 54.15962,
+      "longitude": 10.42241,
+      "population": 13068,
+      "id": 745
+    },
+    {
+      "cityName": "Wehr",
+      "stationName": "Wehr-Brennet",
+      "latitude": 47.58092,
+      "longitude": 7.91052,
+      "population": 13037,
+      "id": 746
+    },
+    {
+      "cityName": "Kirchhundem",
+      "stationName": "Kirchhundem",
+      "latitude": 51.08607,
+      "longitude": 8.0781,
+      "population": 12966,
+      "id": 747
+    },
+    {
+      "cityName": "Rotenburg an der Fulda",
+      "stationName": "Rotenburg a.d. Fulda",
+      "latitude": 50.99786,
+      "longitude": 9.73334,
+      "population": 12937,
+      "id": 748
+    },
+    {
+      "cityName": "Petershagen",
+      "stationName": "Petershagen Nord",
+      "latitude": 52.52885,
+      "longitude": 13.78948,
+      "population": 12931,
+      "id": 749
+    },
+    {
+      "cityName": "Bitburg",
+      "stationName": "Bitburg-Erdorf",
+      "latitude": 49.99869,
+      "longitude": 6.57096,
+      "population": 12908,
+      "id": 750
+    },
+    {
+      "cityName": "Scheeßel",
+      "stationName": "Scheeßel",
+      "latitude": 53.16582,
+      "longitude": 9.49696,
+      "population": 12907,
+      "id": 751
+    },
+    {
+      "cityName": "Altötting",
+      "stationName": "Altötting",
+      "latitude": 48.22124,
+      "longitude": 12.67479,
+      "population": 12902,
+      "id": 752
+    },
+    {
+      "cityName": "Eggenfelden",
+      "stationName": "Eggenfelden",
+      "latitude": 48.40396,
+      "longitude": 12.74867,
+      "population": 12860,
+      "id": 753
+    },
+    {
+      "cityName": "Sulingen",
+      "stationName": "Bahnhof Barenburg",
+      "latitude": 52.63168,
+      "longitude": 8.77792,
+      "population": 12835,
+      "id": 754
+    },
+    {
+      "cityName": "Krumbach",
+      "stationName": "Krumbach (Schwab)",
+      "latitude": 48.24759,
+      "longitude": 10.35862,
+      "population": 12805,
+      "id": 755
+    },
+    {
+      "cityName": "Eching",
+      "stationName": "Eching",
+      "latitude": 48.30299,
+      "longitude": 11.61675,
+      "population": 12804,
+      "id": 756
+    },
+    {
+      "cityName": "Herzberg am Harz",
+      "stationName": "Herzberg Schloß",
+      "latitude": 51.65449,
+      "longitude": 10.3328,
+      "population": 12792,
+      "id": 757
+    },
+    {
+      "cityName": "Sulz am Neckar",
+      "stationName": "Sulz (Neckar)",
+      "latitude": 48.36648,
+      "longitude": 8.63675,
+      "population": 12763,
+      "id": 758
+    },
+    {
+      "cityName": "Quakenbrück",
+      "stationName": "Quakenbrück",
+      "latitude": 52.67394,
+      "longitude": 7.94782,
+      "population": 12727,
+      "id": 759
+    },
+    {
+      "cityName": "Wolgast",
+      "stationName": "Wolgast Hafen",
+      "latitude": 54.05185,
+      "longitude": 13.77996,
+      "population": 12664,
+      "id": 760
+    },
+    {
+      "cityName": "Twistringen",
+      "stationName": "Twistringen",
+      "latitude": 52.79188,
+      "longitude": 8.64483,
+      "population": 12645,
+      "id": 761
+    },
+    {
+      "cityName": "Dinklage",
+      "stationName": "Lohne (Oldb)",
+      "latitude": 52.66533,
+      "longitude": 8.22929,
+      "population": 12626,
+      "id": 762
+    },
+    {
+      "cityName": "Bopfingen",
+      "stationName": "Bopfingen",
+      "latitude": 48.85515,
+      "longitude": 10.35171,
+      "population": 12606,
+      "id": 763
+    },
+    {
+      "cityName": "Gaildorf",
+      "stationName": "Gaildorf West",
+      "latitude": 49.00382,
+      "longitude": 9.75389,
+      "population": 12571,
+      "id": 764
+    },
+    {
+      "cityName": "Abensberg",
+      "stationName": "Abensberg",
+      "latitude": 48.81946,
+      "longitude": 11.84662,
+      "population": 12570,
+      "id": 765
+    },
+    {
+      "cityName": "Haselünne",
+      "stationName": "Meppen",
+      "latitude": 52.69602,
+      "longitude": 7.29802,
+      "population": 12562,
+      "id": 766
+    },
+    {
+      "cityName": "Hauzenberg",
+      "stationName": "Waldkirchen (Niederbay.)",
+      "latitude": 48.73716,
+      "longitude": 13.60658,
+      "population": 12522,
+      "id": 767
+    },
+    {
+      "cityName": "Wernau",
+      "stationName": "Wernau (Neckar)",
+      "latitude": 48.69425,
+      "longitude": 9.4139,
+      "population": 12518,
+      "id": 768
+    },
+    {
+      "cityName": "Maisach",
+      "stationName": "Maisach",
+      "latitude": 48.21415,
+      "longitude": 11.25639,
+      "population": 12507,
+      "id": 769
+    },
+    {
+      "cityName": "Westerland",
+      "stationName": "Westerland",
+      "latitude": 54.90686,
+      "longitude": 8.31086,
+      "population": 12500,
+      "id": 770
+    },
+    {
+      "cityName": "Demmin",
+      "stationName": "Demmin",
+      "latitude": 53.90114,
+      "longitude": 13.05395,
+      "population": 12495,
+      "id": 771
+    },
+    {
+      "cityName": "Beelitz",
+      "stationName": "Beelitz Stadt",
+      "latitude": 52.2394,
+      "longitude": 12.96686,
+      "population": 12475,
+      "id": 772
+    },
+    {
+      "cityName": "Barßel",
+      "stationName": "Augustfehn",
+      "latitude": 53.22089,
+      "longitude": 7.75966,
+      "population": 12475,
+      "id": 773
+    },
+    {
+      "cityName": "Spaichingen",
+      "stationName": "Spaichingen Mitte",
+      "latitude": 48.0785,
+      "longitude": 8.73043,
+      "population": 12466,
+      "id": 774
+    },
+    {
+      "cityName": "Wächtersbach",
+      "stationName": "Bahnhof Wächtersbach",
+      "latitude": 50.25419,
+      "longitude": 9.29577,
+      "population": 12464,
+      "id": 775
+    },
+    {
+      "cityName": "Neustadt an der Aisch",
+      "stationName": "Neustadt (Aisch)Mitte",
+      "latitude": 49.5742,
+      "longitude": 10.60931,
+      "population": 12448,
+      "id": 776
+    },
+    {
+      "cityName": "Schongau",
+      "stationName": "Schongau",
+      "latitude": 47.81233,
+      "longitude": 10.90246,
+      "population": 12442,
+      "id": 777
+    },
+    {
+      "cityName": "Bad Wünnenberg",
+      "stationName": "Bahnhof Ringelstein",
+      "latitude": 51.50026,
+      "longitude": 8.57115,
+      "population": 12439,
+      "id": 778
+    },
+    {
+      "cityName": "Altenstadt",
+      "stationName": "Altenstadt (Hess)",
+      "latitude": 50.2834,
+      "longitude": 8.94398,
+      "population": 12437,
+      "id": 779
+    },
+    {
+      "cityName": "Wittingen",
+      "stationName": "Wittingen",
+      "latitude": 52.72729,
+      "longitude": 10.72317,
+      "population": 12427,
+      "id": 780
+    },
+    {
+      "cityName": "Hersbruck",
+      "stationName": "Hersbruck (r Pegnitz)",
+      "latitude": 49.51007,
+      "longitude": 11.42383,
+      "population": 12404,
+      "id": 781
+    },
+    {
+      "cityName": "Plattling",
+      "stationName": "Deggendorf Hbf",
+      "latitude": 48.83944,
+      "longitude": 12.94973,
+      "population": 12390,
+      "id": 782
+    },
+    {
+      "cityName": "Wasserburg am Inn",
+      "stationName": "Wasserburg (Inn)Bf",
+      "latitude": 48.06156,
+      "longitude": 12.18523,
+      "population": 12375,
+      "id": 783
+    },
+    {
+      "cityName": "Harsefeld",
+      "stationName": "Harsefeld",
+      "latitude": 53.45006,
+      "longitude": 9.49866,
+      "population": 12350,
+      "id": 784
+    },
+    {
+      "cityName": "Montabaur",
+      "stationName": "Montabaur",
+      "latitude": 50.44483,
+      "longitude": 7.82533,
+      "population": 12345,
+      "id": 785
+    },
+    {
+      "cityName": "Regen",
+      "stationName": "Regen",
+      "latitude": 48.96863,
+      "longitude": 13.13646,
+      "population": 12296,
+      "id": 786
+    },
+    {
+      "cityName": "Garrel",
+      "stationName": "Cloppenburg",
+      "latitude": 52.844,
+      "longitude": 8.05576,
+      "population": 12273,
+      "id": 787
+    },
+    {
+      "cityName": "Borken",
+      "stationName": "Borken (Hess)",
+      "latitude": 51.05068,
+      "longitude": 9.277,
+      "population": 12268,
+      "id": 788
+    },
+    {
+      "cityName": "Feuchtwangen",
+      "stationName": "Feuchtwangen Bf",
+      "latitude": 49.16872,
+      "longitude": 10.32402,
+      "population": 12267,
+      "id": 789
+    },
+    {
+      "cityName": "Dinkelsbühl",
+      "stationName": "Dinkelsbühl Bf",
+      "latitude": 49.06885,
+      "longitude": 10.32886,
+      "population": 12260,
+      "id": 790
+    },
+    {
+      "cityName": "Ottersberg",
+      "stationName": "Bahnhof Ottersberg (Han)",
+      "latitude": 53.09676,
+      "longitude": 9.13331,
+      "population": 12205,
+      "id": 791
+    },
+    {
+      "cityName": "Bretzfeld",
+      "stationName": "Öhringen Hbf",
+      "latitude": 49.20321,
+      "longitude": 9.50271,
+      "population": 12162,
+      "id": 792
+    },
+    {
+      "cityName": "Olfen",
+      "stationName": "Lünen Hbf",
+      "latitude": 51.61713,
+      "longitude": 7.52949,
+      "population": 12133,
+      "id": 793
+    },
+    {
+      "cityName": "Hadamar",
+      "stationName": "Hadamar",
+      "latitude": 50.44719,
+      "longitude": 8.04345,
+      "population": 12131,
+      "id": 794
+    },
+    {
+      "cityName": "Hagenow",
+      "stationName": "Hagenow Stadt",
+      "latitude": 53.42944,
+      "longitude": 11.18499,
+      "population": 12128,
+      "id": 795
+    },
+    {
+      "cityName": "Glückstadt",
+      "stationName": "Glückstadt",
+      "latitude": 53.78861,
+      "longitude": 9.42832,
+      "population": 12121,
+      "id": 796
+    },
+    {
+      "cityName": "Pasewalk",
+      "stationName": "Pasewalk",
+      "latitude": 53.51535,
+      "longitude": 13.98888,
+      "population": 12120,
+      "id": 797
+    },
+    {
+      "cityName": "Walldürn",
+      "stationName": "Walldürn",
+      "latitude": 49.57802,
+      "longitude": 9.36754,
+      "population": 12113,
+      "id": 798
+    },
+    {
+      "cityName": "Ludwigslust",
+      "stationName": "Ludwigslust",
+      "latitude": 53.33467,
+      "longitude": 11.49449,
+      "population": 12112,
+      "id": 799
+    },
+    {
+      "cityName": "Peiting",
+      "stationName": "Peiting Ost",
+      "latitude": 47.79295,
+      "longitude": 10.93669,
+      "population": 12106,
+      "id": 800
+    },
+    {
+      "cityName": "Wentorf bei Hamburg",
+      "stationName": "Reinbek",
+      "latitude": 53.50846,
+      "longitude": 10.25351,
+      "population": 12104,
+      "id": 801
+    },
+    {
+      "cityName": "Burglengenfeld",
+      "stationName": "Maxhütte-Haidhof",
+      "latitude": 49.19822,
+      "longitude": 12.1077,
+      "population": 12095,
+      "id": 802
+    },
+    {
+      "cityName": "Scharbeutz",
+      "stationName": "Scharbeutz",
+      "latitude": 54.01874,
+      "longitude": 10.74576,
+      "population": 12087,
+      "id": 803
+    },
+    {
+      "cityName": "Überherrn",
+      "stationName": "Saarlouis Hbf",
+      "latitude": 49.32783,
+      "longitude": 6.75017,
+      "population": 12071,
+      "id": 804
+    },
+    {
+      "cityName": "Bad Windsheim",
+      "stationName": "Bad Windsheim",
+      "latitude": 49.5066,
+      "longitude": 10.41294,
+      "population": 12022,
+      "id": 805
+    },
+    {
+      "cityName": "Titisee-Neustadt",
+      "stationName": "Neustadt (Schwarzw)",
+      "latitude": 47.9102,
+      "longitude": 8.21088,
+      "population": 12019,
+      "id": 806
+    },
+    {
+      "cityName": "Schönefeld",
+      "stationName": "Berlin-Schönefeld Flughafen",
+      "latitude": 52.39106,
+      "longitude": 13.51271,
+      "population": 12015,
+      "id": 807
+    },
+    {
+      "cityName": "Jork",
+      "stationName": "Wedel",
+      "latitude": 53.58182,
+      "longitude": 9.70496,
+      "population": 12014,
+      "id": 808
+    },
+    {
+      "cityName": "Hammelburg",
+      "stationName": "Hammelburg",
+      "latitude": 50.12004,
+      "longitude": 9.88297,
+      "population": 12004,
+      "id": 809
+    },
+    {
+      "cityName": "Bad Belzig",
+      "stationName": "Bad Belzig",
+      "latitude": 52.13597,
+      "longitude": 12.59498,
+      "population": 11999,
+      "id": 810
+    },
+    {
+      "cityName": "Buchloe",
+      "stationName": "Buchloe",
+      "latitude": 48.03372,
+      "longitude": 10.71622,
+      "population": 11978,
+      "id": 811
+    },
+    {
+      "cityName": "Pößneck",
+      "stationName": "Pößneck ob Bf",
+      "latitude": 50.69029,
+      "longitude": 11.58834,
+      "population": 11960,
+      "id": 812
+    },
+    {
+      "cityName": "Murnau am Staffelsee",
+      "stationName": "Murnau Ort",
+      "latitude": 47.67883,
+      "longitude": 11.19566,
+      "population": 11958,
+      "id": 813
+    },
+    {
+      "cityName": "Geisenheim",
+      "stationName": "Bingen (Rhein) Hbf",
+      "latitude": 49.96873,
+      "longitude": 7.88426,
+      "population": 11949,
+      "id": 814
+    },
+    {
+      "cityName": "Blankenfelde",
+      "stationName": "Blankenfelde (Teltow-Fläming)",
+      "latitude": 52.33721,
+      "longitude": 13.41598,
+      "population": 11929,
+      "id": 815
+    },
+    {
+      "cityName": "Schöneiche",
+      "stationName": "Berlin-Rahnsdorf",
+      "latitude": 52.45154,
+      "longitude": 13.69041,
+      "population": 11907,
+      "id": 816
+    },
+    {
+      "cityName": "Kall",
+      "stationName": "Kall",
+      "latitude": 50.53849,
+      "longitude": 6.55728,
+      "population": 11903,
+      "id": 817
+    },
+    {
+      "cityName": "Pfarrkirchen",
+      "stationName": "Pfarrkirchen",
+      "latitude": 48.42919,
+      "longitude": 12.93817,
+      "population": 11894,
+      "id": 818
+    },
+    {
+      "cityName": "Teningen",
+      "stationName": "Teningen-Mundingen",
+      "latitude": 48.12878,
+      "longitude": 7.82441,
+      "population": 11887,
+      "id": 819
+    },
+    {
+      "cityName": "Osterhofen",
+      "stationName": "Osterhofen (Nby)",
+      "latitude": 48.69547,
+      "longitude": 13.01871,
+      "population": 11870,
+      "id": 820
+    },
+    {
+      "cityName": "Gardelegen",
+      "stationName": "Gardelegen",
+      "latitude": 52.51838,
+      "longitude": 11.40454,
+      "population": 11868,
+      "id": 821
+    },
+    {
+      "cityName": "Lauenburg",
+      "stationName": "Lauenburg (Elbe)",
+      "latitude": 53.36955,
+      "longitude": 10.56759,
+      "population": 11814,
+      "id": 822
+    },
+    {
+      "cityName": "Neustadt in Sachsen",
+      "stationName": "Neustadt (Sachs)",
+      "latitude": 51.02134,
+      "longitude": 14.21322,
+      "population": 11810,
+      "id": 823
+    },
+    {
+      "cityName": "Blaubeuren",
+      "stationName": "Blaubeuren",
+      "latitude": 48.40382,
+      "longitude": 9.79198,
+      "population": 11797,
+      "id": 824
+    },
+    {
+      "cityName": "Bad Lauterberg im Harz",
+      "stationName": "Bad Lauterberg im Harz Barbis",
+      "latitude": 51.61902,
+      "longitude": 10.41461,
+      "population": 11784,
+      "id": 825
+    },
+    {
+      "cityName": "Bestwig",
+      "stationName": "Bestwig",
+      "latitude": 51.36191,
+      "longitude": 8.39784,
+      "population": 11764,
+      "id": 826
+    },
+    {
+      "cityName": "Rosbach vor der Höhe",
+      "stationName": "Rosbach v d Höhe",
+      "latitude": 50.29867,
+      "longitude": 8.7008,
+      "population": 11741,
+      "id": 827
+    },
+    {
+      "cityName": "Erkner",
+      "stationName": "Erkner",
+      "latitude": 52.42836,
+      "longitude": 13.75146,
+      "population": 11741,
+      "id": 828
+    },
+    {
+      "cityName": "Billerbeck",
+      "stationName": "Billerbeck",
+      "latitude": 51.98134,
+      "longitude": 7.29748,
+      "population": 11699,
+      "id": 829
+    },
+    {
+      "cityName": "Zetel",
+      "stationName": "Bahnhof Sande",
+      "latitude": 53.49005,
+      "longitude": 8.03169,
+      "population": 11684,
+      "id": 830
+    },
+    {
+      "cityName": "Neuenburg am Rhein",
+      "stationName": "Neuenburg (Baden)",
+      "latitude": 47.81148,
+      "longitude": 7.56276,
+      "population": 11682,
+      "id": 831
+    },
+    {
+      "cityName": "Trostberg an der Alz",
+      "stationName": "Trostberg",
+      "latitude": 48.02474,
+      "longitude": 12.55565,
+      "population": 11676,
+      "id": 832
+    },
+    {
+      "cityName": "Hildburghausen",
+      "stationName": "Hildburghausen",
+      "latitude": 50.42513,
+      "longitude": 10.71783,
+      "population": 11632,
+      "id": 833
+    },
+    {
+      "cityName": "Morsbach",
+      "stationName": "Wissen (Sieg)",
+      "latitude": 50.78287,
+      "longitude": 7.73981,
+      "population": 11630,
+      "id": 834
+    },
+    {
+      "cityName": "Poing",
+      "stationName": "Poing",
+      "latitude": 48.17133,
+      "longitude": 11.80944,
+      "population": 11592,
+      "id": 835
+    },
+    {
+      "cityName": "Lindenberg",
+      "stationName": "Heimenkirch",
+      "latitude": 47.62891,
+      "longitude": 9.9021,
+      "population": 11587,
+      "id": 836
+    },
+    {
+      "cityName": "Schotten",
+      "stationName": "Borsdorf (Hess)",
+      "latitude": 50.42941,
+      "longitude": 8.97522,
+      "population": 11566,
+      "id": 837
+    },
+    {
+      "cityName": "Bad Doberan",
+      "stationName": "Bad Doberan Goethestraße railway station",
+      "latitude": 54.10849,
+      "longitude": 11.89999,
+      "population": 11559,
+      "id": 838
+    },
+    {
+      "cityName": "Münchberg",
+      "stationName": "Münchberg",
+      "latitude": 50.18904,
+      "longitude": 11.79067,
+      "population": 11557,
+      "id": 839
+    },
+    {
+      "cityName": "Zwönitz",
+      "stationName": "Zwönitz",
+      "latitude": 50.63223,
+      "longitude": 12.7979,
+      "population": 11547,
+      "id": 840
+    },
+    {
+      "cityName": "Großräschen",
+      "stationName": "Großräschen",
+      "latitude": 51.59149,
+      "longitude": 14.0149,
+      "population": 11523,
+      "id": 841
+    },
+    {
+      "cityName": "Bad Dürrenberg",
+      "stationName": "Bad Dürrenberg",
+      "latitude": 51.30494,
+      "longitude": 12.06965,
+      "population": 11521,
+      "id": 842
+    },
+    {
+      "cityName": "Lauingen",
+      "stationName": "Lauingen",
+      "latitude": 48.57457,
+      "longitude": 10.42497,
+      "population": 11510,
+      "id": 843
+    },
+    {
+      "cityName": "Ochsenfurt",
+      "stationName": "Ochsenfurt",
+      "latitude": 49.66304,
+      "longitude": 10.07178,
+      "population": 11492,
+      "id": 844
+    },
+    {
+      "cityName": "Schüttorf",
+      "stationName": "Schüttorf",
+      "latitude": 52.31684,
+      "longitude": 7.22061,
+      "population": 11465,
+      "id": 845
+    },
+    {
+      "cityName": "Eisenberg",
+      "stationName": "Crossen Ort",
+      "latitude": 50.97472,
+      "longitude": 11.9819,
+      "population": 11438,
+      "id": 846
+    },
+    {
+      "cityName": "Vilsbiburg",
+      "stationName": "Vilsbiburg",
+      "latitude": 48.44738,
+      "longitude": 12.3475,
+      "population": 11416,
+      "id": 847
+    },
+    {
+      "cityName": "Roding",
+      "stationName": "Roding",
+      "latitude": 49.21448,
+      "longitude": 12.51574,
+      "population": 11406,
+      "id": 848
+    },
+    {
+      "cityName": "Gemünden am Main",
+      "stationName": "Gemünden (Main)",
+      "latitude": 50.05002,
+      "longitude": 9.69989,
+      "population": 11375,
+      "id": 849
+    },
+    {
+      "cityName": "Altdorf",
+      "stationName": "Soyen",
+      "latitude": 48.10809,
+      "longitude": 12.20974,
+      "population": 11355,
+      "id": 850
+    },
+    {
+      "cityName": "Miesbach",
+      "stationName": "Miesbach",
+      "latitude": 47.79044,
+      "longitude": 11.83066,
+      "population": 11354,
+      "id": 851
+    },
+    {
+      "cityName": "Calbe",
+      "stationName": "Calbe (Saale) Stadt",
+      "latitude": 51.91388,
+      "longitude": 11.77634,
+      "population": 11322,
+      "id": 852
+    },
+    {
+      "cityName": "Steinau an der Straße",
+      "stationName": "Steinau (Straße)",
+      "latitude": 50.31435,
+      "longitude": 9.44316,
+      "population": 11302,
+      "id": 853
+    },
+    {
+      "cityName": "Rüthen",
+      "stationName": "Bahnhof Ringelstein",
+      "latitude": 51.50026,
+      "longitude": 8.57115,
+      "population": 11299,
+      "id": 854
+    },
+    {
+      "cityName": "Lügde",
+      "stationName": "Lügde",
+      "latitude": 51.95929,
+      "longitude": 9.25083,
+      "population": 11290,
+      "id": 855
+    },
+    {
+      "cityName": "Dassel",
+      "stationName": "Stadtoldendorf",
+      "latitude": 51.881,
+      "longitude": 9.62052,
+      "population": 11287,
+      "id": 856
+    },
+    {
+      "cityName": "Altensteig",
+      "stationName": "Nagold",
+      "latitude": 48.55564,
+      "longitude": 8.72777,
+      "population": 11266,
+      "id": 857
+    },
+    {
+      "cityName": "Emstek",
+      "stationName": "Cloppenburg",
+      "latitude": 52.844,
+      "longitude": 8.05576,
+      "population": 11257,
+      "id": 858
+    },
+    {
+      "cityName": "Gräfenhainichen",
+      "stationName": "Gräfenhainichen",
+      "latitude": 51.72473,
+      "longitude": 12.46004,
+      "population": 11228,
+      "id": 859
+    },
+    {
+      "cityName": "Felsberg",
+      "stationName": "Felsberg-Gensungen",
+      "latitude": 51.13112,
+      "longitude": 9.43563,
+      "population": 11219,
+      "id": 860
+    },
+    {
+      "cityName": "Meitingen",
+      "stationName": "Meitingen",
+      "latitude": 48.546,
+      "longitude": 10.84805,
+      "population": 11201,
+      "id": 861
+    },
+    {
+      "cityName": "Bockenem",
+      "stationName": "Bodenburg",
+      "latitude": 52.03112,
+      "longitude": 10.00133,
+      "population": 11177,
+      "id": 862
+    },
+    {
+      "cityName": "Olbernhau",
+      "stationName": "Olbernhau",
+      "latitude": 50.65626,
+      "longitude": 13.33677,
+      "population": 11162,
+      "id": 863
+    },
+    {
+      "cityName": "Stollberg",
+      "stationName": "Stollberg (Sachs)",
+      "latitude": 50.70931,
+      "longitude": 12.77355,
+      "population": 11127,
+      "id": 864
+    },
+    {
+      "cityName": "Niesky",
+      "stationName": "Horka",
+      "latitude": 51.30398,
+      "longitude": 14.90209,
+      "population": 11111,
+      "id": 865
+    },
+    {
+      "cityName": "Rothenburg ob der Tauber",
+      "stationName": "Rothenburg ob der Tauber",
+      "latitude": 49.37669,
+      "longitude": 10.1907,
+      "population": 11106,
+      "id": 866
+    },
+    {
+      "cityName": "Bad Gandersheim",
+      "stationName": "Bad Gandersheim",
+      "latitude": 51.86737,
+      "longitude": 10.02024,
+      "population": 11099,
+      "id": 867
+    },
+    {
+      "cityName": "Jessen",
+      "stationName": "Jessen (Elster)",
+      "latitude": 51.79279,
+      "longitude": 12.95472,
+      "population": 11065,
+      "id": 868
+    },
+    {
+      "cityName": "Boizenburg",
+      "stationName": "Bahnhof Boizenburg",
+      "latitude": 53.37812,
+      "longitude": 10.75418,
+      "population": 11048,
+      "id": 869
+    },
+    {
+      "cityName": "Ebersberg",
+      "stationName": "Ebersberg (Oberbay)",
+      "latitude": 48.07497,
+      "longitude": 11.97024,
+      "population": 11041,
+      "id": 870
+    },
+    {
+      "cityName": "Herzberg",
+      "stationName": "Herzberg (Elster)",
+      "latitude": 51.67945,
+      "longitude": 13.20279,
+      "population": 11033,
+      "id": 871
+    },
+    {
+      "cityName": "Marktheidenfeld",
+      "stationName": "Wertheim-Bestenheid",
+      "latitude": 49.78618,
+      "longitude": 9.49993,
+      "population": 11024,
+      "id": 872
+    },
+    {
+      "cityName": "Burgkirchen an der Alz",
+      "stationName": "Burgkirchen",
+      "latitude": 48.16691,
+      "longitude": 12.72778,
+      "population": 11006,
+      "id": 873
+    },
+    {
+      "cityName": "Ueckermünde",
+      "stationName": "Ueckermünde Stadthafen",
+      "latitude": 53.7362,
+      "longitude": 14.05223,
+      "population": 11003,
+      "id": 874
+    },
+    {
+      "cityName": "Apen",
+      "stationName": "Augustfehn",
+      "latitude": 53.22089,
+      "longitude": 7.75966,
+      "population": 10992,
+      "id": 875
+    },
+    {
+      "cityName": "Grevesmühlen",
+      "stationName": "Grevesmühlen",
+      "latitude": 53.85747,
+      "longitude": 11.18471,
+      "population": 10975,
+      "id": 876
+    },
+    {
+      "cityName": "Wolnzach",
+      "stationName": "Pfaffenhofen (Ilm)",
+      "latitude": 48.52243,
+      "longitude": 11.51188,
+      "population": 10973,
+      "id": 877
+    },
+    {
+      "cityName": "Dippoldiswalde",
+      "stationName": "Dippoldiswalde",
+      "latitude": 50.89109,
+      "longitude": 13.6646,
+      "population": 10959,
+      "id": 878
+    },
+    {
+      "cityName": "Prien am Chiemsee",
+      "stationName": "Prien am Chiemsee",
+      "latitude": 47.85551,
+      "longitude": 12.34661,
+      "population": 10915,
+      "id": 879
+    },
+    {
+      "cityName": "Rehburg-Loccum",
+      "stationName": "Leese-Stolzenau",
+      "latitude": 52.50947,
+      "longitude": 9.11013,
+      "population": 10894,
+      "id": 880
+    },
+    {
+      "cityName": "Bad Liebenwerda",
+      "stationName": "Bad Liebenwerda",
+      "latitude": 51.5184,
+      "longitude": 13.40293,
+      "population": 10890,
+      "id": 881
+    },
+    {
+      "cityName": "Markt Schwaben",
+      "stationName": "Markt Schwaben",
+      "latitude": 48.19361,
+      "longitude": 11.86209,
+      "population": 10857,
+      "id": 882
+    },
+    {
+      "cityName": "Laichingen",
+      "stationName": "Blaubeuren",
+      "latitude": 48.40382,
+      "longitude": 9.79198,
+      "population": 10853,
+      "id": 883
+    },
+    {
+      "cityName": "Haigerloch",
+      "stationName": "Haigerloch",
+      "latitude": 48.3702,
+      "longitude": 8.8013,
+      "population": 10828,
+      "id": 884
+    },
+    {
+      "cityName": "Diez",
+      "stationName": "Diez",
+      "latitude": 50.37013,
+      "longitude": 8.01962,
+      "population": 10822,
+      "id": 885
+    },
+    {
+      "cityName": "Malente",
+      "stationName": "Bad Malente-Gremsmühlen",
+      "latitude": 54.16701,
+      "longitude": 10.55151,
+      "population": 10817,
+      "id": 886
+    },
+    {
+      "cityName": "Visselhövede",
+      "stationName": "Visselhövede",
+      "latitude": 52.98006,
+      "longitude": 9.56664,
+      "population": 10808,
+      "id": 887
+    },
+    {
+      "cityName": "Sassnitz",
+      "stationName": "Sassnitz",
+      "latitude": 54.51628,
+      "longitude": 13.63791,
+      "population": 10779,
+      "id": 888
+    },
+    {
+      "cityName": "Waldkirchen",
+      "stationName": "Waldkirchen (Niederbay.)",
+      "latitude": 48.73716,
+      "longitude": 13.60658,
+      "population": 10757,
+      "id": 889
+    },
+    {
+      "cityName": "Ruppichteroth",
+      "stationName": "Dattenfeld (Sieg)",
+      "latitude": 50.80916,
+      "longitude": 7.54625,
+      "population": 10749,
+      "id": 890
+    },
+    {
+      "cityName": "Ostrhauderfehn",
+      "stationName": "Augustfehn",
+      "latitude": 53.22089,
+      "longitude": 7.75966,
+      "population": 10699,
+      "id": 891
+    },
+    {
+      "cityName": "Nohfelden",
+      "stationName": "Nohfelden",
+      "latitude": 49.58569,
+      "longitude": 7.13944,
+      "population": 10687,
+      "id": 892
+    },
+    {
+      "cityName": "Maxhütte-Haidhof",
+      "stationName": "Maxhütte-Haidhof",
+      "latitude": 49.19822,
+      "longitude": 12.1077,
+      "population": 10674,
+      "id": 893
+    },
+    {
+      "cityName": "Grimmen",
+      "stationName": "Grimmen",
+      "latitude": 54.10974,
+      "longitude": 13.03402,
+      "population": 10671,
+      "id": 894
+    },
+    {
+      "cityName": "Torgelow",
+      "stationName": "Torgelow",
+      "latitude": 53.63462,
+      "longitude": 14.00876,
+      "population": 10665,
+      "id": 895
+    },
+    {
+      "cityName": "Kriftel",
+      "stationName": "Kriftel",
+      "latitude": 50.08228,
+      "longitude": 8.47545,
+      "population": 10633,
+      "id": 896
+    },
+    {
+      "cityName": "Langenzenn",
+      "stationName": "Langenzenn",
+      "latitude": 49.49694,
+      "longitude": 10.80186,
+      "population": 10629,
+      "id": 897
+    },
+    {
+      "cityName": "Bad Staffelstein",
+      "stationName": "Bad Staffelstein",
+      "latitude": 50.10826,
+      "longitude": 10.99424,
+      "population": 10618,
+      "id": 898
+    },
+    {
+      "cityName": "Friedeburg",
+      "stationName": "Schortens-Heidmühle",
+      "latitude": 53.54216,
+      "longitude": 7.94637,
+      "population": 10607,
+      "id": 899
+    },
+    {
+      "cityName": "Salzhemmendorf",
+      "stationName": "Voldagsen",
+      "latitude": 52.10168,
+      "longitude": 9.58268,
+      "population": 10603,
+      "id": 900
+    },
+    {
+      "cityName": "Bischofswerda",
+      "stationName": "Bischofswerda",
+      "latitude": 51.12559,
+      "longitude": 14.18614,
+      "population": 10576,
+      "id": 901
+    },
+    {
+      "cityName": "Penig",
+      "stationName": "Burgstädt",
+      "latitude": 50.91582,
+      "longitude": 12.81271,
+      "population": 10557,
+      "id": 902
+    },
+    {
+      "cityName": "Oberderdingen",
+      "stationName": "Oberderdingen-Flehingen Industrie",
+      "latitude": 49.08397,
+      "longitude": 8.77501,
+      "population": 10515,
+      "id": 903
+    },
+    {
+      "cityName": "Blumberg",
+      "stationName": "Blumberg-Zollhaus",
+      "latitude": 47.83806,
+      "longitude": 8.55584,
+      "population": 10500,
+      "id": 904
+    },
+    {
+      "cityName": "Kirchlinteln",
+      "stationName": "Bahnhof Verden (Aller)",
+      "latitude": 52.9208,
+      "longitude": 9.23779,
+      "population": 10487,
+      "id": 905
+    },
+    {
+      "cityName": "Luckau",
+      "stationName": "Luckau-Uckro",
+      "latitude": 51.85212,
+      "longitude": 13.60784,
+      "population": 10471,
+      "id": 906
+    },
+    {
+      "cityName": "Weinböhla",
+      "stationName": "Weinböhla Hp",
+      "latitude": 51.1591,
+      "longitude": 13.56155,
+      "population": 10456,
+      "id": 907
+    },
+    {
+      "cityName": "Lößnitz",
+      "stationName": "Lößnitz ob Bf",
+      "latitude": 50.62487,
+      "longitude": 12.74877,
+      "population": 10433,
+      "id": 908
+    },
+    {
+      "cityName": "Herxheim am Berg",
+      "stationName": "Herxheim am Berg",
+      "latitude": 49.50949,
+      "longitude": 8.19004,
+      "population": 10424,
+      "id": 909
+    },
+    {
+      "cityName": "Feldkirchen-Westerham",
+      "stationName": "Westerham",
+      "latitude": 47.90389,
+      "longitude": 11.82848,
+      "population": 10399,
+      "id": 910
+    },
+    {
+      "cityName": "Riedlingen",
+      "stationName": "Riedlingen",
+      "latitude": 48.14959,
+      "longitude": 9.48493,
+      "population": 10394,
+      "id": 911
+    },
+    {
+      "cityName": "Zwiesel",
+      "stationName": "Zwiesel (Bay)",
+      "latitude": 49.02094,
+      "longitude": 13.22638,
+      "population": 10327,
+      "id": 912
+    },
+    {
+      "cityName": "Wunsiedel",
+      "stationName": "Wunsiedel-Holenbrunn",
+      "latitude": 50.05111,
+      "longitude": 12.03393,
+      "population": 10295,
+      "id": 913
+    },
+    {
+      "cityName": "Kyritz",
+      "stationName": "Kyritz",
+      "latitude": 52.94249,
+      "longitude": 12.39095,
+      "population": 10274,
+      "id": 914
+    },
+    {
+      "cityName": "Schlitz",
+      "stationName": "Bad Salzschlirf",
+      "latitude": 50.62694,
+      "longitude": 9.49448,
+      "population": 10258,
+      "id": 915
+    },
+    {
+      "cityName": "Nordkirchen",
+      "stationName": "Lünen Hbf",
+      "latitude": 51.61713,
+      "longitude": 7.52949,
+      "population": 10231,
+      "id": 916
+    },
+    {
+      "cityName": "Höchst im Odenwald",
+      "stationName": "Höchst (Odenw)",
+      "latitude": 49.7945,
+      "longitude": 8.98855,
+      "population": 10209,
+      "id": 917
+    },
+    {
+      "cityName": "Mengen",
+      "stationName": "Mengen",
+      "latitude": 48.0537,
+      "longitude": 9.33655,
+      "population": 10205,
+      "id": 918
+    },
+    {
+      "cityName": "Laubach",
+      "stationName": "Grünberg (Oberhess)",
+      "latitude": 50.59659,
+      "longitude": 8.95993,
+      "population": 10205,
+      "id": 919
+    },
+    {
+      "cityName": "Bad Orb",
+      "stationName": "Bahnhof Wächtersbach",
+      "latitude": 50.25419,
+      "longitude": 9.29577,
+      "population": 10186,
+      "id": 920
+    },
+    {
+      "cityName": "Cadolzburg",
+      "stationName": "Fürth (Bay)Hbf",
+      "latitude": 49.46971,
+      "longitude": 10.98999,
+      "population": 10164,
+      "id": 921
+    },
+    {
+      "cityName": "Oberzent",
+      "stationName": "Beerfelden Hetzbach",
+      "latitude": 49.5949,
+      "longitude": 8.99286,
+      "population": 10153,
+      "id": 922
+    },
+    {
+      "cityName": "Doberlug-Kirchhain",
+      "stationName": "Bahnhof Doberlug-Kirchhain",
+      "latitude": 51.62096,
+      "longitude": 13.56423,
+      "population": 10151,
+      "id": 923
+    },
+    {
+      "cityName": "Büdelsdorf",
+      "stationName": "Rendsburg",
+      "latitude": 54.30226,
+      "longitude": 9.67113,
+      "population": 10144,
+      "id": 924
+    },
+    {
+      "cityName": "Premnitz",
+      "stationName": "Döberitz",
+      "latitude": 52.52427,
+      "longitude": 12.36788,
+      "population": 10105,
+      "id": 925
+    },
+    {
+      "cityName": "Ottendorf-Okrilla",
+      "stationName": "Ottendorf-Okrilla Hp",
+      "latitude": 51.18679,
+      "longitude": 13.83628,
+      "population": 10093,
+      "id": 926
+    },
+    {
+      "cityName": "Zeuthen",
+      "stationName": "Zeuthen",
+      "latitude": 52.34894,
+      "longitude": 13.62717,
+      "population": 10084,
+      "id": 927
+    },
+    {
+      "cityName": "Aulendorf",
+      "stationName": "Aulendorf",
+      "latitude": 47.95305,
+      "longitude": 9.64405,
+      "population": 10063,
+      "id": 928
+    },
+    {
+      "cityName": "Roßtal",
+      "stationName": "Roßtal Wegbrücke",
+      "latitude": 49.39478,
+      "longitude": 10.88541,
+      "population": 10052,
+      "id": 929
+    },
+    {
+      "cityName": "Dießen am Ammersee",
+      "stationName": "Dießen",
+      "latitude": 47.95082,
+      "longitude": 11.10754,
+      "population": 10050,
+      "id": 930
+    },
+    {
+      "cityName": "Ainring",
+      "stationName": "Ainring",
+      "latitude": 47.81503,
+      "longitude": 12.9645,
+      "population": 10028,
+      "id": 931
+    },
+    {
+      "cityName": "Eisenberg",
+      "stationName": "Eisenberg (Pfalz)",
+      "latitude": 49.55448,
+      "longitude": 8.07058,
+      "population": 10006,
+      "id": 932
+    },
+    {
+      "cityName": "Herrsching am Ammersee",
+      "stationName": "Herrsching",
+      "latitude": 47.99885,
+      "longitude": 11.17057,
+      "population": 10000,
+      "id": 933
+    }
+  ]
+}

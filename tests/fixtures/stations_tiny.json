@@ -1,0 +1,36 @@
+{
+  "stations": [
+    {
+      "id": 2,
+      "cityName": "TinyTown",
+      "stationName": "TinyTown Bf",
+      "latitude": 49.2,
+      "longitude": 7.4,
+      "population": 12000
+    },
+    {
+      "id": 0,
+      "cityName": "Berlin",
+      "stationName": "Berlin Hbf",
+      "latitude": 52.525,
+      "longitude": 13.369,
+      "population": 3600000
+    },
+    {
+      "id": 1,
+      "cityName": "Hamburg",
+      "stationName": "Hamburg Hbf",
+      "latitude": 53.553,
+      "longitude": 10.007,
+      "population": 1800000
+    },
+    {
+      "id": 3,
+      "cityName": "TooSmall",
+      "stationName": "TooSmall",
+      "latitude": 50.0,
+      "longitude": 8.0,
+      "population": 5000
+    }
+  ]
+}

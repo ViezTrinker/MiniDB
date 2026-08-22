@@ -1,0 +1,15 @@
+build/
+out/
+cmake_test_discovery_*.json
+.vs/
+.idea/
+cmake-build-*/
+CMakeUserPresets.json
+*.user
+*.suo
+*.sdf
+*.opensdf
+.cache/
+__pycache__/
+*.pyc
+tools/_download_cache/

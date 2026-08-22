@@ -1,0 +1,307 @@
+/*!
+ *\file world.h
+ *\brief Real-time simulation facade for stations, lines, trains and passengers.
+ */
+
+#ifndef WORLD_H
+#define WORLD_H
+
+#include <cstdint>
+#include <random>
+#include <string_view>
+
+#include "core/constants.h"
+#include "core/result.h"
+#include "core/types.h"
+#include "simulation/network.h"
+#include "simulation/passenger.h"
+#include "simulation/train.h"
+
+namespace MiniDb
+{
+   enum class PassengerAutoSpawn : bool
+   {
+      No = false,
+      Yes = true
+   };
+
+   class World
+   {
+   public:
+      /*!
+       *\brief Creates an empty world.
+       *
+       *\param[in] randomSeed Seed for passenger origin and destination sampling.
+       */
+      explicit World(uint32_t randomSeed);
+
+      /*!
+       *\brief Loads the city catalog from a JSON file.
+       *
+       *\param[in] filePath Path to stations.json.
+       */
+      Result LoadCatalogFromFile(std::string_view filePath);
+
+      /*!
+       *\brief Loads the city catalog from a JSON string.
+       *
+       *\param[in] jsonText Catalog JSON.
+       */
+      Result LoadCatalogFromString(std::string_view jsonText);
+
+      /*!
+       *\brief Clears lines, trains and passengers while keeping the catalog.
+       */
+      void ResetSimulation(void);
+
+      /*!
+       *\brief Caps how many catalog cities become playable stations.
+       *
+       *\param[in] maxStationCount Maximum active stations, or UnlimitedStationCount.
+       */
+      void SetMaxStationCount(uint32_t maxStationCount);
+
+      /*!
+       *\brief Spawns the first cities from the catalog.
+       */
+      Result SpawnInitialStations(void);
+
+      /*!
+       *\brief Spawns the next catalog city if any remain under the station cap.
+       */
+      Result SpawnNextStation(void);
+
+      /*!
+       *\brief Enables or disables automatic passenger spawning.
+       *
+       *\param[in] autoSpawn Whether passengers appear over time.
+       */
+      void SetPassengerAutoSpawn(PassengerAutoSpawn autoSpawn);
+
+      /*!
+       *\brief Sets train capacity used when boarding.
+       *
+       *\param[in] capacity Maximum passengers per train.
+       */
+      void SetTrainCapacity(uint32_t capacity);
+
+      /*!
+       *\brief Advances the simulation.
+       *
+       *\param[in] deltaSeconds Elapsed simulation time.
+       */
+      void Tick(float deltaSeconds);
+
+      /*!
+       *\brief Creates a finished line and identifiers it.
+       *
+       *\param[in] stationIds Ordered stations on the line.
+       *\param[out] lineId New line identifier.
+       */
+      Result AddLine(const StationIdList& stationIds, LineId& lineId);
+
+      /*!
+       *\brief Appends a station to an existing line.
+       *
+       *\param[in] lineId Line to extend.
+       *\param[in] stationId Station to append.
+       */
+      Result ExtendLine(LineId lineId, StationId stationId);
+
+      /*!
+       *\brief Inserts a station into a line between the two ends of a segment.
+       *
+       *\param[in] lineId Line to change.
+       *\param[in] segmentIndex Segment that receives the station.
+       *\param[in] stationId Station to insert.
+       */
+      Result InsertStationOnLine(LineId lineId, uint32_t segmentIndex, StationId stationId);
+
+      /*!
+       *\brief Deletes a line, its trains, and repaths affected passengers.
+       *
+       *\param[in] lineId Line to delete.
+       */
+      Result RemoveLine(LineId lineId);
+
+      /*!
+       *\brief Adds a shuttle train at the start of a line.
+       *
+       *\param[in] lineId Line that receives the train.
+       */
+      Result AddTrainToLine(LineId lineId);
+
+      /*!
+       *\brief Adds a train on the nearest segment to a drop point.
+       *
+       *\param[in] lineId Line that receives the train.
+       *\param[in] dropPoint Map location where the train was released.
+       */
+      Result AddTrainToLineAt(LineId lineId, MapPoint dropPoint);
+
+      /*!
+       *\brief Spawns one passenger with a chosen origin and destination.
+       *
+       *\param[in] originId Start station.
+       *\param[in] destinationId Target station.
+       */
+      Result SpawnPassenger(StationId originId, StationId destinationId);
+
+      /*!
+       *\brief Returns the closest station within radius, or InvalidStationId.
+       *
+       *\param[in] point Map location in kilometres.
+       *\param[in] radiusKm Hit radius.
+       */
+      StationId HitTestStation(MapPoint point, float radiusKm) const;
+
+      /*!
+       *\brief Returns the closest train within radius, or InvalidTrainId.
+       *
+       *\param[in] point Map location in kilometres.
+       *\param[in] radiusKm Hit radius.
+       */
+      TrainId HitTestTrain(MapPoint point, float radiusKm) const;
+
+      /*!
+       *\brief Returns the closest line within radius, or InvalidLineId.
+       *
+       *\param[in] point Map location in kilometres.
+       *\param[in] radiusKm Maximum distance to a line segment.
+       */
+      LineId FindNearestLine(MapPoint point, float radiusKm) const;
+
+      /*!
+       *\brief Closest line segment within radius, or an invalid hit.
+       *
+       *\param[in] point Map location in kilometres.
+       *\param[in] radiusKm Maximum distance to a line segment.
+       */
+      LineSegmentHit FindNearestLineSegment(MapPoint point, float radiusKm) const;
+
+      /*!
+       *\brief Closest segment of one line, with no radius limit.
+       *
+       *\param[in] lineId Line to search.
+       *\param[in] point Map location in kilometres.
+       */
+      LineSegmentHit FindNearestSegmentOnLine(LineId lineId, MapPoint point) const;
+
+      /*!
+       *\brief Stations that are not yet on any line.
+       *
+       *\param[out] stationIds Unconnected station identifiers.
+       */
+      Result CollectUnconnectedStations(StationIdList& stationIds) const;
+
+      /*!
+       *\brief Number of passengers waiting at a station.
+       *
+       *\param[in] stationId Station to inspect.
+       */
+      uint32_t GetWaitingCountAt(StationId stationId) const;
+
+      /*!
+       *\brief Groups waiting passengers at a station by destination, largest first.
+       *
+       *\param[in] stationId Station whose platform demand is listed.
+       *\param[out] demand Destination counts for waiting passengers.
+       */
+      Result CollectWaitingDemand(StationId stationId, DestinationDemandList& demand) const;
+
+      /*!
+       *\brief Groups onboard passengers by destination and first transfer.
+       *
+       *\param[in] trainId Train to inspect.
+       *\param[out] demand Destination counts and transfer stations.
+       */
+      Result CollectOnboardDemand(TrainId trainId, OnboardDemandList& demand) const;
+
+      /*!
+       *\brief Finds a train by id.
+       *
+       *\param[in] trainId Train identifier.
+       */
+      const Train* FindTrain(TrainId trainId) const;
+
+      const Network& GetNetwork(void) const;
+      const TrainList& GetTrains(void) const;
+      const PassengerList& GetPassengers(void) const;
+      uint32_t GetArrivedPassengerCount(void) const;
+      uint32_t GetWaitingPassengerCount(void) const;
+      uint32_t GetOnboardPassengerCount(void) const;
+      float GetSimulationTimeSeconds(void) const;
+      uint32_t GetCatalogStationCount(void) const;
+
+      /*!
+       *\brief Configured station cap, or UnlimitedStationCount.
+       */
+      uint32_t GetMaxStationCount(void) const;
+
+      /*!
+       *\brief How many stations can actually appear (min of cap and catalog size).
+       */
+      uint32_t GetStationCap(void) const;
+
+      uint32_t GetTrainCapacity(void) const;
+
+   private:
+      void UnloadTrainPassengers(Train& train);
+      void RemoveTrainsOnLine(LineId lineId);
+
+      /*!
+       *\brief Fills expected platform waits from cycle time and train counts.
+       *
+       *\param[out] lineWaits One entry per finished line.
+       */
+      void CollectLineWaits(LineWaitList& lineWaits) const;
+
+      /*!
+       *\brief Marks routes stale and recomputes them.
+       */
+      void NotePathChanged(void);
+
+      void RepathAllPassengers(void);
+      void AdjustTrainsAfterInsert(LineId lineId, uint32_t insertIndex);
+      void ClampTrainToCurrentSegment(Train& train);
+      LineSegmentHit FindNearestSegmentOnLineInternal(const Line& line, MapPoint point) const;
+      void MaybeSpawnStations(float deltaSeconds);
+      void MaybeSpawnPassengers(float deltaSeconds);
+      Result SpawnRandomPassenger(void);
+      void UpdateTrains(float deltaSeconds);
+      void AlightAndBoard(Train& train);
+      void HandleOnboardArrival(Passenger& passenger, Train& train, StationId stationId, StationId nextStationId);
+      void CompletePassenger(Passenger& passenger, Train& train);
+
+      /*!
+       *\brief Rebuilds the passenger route when the path revision changed.
+       *
+       *\param[in,out] passenger Passenger to update.
+       *\param[in] lineWaits Expected wait per line.
+       */
+      void MaybeRepath(Passenger& passenger, const LineWaitList& lineWaits);
+      Passenger* FindMutablePassenger(PassengerId passengerId);
+      void RemovePassengerById(PassengerId passengerId);
+      void RemovePassengerIdFromList(PassengerIdList& passengerIds, PassengerId passengerId);
+
+      StationRecordList _catalog;
+      uint32_t _nextCatalogIndex = 0;
+      uint32_t _maxStationCount = DefaultMaxStationCount;
+      Network _network;
+      TrainList _trains;
+      PassengerList _passengers;
+      TrainId _nextTrainId = 1;
+      PassengerId _nextPassengerId = 1;
+      uint32_t _arrivedPassengerCount = 0;
+      uint32_t _trainCapacity = 0;
+      uint64_t _pathRevision = 0;
+      float _simulationTimeSeconds = 0.0f;
+      float _timeUntilNextStationSeconds = 0.0f;
+      float _passengerSpawnAccumulator = 0.0f;
+      PassengerAutoSpawn _passengerAutoSpawn = PassengerAutoSpawn::Yes;
+      std::mt19937 _generator;
+      std::uniform_real_distribution<float> _unitDistribution;
+   };
+} // namespace MiniDb
+
+#endif // WORLD_H

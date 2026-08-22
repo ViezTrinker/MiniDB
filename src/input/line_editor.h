@@ -1,0 +1,81 @@
+/*!
+ *\file line_editor.h
+ *\brief Mouse-driven line drafting and extension.
+ */
+
+#ifndef LINE_EDITOR_H
+#define LINE_EDITOR_H
+
+#include "core/result.h"
+#include "core/types.h"
+#include "simulation/world.h"
+
+namespace MiniDb
+{
+   class LineEditor
+   {
+   public:
+      /*!
+       *\brief Handles a left click on a station.
+       *
+       *\param[in,out] world Simulation to mutate.
+       *\param[in] stationId Clicked station.
+       */
+      Result OnStationClicked(World& world, StationId stationId);
+
+      /*!
+       *\brief Finishes the current draft as a new or extended line.
+       *
+       *\param[in,out] world Simulation to mutate.
+       */
+      Result Confirm(World& world);
+
+      /*!
+       *\brief Cancels the current draft.
+       */
+      Result Cancel(void);
+
+      /*!
+       *\brief Clears draft and selection state.
+       */
+      void Reset(void);
+
+      /*!
+       *\brief Adds another train to the last selected line.
+       *
+       *\param[in,out] world Simulation to mutate.
+       */
+      Result AddTrainToSelectedLine(World& world);
+
+      /*!
+       *\brief Marks a finished line as selected.
+       *
+       *\param[in] lineId Line to select, or InvalidLineId.
+       */
+      void SelectLine(LineId lineId);
+
+      /*!
+       *\brief Deletes the selected finished line.
+       *
+       *\param[in,out] world Simulation to mutate.
+       */
+      Result DeleteSelectedLine(World& world);
+
+      /*!
+       *\brief Returns true while a line is being drafted.
+       */
+      bool IsDrafting(void) const;
+
+      const StationIdList& GetDraftStationIds(void) const;
+      LineId GetSelectedLineId(void) const;
+
+   private:
+      bool IsTerminalOfLine(const World& world, LineId lineId, StationId stationId) const;
+
+      StationIdList _draftStationIds;
+      LineId _extendLineId = InvalidLineId;
+      LineId _selectedLineId = InvalidLineId;
+   };
+} // namespace MiniDb
+
+#endif // LINE_EDITOR_H
