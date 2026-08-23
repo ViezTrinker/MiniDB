@@ -991,3 +991,45 @@ TEST(WorldTest, WaitingCountTracksTransferAndArrival)
    EXPECT_EQ(world.GetWaitingCountAt(4), 0u);
    EXPECT_EQ(world.GetWaitingCountAt(5), 0u);
 }
+
+TEST(WorldTest, WaitingCountMatchesSidebarDemandAfterTransfer)
+{
+   MiniDb::World world(17);
+   world.SetPassengerAutoSpawn(MiniDb::PassengerAutoSpawn::No);
+   ASSERT_TRUE(MiniDb::IsOk(world.LoadCatalogFromString(CatalogJson)));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+
+   MiniDb::StationIdList firstLine;
+   firstLine.push_back(3);
+   firstLine.push_back(4);
+   MiniDb::LineId firstLineId = MiniDb::InvalidLineId;
+   ASSERT_TRUE(MiniDb::IsOk(world.AddLine(firstLine, firstLineId)));
+
+   MiniDb::StationIdList secondLine;
+   secondLine.push_back(4);
+   secondLine.push_back(5);
+   MiniDb::LineId secondLineId = MiniDb::InvalidLineId;
+   ASSERT_TRUE(MiniDb::IsOk(world.AddLine(secondLine, secondLineId)));
+
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnPassenger(3, 5)));
+   for (uint32_t step = 0; step < 600; ++step)
+   {
+      world.Tick(0.05f);
+   }
+
+   MiniDb::DestinationDemandList demand;
+   ASSERT_TRUE(MiniDb::IsOk(world.CollectWaitingDemand(4, demand)));
+
+   uint32_t demandTotal = 0;
+   for (const MiniDb::DestinationDemand& entry : demand)
+   {
+      demandTotal += entry.waitingCount;
+   }
+
+   EXPECT_EQ(world.GetWaitingCountAt(4), demandTotal);
+}

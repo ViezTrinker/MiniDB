@@ -369,8 +369,6 @@ namespace MiniDb
       void RemovePassengerIdFromList(PassengerIdList& passengerIds, PassengerId passengerId);
 
       void EnsureWaitingCacheSize(void);
-      void IncrementWaitingCount(StationId stationId);
-      void DecrementWaitingCount(StationId stationId);
       void AddPassengerToWaitingQueue(Passenger& passenger);
       void RemovePassengerFromWaitingQueue(PassengerId passengerId, StationId stationId);
       void RebuildWaitingCaches(void);

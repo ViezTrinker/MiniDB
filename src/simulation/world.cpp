@@ -430,7 +430,6 @@ namespace MiniDb
          if (dropStationId != InvalidStationId)
          {
             pPassenger->currentStationId = dropStationId;
-            IncrementWaitingCount(dropStationId);
             AddPassengerToWaitingQueue(*pPassenger);
          }
       }
@@ -469,32 +468,6 @@ namespace MiniDb
       }
    }
 
-   void World::IncrementWaitingCount(StationId stationId)
-   {
-      const uint32_t stationIndex = _network.GetStationVectorIndex(stationId);
-      if (stationIndex == InvalidIndex)
-      {
-         return;
-      }
-
-      EnsureWaitingCacheSize();
-      ++_waitingCountByStationIndex[stationIndex];
-   }
-
-   void World::DecrementWaitingCount(StationId stationId)
-   {
-      const uint32_t stationIndex = _network.GetStationVectorIndex(stationId);
-      if (stationIndex == InvalidIndex || stationIndex >= _waitingCountByStationIndex.size())
-      {
-         return;
-      }
-
-      if (_waitingCountByStationIndex[stationIndex] > 0)
-      {
-         --_waitingCountByStationIndex[stationIndex];
-      }
-   }
-
    void World::AddPassengerToWaitingQueue(Passenger& passenger)
    {
       const uint32_t stationIndex = _network.GetStationVectorIndex(passenger.currentStationId);
@@ -505,6 +478,14 @@ namespace MiniDb
 
       EnsureWaitingCacheSize();
       WaitingPassengerQueue& queue = _waitingPassengersByStationIndex[stationIndex];
+      for (PassengerId queuedPassengerId : queue)
+      {
+         if (queuedPassengerId == passenger.id)
+         {
+            return;
+         }
+      }
+
       uint32_t insertIndex = static_cast<uint32_t>(queue.size());
       for (uint32_t index = 0; index < queue.size(); ++index)
       {
@@ -521,6 +502,7 @@ namespace MiniDb
       }
 
       queue.insert(queue.begin() + static_cast<int32_t>(insertIndex), passenger.id);
+      ++_waitingCountByStationIndex[stationIndex];
    }
 
    void World::RemovePassengerFromWaitingQueue(PassengerId passengerId, StationId stationId)
@@ -540,6 +522,10 @@ namespace MiniDb
          }
 
          queue.erase(queue.begin() + static_cast<int32_t>(index));
+         if (stationIndex < _waitingCountByStationIndex.size() && _waitingCountByStationIndex[stationIndex] > 0)
+         {
+            --_waitingCountByStationIndex[stationIndex];
+         }
          return;
       }
    }
@@ -557,7 +543,6 @@ namespace MiniDb
             continue;
          }
 
-         IncrementWaitingCount(passenger.currentStationId);
          AddPassengerToWaitingQueue(passenger);
       }
    }
@@ -673,7 +658,6 @@ namespace MiniDb
 
       if (passenger.state == PassengerState::Waiting)
       {
-         IncrementWaitingCount(passenger.currentStationId);
          AddPassengerToWaitingQueue(passenger);
          TryBoardDwellingTrainsAt(passenger.currentStationId);
       }
@@ -1437,6 +1421,12 @@ namespace MiniDb
             continue;
          }
 
+         if (pPassenger->state == PassengerState::Waiting)
+         {
+            RemovePassengerIdFromList(train.passengerIds, passengerId);
+            continue;
+         }
+
          HandleOnboardArrival(*pPassenger, train, stationId, nextStationId);
       }
 
@@ -1492,7 +1482,6 @@ namespace MiniDb
          }
 
          RemovePassengerFromWaitingQueue(pBest->id, stationId);
-         DecrementWaitingCount(stationId);
          pBest->state = PassengerState::Onboard;
          pBest->trainId = train.id;
          pBest->route[pBest->routeHopIndex].lineId = train.lineId;
@@ -1506,6 +1495,12 @@ namespace MiniDb
       StationId stationId,
       StationId nextStationId)
    {
+      if (passenger.state == PassengerState::Waiting)
+      {
+         RemovePassengerIdFromList(train.passengerIds, passenger.id);
+         return;
+      }
+
       if (passenger.destinationId == stationId)
       {
          CompletePassenger(passenger, train);
@@ -1532,7 +1527,6 @@ namespace MiniDb
          passenger.currentStationId = stationId;
          passenger.platformArrivalTimeSeconds = _simulationTimeSeconds;
          RemovePassengerIdFromList(train.passengerIds, passenger.id);
-         IncrementWaitingCount(stationId);
          AddPassengerToWaitingQueue(passenger);
          TryBoardDwellingTrainsAt(stationId);
       }
@@ -1616,7 +1610,6 @@ namespace MiniDb
       if (_passengers[slot].state == PassengerState::Waiting)
       {
          RemovePassengerFromWaitingQueue(passengerId, _passengers[slot].currentStationId);
-         DecrementWaitingCount(_passengers[slot].currentStationId);
       }
 
       const PassengerId movedPassengerId = _passengers.back().id;
