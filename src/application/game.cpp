@@ -592,22 +592,34 @@ namespace MiniDb
       }
       if (keyPressed.code == sf::Keyboard::Key::Num1)
       {
-         _timeScale = TimeScaleSlow;
+         if (!keyPressed.alt)
+         {
+            _timeScale = TimeScaleSlow;
+         }
          return;
       }
       if (keyPressed.code == sf::Keyboard::Key::Num2)
       {
-         _timeScale = TimeScaleMedium;
+         if (!keyPressed.alt)
+         {
+            _timeScale = TimeScaleMedium;
+         }
          return;
       }
       if (keyPressed.code == sf::Keyboard::Key::Num4)
       {
-         _timeScale = TimeScaleFast;
+         if (!keyPressed.alt)
+         {
+            _timeScale = TimeScaleFast;
+         }
          return;
       }
       if (keyPressed.code == sf::Keyboard::Key::Num8)
       {
-         _timeScale = TimeScaleVeryFast;
+         if (!keyPressed.alt)
+         {
+            _timeScale = TimeScaleVeryFast;
+         }
          return;
       }
       if (keyPressed.code == sf::Keyboard::Key::Equal ||
@@ -622,26 +634,26 @@ namespace MiniDb
          _renderer.ZoomAt(_renderer.MapViewCenterPixel(), KeyboardZoomOutFactor);
          return;
       }
-      if (keyPressed.code == sf::Keyboard::Key::LBracket)
-      {
-         AdjustStationCap(StationLimitStep::Decrease);
-         return;
-      }
-      if (keyPressed.code == sf::Keyboard::Key::RBracket)
-      {
-         AdjustStationCap(StationLimitStep::Increase);
-         return;
-      }
    }
 
    void Game::HandleTextEntered(const sf::Event::TextEntered& textEntered)
    {
-      if (_appScreen != AppScreen::Menu)
+      if (_appScreen == AppScreen::Menu)
       {
+         _mainMenu.HandleTextEntered(textEntered.unicode);
          return;
       }
 
-      _mainMenu.HandleTextEntered(textEntered.unicode);
+      if (textEntered.unicode == U'[')
+      {
+         AdjustStationCap(StationLimitStep::Decrease);
+         return;
+      }
+      if (textEntered.unicode == U']')
+      {
+         AdjustStationCap(StationLimitStep::Increase);
+         return;
+      }
    }
 
    void Game::HandleMousePressed(const sf::Event::MouseButtonPressed& mousePressed)

@@ -539,7 +539,7 @@ namespace MiniDb
       _pWindow->clear(sf::Color(236, 230, 218));
       _pWindow->setView(_mapView);
       DrawOutline();
-      _pWindow->setView(_pWindow->getDefaultView());
+      ApplyDefaultView();
 
       const auto windowWidth = static_cast<float>(_pWindow->getSize().x);
       const auto windowHeight = static_cast<float>(_pWindow->getSize().y);
