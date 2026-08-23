@@ -34,6 +34,11 @@ namespace MiniDb
    inline constexpr float GravityAlpha = 1.0f;
    inline constexpr float GravityGamma = 1.6f;
    inline constexpr float GravityDistanceOffsetKm = 20.0f;
+   inline constexpr float EventCheckIntervalSeconds = 90.0f;
+   inline constexpr float EventDurationSeconds = 60.0f;
+   inline constexpr float EventStationFraction = 0.05f;
+   inline constexpr float EventDestinationWeightMultiplier = 10.0f;
+   inline constexpr uint32_t EventStationMaxRows = 10;
    inline constexpr uint32_t MinimumLineStations = 2;
    inline constexpr uint32_t MinimumLoopStations = 3;
    inline constexpr uint32_t LineColorCount = 8;

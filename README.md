@@ -23,7 +23,7 @@ ctest --test-dir build -C Release --output-on-failure
 
 The game executable is `build/bin/Release/MiniDB.exe` on Windows (or `build/bin/MiniDB` on single-config generators). `data/` is copied next to the executable.
 
-The game opens on a start menu. The default station cap is 100 (enough for performance). Click the number field to type a count (minimum 2), or use `<` / `>` (and the arrow keys) to change it in steps of 50. If the cap is below 6, the game starts with that many stations instead of the usual first six. Escape during play returns to the menu; Resume continues the current game.
+The game opens on a start menu. Open **Settings** to choose the station cap (default 100), optional random city pool, random spawn order, and destination events. Click the number field to type a count (minimum 2), or use `<` / `>` (and the arrow keys) in steps of 50. Settings apply when you press **Start**. Escape during play returns to the menu; Resume continues the current game.
 
 ## Controls
 
@@ -31,7 +31,7 @@ The game opens on a start menu. The default station cap is 100 (enough for perfo
 - Click a train to inspect onboard passengers, destinations and transfers in that panel
 - Click a line to inspect its trains, occupancy, and destinations by passenger count
 - Click the first station of a draft again to close a loop (`A, B, C, A`)
-- Click empty map to return to the overview panel (top waiting destinations and ten busiest stations)
+- Click empty map to return to the overview panel (top waiting destinations, busiest stations, and active events)
 - Enter or right-click to finish a line (one train is added automatically)
 - Select a line, then drag a terminus anchor (small handle past each end) onto a station to extend at the front or back
 - Drag a line onto a station to insert it between the two segment ends
@@ -44,14 +44,12 @@ The game opens on a start menu. The default station cap is 100 (enough for perfo
 - Mouse wheel zooms (station markers stay a constant pixel size), middle-mouse drag pans
 - Arrow keys pan the map; `+` / `-` (and numpad) zoom in and out
 - Space pauses, `1` / `2` / `4` / `8` set simulation speed (default is 1x)
-- `[` / `]` lower or raise the station cap by 50 (cannot go below stations already on the map)
-- Or open Menu, change the station count, and Resume — new cities keep spawning over time
 - F11 toggles fullscreen
 - Esc cancels a draft, or returns to the start menu
 
 ## Passenger destinations
 
-There is no public nationwide DB origin-destination matrix. Destinations are sampled from a gravity model using city population and map distance, so Berlin is a frequent target and a 12,000-inhabitant town is not. See [data/DATA_SOURCES.md](data/DATA_SOURCES.md).
+There is no public nationwide DB origin-destination matrix. Destinations are sampled from a gravity model using city population and map distance, so Berlin is a frequent target and a 12,000-inhabitant town is not. With **Events** enabled in Settings, a small share of active cities temporarily get a 10× destination weight (shown under Events in the overview sidebar). See [data/DATA_SOURCES.md](data/DATA_SOURCES.md).
 
 ## Routing and boarding
 

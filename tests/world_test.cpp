@@ -1033,3 +1033,112 @@ TEST(WorldTest, WaitingCountMatchesSidebarDemandAfterTransfer)
 
    EXPECT_EQ(world.GetWaitingCountAt(4), demandTotal);
 }
+
+TEST(WorldTest, RandomPoolDiffersFromLargestCities)
+{
+   MiniDb::World defaultPool(99);
+   defaultPool.SetPassengerAutoSpawn(MiniDb::PassengerAutoSpawn::No);
+   ASSERT_TRUE(MiniDb::IsOk(defaultPool.LoadCatalogFromString(CatalogJson)));
+   defaultPool.SetMaxStationCount(3);
+   defaultPool.ConfigureNewGame(
+      MiniDb::RandomPool::No,
+      MiniDb::RandomOrder::No,
+      MiniDb::EventsEnabled::No);
+   ASSERT_TRUE(MiniDb::IsOk(defaultPool.SpawnInitialStations()));
+
+   MiniDb::World randomPool(99);
+   randomPool.SetPassengerAutoSpawn(MiniDb::PassengerAutoSpawn::No);
+   ASSERT_TRUE(MiniDb::IsOk(randomPool.LoadCatalogFromString(CatalogJson)));
+   randomPool.SetMaxStationCount(3);
+   randomPool.ConfigureNewGame(
+      MiniDb::RandomPool::Yes,
+      MiniDb::RandomOrder::No,
+      MiniDb::EventsEnabled::No);
+   ASSERT_TRUE(MiniDb::IsOk(randomPool.SpawnInitialStations()));
+
+   ASSERT_EQ(defaultPool.GetNetwork().GetStations().size(), 3u);
+   ASSERT_EQ(randomPool.GetNetwork().GetStations().size(), 3u);
+
+   bool setsDiffer = false;
+   for (const MiniDb::StationRecord& randomStation : randomPool.GetNetwork().GetStations())
+   {
+      bool foundInDefault = false;
+      for (const MiniDb::StationRecord& defaultStation : defaultPool.GetNetwork().GetStations())
+      {
+         if (defaultStation.id == randomStation.id)
+         {
+            foundInDefault = true;
+            break;
+         }
+      }
+      if (!foundInDefault)
+      {
+         setsDiffer = true;
+         break;
+      }
+   }
+
+   EXPECT_TRUE(setsDiffer);
+}
+
+TEST(WorldTest, RandomOrderChangesInitialSpawnSequence)
+{
+   MiniDb::World sequential(11);
+   sequential.SetPassengerAutoSpawn(MiniDb::PassengerAutoSpawn::No);
+   ASSERT_TRUE(MiniDb::IsOk(sequential.LoadCatalogFromString(CatalogJson)));
+   sequential.SetMaxStationCount(6);
+   sequential.ConfigureNewGame(
+      MiniDb::RandomPool::No,
+      MiniDb::RandomOrder::No,
+      MiniDb::EventsEnabled::No);
+   ASSERT_TRUE(MiniDb::IsOk(sequential.SpawnInitialStations()));
+
+   MiniDb::World shuffled(11);
+   shuffled.SetPassengerAutoSpawn(MiniDb::PassengerAutoSpawn::No);
+   ASSERT_TRUE(MiniDb::IsOk(shuffled.LoadCatalogFromString(CatalogJson)));
+   shuffled.SetMaxStationCount(6);
+   shuffled.ConfigureNewGame(
+      MiniDb::RandomPool::No,
+      MiniDb::RandomOrder::Yes,
+      MiniDb::EventsEnabled::No);
+   ASSERT_TRUE(MiniDb::IsOk(shuffled.SpawnInitialStations()));
+
+   ASSERT_EQ(sequential.GetNetwork().GetStations().size(), shuffled.GetNetwork().GetStations().size());
+   bool sequenceDiffers = false;
+   for (uint32_t index = 0; index < sequential.GetNetwork().GetStations().size(); ++index)
+   {
+      if (sequential.GetNetwork().GetStations()[index].id != shuffled.GetNetwork().GetStations()[index].id)
+      {
+         sequenceDiffers = true;
+         break;
+      }
+   }
+
+   EXPECT_TRUE(sequenceDiffers);
+}
+
+TEST(WorldTest, EventsBoostDestinationAndExpire)
+{
+   MiniDb::World world(21);
+   world.SetPassengerAutoSpawn(MiniDb::PassengerAutoSpawn::No);
+   ASSERT_TRUE(MiniDb::IsOk(world.LoadCatalogFromString(CatalogJson)));
+   world.SetMaxStationCount(6);
+   world.ConfigureNewGame(
+      MiniDb::RandomPool::No,
+      MiniDb::RandomOrder::No,
+      MiniDb::EventsEnabled::Yes);
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnInitialStations()));
+
+   MiniDb::StationEventList events;
+   ASSERT_TRUE(MiniDb::IsOk(world.CollectActiveEvents(events)));
+   ASSERT_FALSE(events.empty());
+   EXPECT_LE(events.size(), 1u);
+
+   const MiniDb::StationId eventStationId = events[0].stationId;
+   world.Tick(MiniDb::EventDurationSeconds + 0.1f);
+   ASSERT_TRUE(MiniDb::IsOk(world.CollectActiveEvents(events)));
+   for (const MiniDb::StationEvent& event : events)
+   {
+      EXPECT_NE(event.stationId, eventStationId);
+   }
+}

@@ -6,6 +6,7 @@
 #include "simulation/world.h"
 
 #include <algorithm>
+#include <cmath>
 
 #include "core/constants.h"
 #include "data/station_catalog.h"
@@ -39,6 +40,33 @@ namespace MiniDb
          }
 
          return left.stationId < right.stationId;
+      }
+
+      bool CompareEventEndTimeAscending(const StationEvent& left, const StationEvent& right)
+      {
+         if (left.endTimeSeconds != right.endTimeSeconds)
+         {
+            return left.endTimeSeconds < right.endTimeSeconds;
+         }
+
+         return left.stationId < right.stationId;
+      }
+
+      void ShuffleStationRecords(StationRecordList& records, std::mt19937& generator)
+      {
+         if (records.size() < 2)
+         {
+            return;
+         }
+
+         for (uint32_t index = static_cast<uint32_t>(records.size()) - 1U; index > 0; --index)
+         {
+            std::uniform_int_distribution<uint32_t> distribution(0, index);
+            const uint32_t swapIndex = distribution(generator);
+            StationRecord temporary = records[index];
+            records[index] = records[swapIndex];
+            records[swapIndex] = temporary;
+         }
       }
 
       void AddDestinationCount(DestinationDemandList& demand, StationId destinationId)
@@ -150,7 +178,8 @@ namespace MiniDb
       _network.Clear();
       _trains.clear();
       _passengers.clear();
-      _nextCatalogIndex = 0;
+      _spawnQueue.clear();
+      _nextSpawnIndex = 0;
       _nextTrainId = 1;
       _nextPassengerId = 1;
       _arrivedPassengerCount = 0;
@@ -162,9 +191,61 @@ namespace MiniDb
       _trainCountByLineId.clear();
       _passengerSlotById.clear();
       _gravityWeightsByOriginIndex.clear();
+      _activeEvents.clear();
+      _eventCheckAccumulatorSeconds = 0.0f;
+      _randomPool = RandomPool::No;
+      _randomOrder = RandomOrder::No;
+      _eventsEnabled = EventsEnabled::No;
       _simulationTimeSeconds = 0.0f;
       _timeUntilNextStationSeconds = StationSpawnIntervalSeconds;
       _passengerSpawnAccumulator = 0.0f;
+   }
+
+   void World::ConfigureNewGame(RandomPool randomPool, RandomOrder randomOrder, EventsEnabled eventsEnabled)
+   {
+      _randomPool = randomPool;
+      _randomOrder = randomOrder;
+      _eventsEnabled = eventsEnabled;
+      _activeEvents.clear();
+      _eventCheckAccumulatorSeconds = 0.0f;
+      BuildSpawnQueue();
+   }
+
+   void World::BuildSpawnQueue(void)
+   {
+      _spawnQueue.clear();
+      _nextSpawnIndex = 0;
+      if (_catalog.empty())
+      {
+         return;
+      }
+
+      const uint32_t stationCap = GetStationCap();
+      uint32_t queueSize = stationCap;
+      if (queueSize > _catalog.size())
+      {
+         queueSize = static_cast<uint32_t>(_catalog.size());
+      }
+      if (queueSize == 0)
+      {
+         return;
+      }
+
+      if (_randomPool == RandomPool::Yes)
+      {
+         StationRecordList pool = _catalog;
+         ShuffleStationRecords(pool, _generator);
+         _spawnQueue.assign(pool.begin(), pool.begin() + static_cast<std::ptrdiff_t>(queueSize));
+      }
+      else
+      {
+         _spawnQueue.assign(_catalog.begin(), _catalog.begin() + static_cast<std::ptrdiff_t>(queueSize));
+      }
+
+      if (_randomOrder == RandomOrder::Yes)
+      {
+         ShuffleStationRecords(_spawnQueue, _generator);
+      }
    }
 
    void World::SetMaxStationCount(uint32_t maxStationCount)
@@ -198,7 +279,8 @@ namespace MiniDb
          return result;
       }
 
-      _nextCatalogIndex = 0;
+      _nextSpawnIndex = 0;
+      BuildSpawnQueue();
       return Result::Ok;
    }
 
@@ -210,7 +292,8 @@ namespace MiniDb
          return result;
       }
 
-      _nextCatalogIndex = 0;
+      _nextSpawnIndex = 0;
+      BuildSpawnQueue();
       return Result::Ok;
    }
 
@@ -219,6 +302,11 @@ namespace MiniDb
       if (_catalog.empty())
       {
          return Result::Error;
+      }
+
+      if (_spawnQueue.empty())
+      {
+         BuildSpawnQueue();
       }
 
       uint32_t spawned = 0;
@@ -249,7 +337,7 @@ namespace MiniDb
 
    Result World::SpawnNextStation(void)
    {
-      if (_nextCatalogIndex >= _catalog.size())
+      if (_nextSpawnIndex >= _spawnQueue.size())
       {
          return Result::Error;
       }
@@ -260,15 +348,22 @@ namespace MiniDb
          return Result::Error;
       }
 
-      const Result result = _network.AddStation(_catalog[_nextCatalogIndex]);
+      const Result result = _network.AddStation(_spawnQueue[_nextSpawnIndex]);
       if (IsErr(result))
       {
          return result;
       }
 
-      ++_nextCatalogIndex;
+      ++_nextSpawnIndex;
       EnsureWaitingCacheSize();
-      RebuildGravityWeightMatrix();
+      if (_eventsEnabled == EventsEnabled::Yes)
+      {
+         RefreshEventTargets();
+      }
+      else
+      {
+         RebuildGravityWeightMatrix();
+      }
       return Result::Ok;
    }
 
@@ -298,6 +393,7 @@ namespace MiniDb
       _simulationTimeSeconds += clampedDelta;
       MaybeSpawnStations(clampedDelta);
       MaybeSpawnPassengers(clampedDelta);
+      MaybeUpdateEvents(clampedDelta);
       UpdateTrains(clampedDelta);
    }
 
@@ -562,11 +658,155 @@ namespace MiniDb
             stations,
             parameters,
             weights);
-         if (IsOk(result))
+         if (IsErr(result))
          {
-            _gravityWeightsByOriginIndex[originIndex] = weights;
+            continue;
+         }
+
+         for (uint32_t destinationIndex = 0; destinationIndex < stations.size(); ++destinationIndex)
+         {
+            if (IsStationEventActive(stations[destinationIndex].id))
+            {
+               weights[destinationIndex] *= EventDestinationWeightMultiplier;
+            }
+         }
+
+         _gravityWeightsByOriginIndex[originIndex] = weights;
+      }
+   }
+
+   bool World::IsStationEventActive(StationId stationId) const
+   {
+      for (const StationEvent& event : _activeEvents)
+      {
+         if (event.stationId == stationId)
+         {
+            return true;
          }
       }
+
+      return false;
+   }
+
+   uint32_t World::TargetEventStationCount(void) const
+   {
+      const auto activeStationCount = static_cast<uint32_t>(_network.GetStations().size());
+      if (activeStationCount == 0 || _eventsEnabled == EventsEnabled::No)
+      {
+         return 0;
+      }
+
+      const auto fractionCount = static_cast<uint32_t>(
+         std::floor(static_cast<float>(activeStationCount) * EventStationFraction));
+      if (fractionCount < 1)
+      {
+         return 1;
+      }
+
+      return fractionCount;
+   }
+
+   void World::ExpireFinishedEvents(void)
+   {
+      uint32_t index = 0;
+      bool removed = false;
+      while (index < _activeEvents.size())
+      {
+         if (_activeEvents[index].endTimeSeconds > _simulationTimeSeconds)
+         {
+            ++index;
+            continue;
+         }
+
+         _activeEvents[index] = _activeEvents.back();
+         _activeEvents.pop_back();
+         removed = true;
+      }
+
+      if (removed)
+      {
+         RebuildGravityWeightMatrix();
+      }
+   }
+
+   void World::RefreshEventTargets(void)
+   {
+      if (_eventsEnabled == EventsEnabled::No)
+      {
+         _activeEvents.clear();
+         return;
+      }
+
+      const StationRecordList& stations = _network.GetStations();
+      const uint32_t targetCount = TargetEventStationCount();
+      if (targetCount == 0 || stations.empty())
+      {
+         if (!_activeEvents.empty())
+         {
+            _activeEvents.clear();
+            RebuildGravityWeightMatrix();
+         }
+         return;
+      }
+
+      StationIdList candidates;
+      candidates.reserve(stations.size());
+      for (const StationRecord& station : stations)
+      {
+         if (!IsStationEventActive(station.id))
+         {
+            candidates.push_back(station.id);
+         }
+      }
+
+      while (_activeEvents.size() > targetCount)
+      {
+         _activeEvents.pop_back();
+      }
+
+      while (_activeEvents.size() < targetCount && !candidates.empty())
+      {
+         std::uniform_int_distribution<uint32_t> distribution(
+            0,
+            static_cast<uint32_t>(candidates.size()) - 1U);
+         const uint32_t pickIndex = distribution(_generator);
+         StationEvent event;
+         event.stationId = candidates[pickIndex];
+         event.endTimeSeconds = _simulationTimeSeconds + EventDurationSeconds;
+         _activeEvents.push_back(event);
+         candidates[pickIndex] = candidates.back();
+         candidates.pop_back();
+      }
+
+      RebuildGravityWeightMatrix();
+   }
+
+   void World::MaybeUpdateEvents(float deltaSeconds)
+   {
+      if (_eventsEnabled == EventsEnabled::No)
+      {
+         return;
+      }
+
+      ExpireFinishedEvents();
+      _eventCheckAccumulatorSeconds += deltaSeconds;
+      while (_eventCheckAccumulatorSeconds >= EventCheckIntervalSeconds)
+      {
+         _eventCheckAccumulatorSeconds -= EventCheckIntervalSeconds;
+         RefreshEventTargets();
+      }
+   }
+
+   Result World::CollectActiveEvents(StationEventList& events) const
+   {
+      events = _activeEvents;
+      std::sort(events.begin(), events.end(), CompareEventEndTimeAscending);
+      if (events.size() > EventStationMaxRows)
+      {
+         events.resize(EventStationMaxRows);
+      }
+
+      return Result::Ok;
    }
 
    void World::EnsureTrainCountCapacity(LineId lineId)
@@ -1287,13 +1527,13 @@ namespace MiniDb
          return;
       }
 
-      if (_nextCatalogIndex >= _catalog.size())
+      if (_nextSpawnIndex >= _spawnQueue.size())
       {
          return;
       }
 
       _timeUntilNextStationSeconds -= deltaSeconds;
-      while (_timeUntilNextStationSeconds <= 0.0f && _nextCatalogIndex < _catalog.size())
+      while (_timeUntilNextStationSeconds <= 0.0f && _nextSpawnIndex < _spawnQueue.size())
       {
          const Result result = SpawnNextStation();
          if (IsErr(result))

@@ -7,19 +7,35 @@ All of this lives under `src/simulation/` and is owned by `World` (`world.h` / `
 `World::Tick(deltaSeconds)`:
 
 1. Advances `_simulationTimeSeconds`.
-2. Maybe spawns the next catalog city (`StationSpawnIntervalSeconds`, default 5 s), until the station cap or catalog end.
+2. Maybe spawns the next city from the spawn queue (`StationSpawnIntervalSeconds`, default 5 s), until the station cap or queue end.
 3. Maybe spawns passengers (`GlobalPassengerSpawnPerSecond`, default 1.5 / s) if auto-spawn is on.
-4. Moves every train and runs alight/board at stations.
+4. Maybe updates destination events when enabled.
+5. Moves every train and runs alight/board at stations.
 
-`ResetSimulation` clears lines, trains, and passengers but keeps the loaded catalog.
+`ResetSimulation` clears lines, trains, passengers, spawn queue, and events but keeps the loaded catalog.
 
 ## Stations and catalog
 
-The catalog is the full JSON list, sorted by population. Playable stations are a prefix of that list.
+The catalog is the full JSON list, sorted by population. At **Start**, `ConfigureNewGame` builds a spawn queue:
 
-- First `InitialStationCount` (6) cities appear on Start.
+- Default: first `cap` catalog entries (largest cities).
+- **Random pool**: `cap` uniform random catalog entries.
+- **Random order**: shuffle that queue before spawning.
+
+Then:
+
+- First `InitialStationCount` (6) cities appear on Start (or fewer if the cap is lower).
 - Further cities appear over time until `GetStationCap()` (`min(maxStationCount, catalog size)`).
 - `UnlimitedStationCount` means “all catalog cities”.
+
+## Destination events
+
+When Events are enabled at Start:
+
+- About every `EventCheckIntervalSeconds` (90 s), the active event set is refreshed.
+- Target size is `max(1, floor(0.05 * activeStationCount))`.
+- Each event lasts `EventDurationSeconds` (60 s) and multiplies that city’s gravity destination weight by `EventDestinationWeightMultiplier` (10).
+- Sidebar Events section (bottom) lists active event cities via `CollectActiveEvents`.
 
 ## Network
 
@@ -56,7 +72,7 @@ Origins are weighted by city population. Destinations use the gravity / Huff mod
 P(j | i) = pop(j)^α / (distance(i,j) + d0)^γ
 ```
 
-Defaults: `α = 1`, `γ = 1.6`, `d0 = 20 km`. The origin itself has weight 0. There is no real ticket OD matrix; see [data/DATA_SOURCES.md](../data/DATA_SOURCES.md).
+Defaults: `α = 1`, `γ = 1.6`, `d0 = 20 km`. The origin itself has weight 0. Active event destinations multiply that weight by 10. There is no real ticket OD matrix; see [data/DATA_SOURCES.md](../data/DATA_SOURCES.md).
 
 ## Routing
 
@@ -100,3 +116,4 @@ The right-hand inspector reads these `World` helpers:
 - `CollectLineDemand` — passengers currently riding trains on that line, grouped by destination.
 - `CollectGlobalWaitingDemand` — all waiting passengers grouped by destination.
 - `CollectCrowdedStations` — up to ten stations with the most waiting passengers.
+- `CollectActiveEvents` — stations with a temporary destination boost.

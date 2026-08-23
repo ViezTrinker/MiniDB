@@ -1,6 +1,6 @@
 /*!
  *\file main_menu.cpp
- *\brief Start screen for launching a game and choosing the station cap.
+ *\brief Start screen, settings, and new-game options.
  */
 
 #include "application/main_menu.h"
@@ -20,10 +20,14 @@ namespace MiniDb
       constexpr float MenuPanelPaddingBottom = 28.0f;
       constexpr float MenuTitleTop = 24.0f;
       constexpr float MenuSubtitleTop = 78.0f;
-      constexpr float MenuStationsLabelTop = 118.0f;
-      constexpr float MenuStepperTop = 148.0f;
-      constexpr float MenuHintTop = 200.0f;
-      constexpr float MenuFirstButtonTop = 228.0f;
+      constexpr float MenuRootFirstButtonTop = 130.0f;
+      constexpr float MenuSettingsTitleTop = 24.0f;
+      constexpr float MenuStationsLabelTop = 72.0f;
+      constexpr float MenuStepperTop = 102.0f;
+      constexpr float MenuHintTop = 152.0f;
+      constexpr float MenuToggleFirstTop = 184.0f;
+      constexpr float MenuToggleGap = 12.0f;
+      constexpr float MenuBackTopExtra = 16.0f;
       constexpr float MenuButtonWidth = 280.0f;
       constexpr float MenuButtonHeight = 44.0f;
       constexpr float MenuButtonGap = 12.0f;
@@ -31,6 +35,7 @@ namespace MiniDb
       constexpr float MenuValueWidth = 148.0f;
       constexpr float MenuStepperGap = 8.0f;
       constexpr uint32_t MenuStationCountMaxDigits = 5;
+      constexpr uint32_t MenuSettingsToggleCount = 3;
 
       enum class ButtonHover : bool
       {
@@ -134,6 +139,22 @@ namespace MiniDb
          });
          window.draw(text);
       }
+
+      std::string ToggleLabel(std::string_view name, bool enabled)
+      {
+         std::string label(name);
+         label += ": ";
+         if (enabled)
+         {
+            label += "On";
+         }
+         else
+         {
+            label += "Off";
+         }
+
+         return label;
+      }
    } // namespace
 
    MainMenu::MainMenu(void) :
@@ -148,9 +169,9 @@ namespace MiniDb
       _pFont = pFont;
    }
 
-   MainMenu::MenuBounds MainMenu::ComputeBounds(HasActiveGame hasActiveGame) const
+   MainMenu::RootBounds MainMenu::ComputeRootBounds(HasActiveGame hasActiveGame) const
    {
-      MenuBounds bounds;
+      RootBounds bounds;
       if (_pWindow == nullptr)
       {
          return bounds;
@@ -158,16 +179,51 @@ namespace MiniDb
 
       const auto windowWidth = static_cast<float>(_pWindow->getSize().x);
       const auto windowHeight = static_cast<float>(_pWindow->getSize().y);
-      uint32_t actionButtonCount = 2;
+      uint32_t actionButtonCount = 3;
       if (hasActiveGame == HasActiveGame::Yes)
       {
-         actionButtonCount = 3;
+         actionButtonCount = 4;
       }
 
       const float actionBlockHeight =
          (static_cast<float>(actionButtonCount) * MenuButtonHeight) +
          (static_cast<float>(actionButtonCount - 1) * MenuButtonGap);
-      const float panelHeight = MenuFirstButtonTop + actionBlockHeight + MenuPanelPaddingBottom;
+      const float panelHeight = MenuRootFirstButtonTop + actionBlockHeight + MenuPanelPaddingBottom;
+      const float panelLeft = (windowWidth - MenuPanelWidth) * 0.5f;
+      const float panelTop = (windowHeight - panelHeight) * 0.5f;
+      bounds.panel = sf::FloatRect({panelLeft, panelTop}, {MenuPanelWidth, panelHeight});
+
+      const float buttonLeft = panelLeft + ((MenuPanelWidth - MenuButtonWidth) * 0.5f);
+      float actionTop = panelTop + MenuRootFirstButtonTop;
+      bounds.start = sf::FloatRect({buttonLeft, actionTop}, {MenuButtonWidth, MenuButtonHeight});
+      actionTop += MenuButtonHeight + MenuButtonGap;
+      bounds.resume = sf::FloatRect({buttonLeft, actionTop}, {MenuButtonWidth, MenuButtonHeight});
+      if (hasActiveGame == HasActiveGame::Yes)
+      {
+         actionTop += MenuButtonHeight + MenuButtonGap;
+      }
+      bounds.settings = sf::FloatRect({buttonLeft, actionTop}, {MenuButtonWidth, MenuButtonHeight});
+      actionTop += MenuButtonHeight + MenuButtonGap;
+      bounds.quit = sf::FloatRect({buttonLeft, actionTop}, {MenuButtonWidth, MenuButtonHeight});
+      return bounds;
+   }
+
+   MainMenu::SettingsBounds MainMenu::ComputeSettingsBounds(void) const
+   {
+      SettingsBounds bounds;
+      if (_pWindow == nullptr)
+      {
+         return bounds;
+      }
+
+      const auto windowWidth = static_cast<float>(_pWindow->getSize().x);
+      const auto windowHeight = static_cast<float>(_pWindow->getSize().y);
+      const float toggleBlockHeight =
+         (static_cast<float>(MenuSettingsToggleCount) * MenuButtonHeight) +
+         (static_cast<float>(MenuSettingsToggleCount - 1) * MenuToggleGap);
+      const float panelHeight =
+         MenuToggleFirstTop + toggleBlockHeight + MenuBackTopExtra + MenuButtonHeight +
+         MenuPanelPaddingBottom;
       const float panelLeft = (windowWidth - MenuPanelWidth) * 0.5f;
       const float panelTop = (windowHeight - panelHeight) * 0.5f;
       bounds.panel = sf::FloatRect({panelLeft, panelTop}, {MenuPanelWidth, panelHeight});
@@ -184,15 +240,14 @@ namespace MiniDb
          {stepRowLeft + MenuStepSize + MenuStepperGap + MenuValueWidth + MenuStepperGap, stepTop},
          {MenuStepSize, MenuStepSize});
 
-      float actionTop = panelTop + MenuFirstButtonTop;
-      bounds.start = sf::FloatRect({buttonLeft, actionTop}, {MenuButtonWidth, MenuButtonHeight});
-      actionTop += MenuButtonHeight + MenuButtonGap;
-      bounds.resume = sf::FloatRect({buttonLeft, actionTop}, {MenuButtonWidth, MenuButtonHeight});
-      if (hasActiveGame == HasActiveGame::Yes)
-      {
-         actionTop += MenuButtonHeight + MenuButtonGap;
-      }
-      bounds.quit = sf::FloatRect({buttonLeft, actionTop}, {MenuButtonWidth, MenuButtonHeight});
+      float toggleTop = panelTop + MenuToggleFirstTop;
+      bounds.randomPool = sf::FloatRect({buttonLeft, toggleTop}, {MenuButtonWidth, MenuButtonHeight});
+      toggleTop += MenuButtonHeight + MenuToggleGap;
+      bounds.randomOrder = sf::FloatRect({buttonLeft, toggleTop}, {MenuButtonWidth, MenuButtonHeight});
+      toggleTop += MenuButtonHeight + MenuToggleGap;
+      bounds.events = sf::FloatRect({buttonLeft, toggleTop}, {MenuButtonWidth, MenuButtonHeight});
+      toggleTop += MenuButtonHeight + MenuBackTopExtra;
+      bounds.back = sf::FloatRect({buttonLeft, toggleTop}, {MenuButtonWidth, MenuButtonHeight});
       return bounds;
    }
 
@@ -272,9 +327,30 @@ namespace MiniDb
       _stationCountFocus = StationCountFocus::No;
    }
 
+   RandomPool MainMenu::GetRandomPool(void) const
+   {
+      return _randomPool;
+   }
+
+   RandomOrder MainMenu::GetRandomOrder(void) const
+   {
+      return _randomOrder;
+   }
+
+   EventsEnabled MainMenu::GetEventsEnabled(void) const
+   {
+      return _eventsEnabled;
+   }
+
+   void MainMenu::ShowRootPage(void)
+   {
+      CancelStationCountEdit();
+      _page = MenuPage::Root;
+   }
+
    void MainMenu::HandleTextEntered(char32_t unicode)
    {
-      if (_stationCountFocus == StationCountFocus::No)
+      if (_page != MenuPage::Settings || _stationCountFocus == StationCountFocus::No)
       {
          return;
       }
@@ -290,14 +366,9 @@ namespace MiniDb
       _stationCountText.push_back(static_cast<char>(unicode));
    }
 
-   void MainMenu::Draw(HasActiveGame hasActiveGame, uint32_t catalogStationCount, sf::Vector2i cursorPixel)
+   void MainMenu::DrawRoot(HasActiveGame hasActiveGame, sf::Vector2i cursorPixel)
    {
-      if (_pWindow == nullptr || _pFont == nullptr)
-      {
-         return;
-      }
-
-      const MenuBounds bounds = ComputeBounds(hasActiveGame);
+      const RootBounds bounds = ComputeRootBounds(hasActiveGame);
       sf::RectangleShape panel(bounds.panel.size);
       panel.setPosition(bounds.panel.position);
       panel.setFillColor(sf::Color(255, 252, 245, 235));
@@ -316,7 +387,67 @@ namespace MiniDb
          panelTop + MenuSubtitleTop,
          16,
          sf::Color(80, 75, 70));
-      DrawCenteredText(*_pWindow, *_pFont, "Stations", centerX, panelTop + MenuStationsLabelTop, 18, sf::Color(35, 35, 35));
+
+      ButtonHover startHover = ButtonHover::No;
+      if (ContainsPixel(bounds.start, cursorPixel))
+      {
+         startHover = ButtonHover::Yes;
+      }
+      DrawPanelButton(*_pWindow, *_pFont, bounds.start, "Start", startHover);
+
+      if (hasActiveGame == HasActiveGame::Yes)
+      {
+         ButtonHover resumeHover = ButtonHover::No;
+         if (ContainsPixel(bounds.resume, cursorPixel))
+         {
+            resumeHover = ButtonHover::Yes;
+         }
+         DrawPanelButton(*_pWindow, *_pFont, bounds.resume, "Resume", resumeHover);
+      }
+
+      ButtonHover settingsHover = ButtonHover::No;
+      if (ContainsPixel(bounds.settings, cursorPixel))
+      {
+         settingsHover = ButtonHover::Yes;
+      }
+      DrawPanelButton(*_pWindow, *_pFont, bounds.settings, "Settings", settingsHover);
+
+      ButtonHover quitHover = ButtonHover::No;
+      if (ContainsPixel(bounds.quit, cursorPixel))
+      {
+         quitHover = ButtonHover::Yes;
+      }
+      DrawPanelButton(*_pWindow, *_pFont, bounds.quit, "Quit", quitHover);
+   }
+
+   void MainMenu::DrawSettings(uint32_t catalogStationCount, sf::Vector2i cursorPixel)
+   {
+      const SettingsBounds bounds = ComputeSettingsBounds();
+      sf::RectangleShape panel(bounds.panel.size);
+      panel.setPosition(bounds.panel.position);
+      panel.setFillColor(sf::Color(255, 252, 245, 235));
+      panel.setOutlineColor(sf::Color(120, 110, 100));
+      panel.setOutlineThickness(1.0f);
+      _pWindow->draw(panel);
+
+      const float centerX = bounds.panel.position.x + (bounds.panel.size.x * 0.5f);
+      const float panelTop = bounds.panel.position.y;
+      DrawCenteredText(
+         *_pWindow,
+         *_pFont,
+         "Settings",
+         centerX,
+         panelTop + MenuSettingsTitleTop,
+         32,
+         sf::Color(35, 35, 35));
+      DrawCenteredText(
+         *_pWindow,
+         *_pFont,
+         "Stations",
+         centerX,
+         panelTop + MenuStationsLabelTop,
+         18,
+         sf::Color(35, 35, 35));
 
       ButtonHover decreaseHover = ButtonHover::No;
       if (ContainsPixel(bounds.decrease, cursorPixel))
@@ -366,37 +497,93 @@ namespace MiniDb
          13,
          sf::Color(90, 85, 80));
 
-      ButtonHover startHover = ButtonHover::No;
-      if (ContainsPixel(bounds.start, cursorPixel))
+      ButtonHover poolHover = ButtonHover::No;
+      if (ContainsPixel(bounds.randomPool, cursorPixel))
       {
-         startHover = ButtonHover::Yes;
+         poolHover = ButtonHover::Yes;
       }
-      DrawPanelButton(*_pWindow, *_pFont, bounds.start, "Start", startHover);
+      DrawPanelButton(
+         *_pWindow,
+         *_pFont,
+         bounds.randomPool,
+         ToggleLabel("Random pool", _randomPool == RandomPool::Yes),
+         poolHover);
 
-      if (hasActiveGame == HasActiveGame::Yes)
+      ButtonHover orderHover = ButtonHover::No;
+      if (ContainsPixel(bounds.randomOrder, cursorPixel))
       {
-         ButtonHover resumeHover = ButtonHover::No;
-         if (ContainsPixel(bounds.resume, cursorPixel))
-         {
-            resumeHover = ButtonHover::Yes;
-         }
-         DrawPanelButton(*_pWindow, *_pFont, bounds.resume, "Resume", resumeHover);
+         orderHover = ButtonHover::Yes;
       }
+      DrawPanelButton(
+         *_pWindow,
+         *_pFont,
+         bounds.randomOrder,
+         ToggleLabel("Random order", _randomOrder == RandomOrder::Yes),
+         orderHover);
 
-      ButtonHover quitHover = ButtonHover::No;
-      if (ContainsPixel(bounds.quit, cursorPixel))
+      ButtonHover eventsHover = ButtonHover::No;
+      if (ContainsPixel(bounds.events, cursorPixel))
       {
-         quitHover = ButtonHover::Yes;
+         eventsHover = ButtonHover::Yes;
       }
-      DrawPanelButton(*_pWindow, *_pFont, bounds.quit, "Quit", quitHover);
+      DrawPanelButton(
+         *_pWindow,
+         *_pFont,
+         bounds.events,
+         ToggleLabel("Events", _eventsEnabled == EventsEnabled::Yes),
+         eventsHover);
+
+      ButtonHover backHover = ButtonHover::No;
+      if (ContainsPixel(bounds.back, cursorPixel))
+      {
+         backHover = ButtonHover::Yes;
+      }
+      DrawPanelButton(*_pWindow, *_pFont, bounds.back, "Back", backHover);
    }
 
-   MenuAction MainMenu::HandleClick(
-      sf::Vector2i pixel,
-      HasActiveGame hasActiveGame,
-      uint32_t catalogStationCount)
+   void MainMenu::Draw(HasActiveGame hasActiveGame, uint32_t catalogStationCount, sf::Vector2i cursorPixel)
    {
-      const MenuBounds bounds = ComputeBounds(hasActiveGame);
+      if (_pWindow == nullptr || _pFont == nullptr)
+      {
+         return;
+      }
+
+      if (_page == MenuPage::Settings)
+      {
+         DrawSettings(catalogStationCount, cursorPixel);
+         return;
+      }
+
+      DrawRoot(hasActiveGame, cursorPixel);
+   }
+
+   MenuAction MainMenu::HandleRootClick(sf::Vector2i pixel, HasActiveGame hasActiveGame)
+   {
+      const RootBounds bounds = ComputeRootBounds(hasActiveGame);
+      if (ContainsPixel(bounds.start, pixel))
+      {
+         return MenuAction::Start;
+      }
+      if (hasActiveGame == HasActiveGame::Yes && ContainsPixel(bounds.resume, pixel))
+      {
+         return MenuAction::Resume;
+      }
+      if (ContainsPixel(bounds.settings, pixel))
+      {
+         _page = MenuPage::Settings;
+         return MenuAction::None;
+      }
+      if (ContainsPixel(bounds.quit, pixel))
+      {
+         return MenuAction::Quit;
+      }
+
+      return MenuAction::None;
+   }
+
+   MenuAction MainMenu::HandleSettingsClick(sf::Vector2i pixel, uint32_t catalogStationCount)
+   {
+      const SettingsBounds bounds = ComputeSettingsBounds();
       if (ContainsPixel(bounds.value, pixel))
       {
          BeginStationCountEdit();
@@ -414,25 +601,91 @@ namespace MiniDb
          AdjustStationCount(StationLimitStep::Increase, catalogStationCount);
          return MenuAction::None;
       }
-      if (ContainsPixel(bounds.start, pixel))
+      if (ContainsPixel(bounds.randomPool, pixel))
       {
+         if (_randomPool == RandomPool::Yes)
+         {
+            _randomPool = RandomPool::No;
+         }
+         else
+         {
+            _randomPool = RandomPool::Yes;
+         }
+         return MenuAction::None;
+      }
+      if (ContainsPixel(bounds.randomOrder, pixel))
+      {
+         if (_randomOrder == RandomOrder::Yes)
+         {
+            _randomOrder = RandomOrder::No;
+         }
+         else
+         {
+            _randomOrder = RandomOrder::Yes;
+         }
+         return MenuAction::None;
+      }
+      if (ContainsPixel(bounds.events, pixel))
+      {
+         if (_eventsEnabled == EventsEnabled::Yes)
+         {
+            _eventsEnabled = EventsEnabled::No;
+         }
+         else
+         {
+            _eventsEnabled = EventsEnabled::Yes;
+         }
+         return MenuAction::None;
+      }
+      if (ContainsPixel(bounds.back, pixel))
+      {
+         ShowRootPage();
+         return MenuAction::None;
+      }
+
+      return MenuAction::None;
+   }
+
+   MenuAction MainMenu::HandleClick(
+      sf::Vector2i pixel,
+      HasActiveGame hasActiveGame,
+      uint32_t catalogStationCount)
+   {
+      if (_page == MenuPage::Settings)
+      {
+         return HandleSettingsClick(pixel, catalogStationCount);
+      }
+
+      return HandleRootClick(pixel, hasActiveGame);
+   }
+
+   MenuAction MainMenu::HandleRootKeyPressed(
+      const sf::Event::KeyPressed& keyPressed,
+      HasActiveGame hasActiveGame)
+   {
+      if (keyPressed.code == sf::Keyboard::Key::Enter)
+      {
+         if (hasActiveGame == HasActiveGame::Yes)
+         {
+            return MenuAction::Resume;
+         }
          return MenuAction::Start;
       }
-      if (hasActiveGame == HasActiveGame::Yes && ContainsPixel(bounds.resume, pixel))
+      if (keyPressed.code == sf::Keyboard::Key::Escape)
       {
-         return MenuAction::Resume;
-      }
-      if (ContainsPixel(bounds.quit, pixel))
-      {
+         if (hasActiveGame == HasActiveGame::Yes)
+         {
+            return MenuAction::Resume;
+         }
+
          return MenuAction::Quit;
       }
 
       return MenuAction::None;
    }
 
-   MenuAction MainMenu::HandleKeyPressed(
+   MenuAction MainMenu::HandleSettingsKeyPressed(
       const sf::Event::KeyPressed& keyPressed,
-      HasActiveGame hasActiveGame,
       uint32_t catalogStationCount)
    {
       if (_stationCountFocus == StationCountFocus::Yes)
@@ -469,25 +722,25 @@ namespace MiniDb
          AdjustStationCount(StationLimitStep::Increase, catalogStationCount);
          return MenuAction::None;
       }
-      if (keyPressed.code == sf::Keyboard::Key::Enter)
-      {
-         CommitStationCount(catalogStationCount);
-         if (hasActiveGame == HasActiveGame::Yes)
-         {
-            return MenuAction::Resume;
-         }
-         return MenuAction::Start;
-      }
       if (keyPressed.code == sf::Keyboard::Key::Escape)
       {
-         if (hasActiveGame == HasActiveGame::Yes)
-         {
-            return MenuAction::Resume;
-         }
-
-         return MenuAction::Quit;
+         ShowRootPage();
+         return MenuAction::None;
       }
 
       return MenuAction::None;
+   }
+
+   MenuAction MainMenu::HandleKeyPressed(
+      const sf::Event::KeyPressed& keyPressed,
+      HasActiveGame hasActiveGame,
+      uint32_t catalogStationCount)
+   {
+      if (_page == MenuPage::Settings)
+      {
+         return HandleSettingsKeyPressed(keyPressed, catalogStationCount);
+      }
+
+      return HandleRootKeyPressed(keyPressed, hasActiveGame);
    }
 } // namespace MiniDb

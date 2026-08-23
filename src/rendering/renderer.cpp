@@ -88,6 +88,20 @@ namespace MiniDb
          return rowCount;
       }
 
+      uint32_t ClampedEventStationRowCount(uint32_t rowCount)
+      {
+         if (rowCount == 0)
+         {
+            return 1;
+         }
+         if (rowCount > EventStationMaxRows)
+         {
+            return EventStationMaxRows;
+         }
+
+         return rowCount;
+      }
+
       enum class BottomHudControl : uint32_t
       {
          Help = 0,
@@ -1387,7 +1401,6 @@ namespace MiniDb
          "Ctrl+Z / Ctrl+Y undo or redo a draft click.\n"
          "Wheel zoom, middle-drag pan. F11 fullscreen.\n"
          "Arrows pan. + / - zoom.\n"
-         "[ / ] change station cap by 50.\n"
          "Space pause. 1 / 2 / 4 / 8 speed.\n"
          "Esc returns to the menu.";
       sf::Text text(*_pFont, Utf8SfString(helpText), 14);
@@ -1474,6 +1487,7 @@ namespace MiniDb
    {
       SidebarSnapshot snapshot;
       world.CollectUnconnectedStations(snapshot.unconnectedIds);
+      world.CollectActiveEvents(snapshot.activeEvents);
 
       if (inspectedStationId != InvalidStationId)
       {
@@ -1499,8 +1513,15 @@ namespace MiniDb
          inspectedTrainId,
          inspectedLineId,
          snapshot);
+      snapshot.eventsSectionHeightPixels = EventsSectionHeightPixels(snapshot.activeEvents);
       snapshot.unconnectedListTopPixels = snapshot.inspectorHeightPixels + 8.0f;
       return snapshot;
+   }
+
+   float Renderer::EventsSectionHeightPixels(const StationEventList& activeEvents) const
+   {
+      const uint32_t eventRows = ClampedEventStationRowCount(static_cast<uint32_t>(activeEvents.size()));
+      return 28.0f + (static_cast<float>(eventRows) * 20.0f) + 10.0f;
    }
 
    float Renderer::InspectorHeightPixels(
@@ -1584,7 +1605,8 @@ namespace MiniDb
       const sf::FloatRect bounds = UnconnectedPanelBounds();
       const float listTop = snapshot.unconnectedListTopPixels;
       const float rowsTop = listTop + 24.0f;
-      const float listHeight = bounds.size.y - rowsTop - 12.0f;
+      const float listHeight =
+         bounds.size.y - rowsTop - snapshot.eventsSectionHeightPixels - 12.0f;
       const float contentHeight = static_cast<float>(snapshot.unconnectedIds.size()) * UnconnectedRowHeightPixels;
       float maxScroll = contentHeight - listHeight;
       if (maxScroll < 0.0f)
@@ -1626,9 +1648,16 @@ namespace MiniDb
       const sf::FloatRect bounds = UnconnectedPanelBounds();
       const float listTop = snapshot.unconnectedListTopPixels;
       const float rowsTop = listTop + 24.0f;
+      const float listBottom = bounds.size.y - snapshot.eventsSectionHeightPixels - 8.0f;
       const float localY =
          static_cast<float>(pixel.y) - bounds.position.y - rowsTop + unconnectedScrollPixels;
       if (localY < 0.0f)
+      {
+         return InvalidStationId;
+      }
+
+      const float clickYInPanel = static_cast<float>(pixel.y) - bounds.position.y;
+      if (clickYInPanel > listBottom)
       {
          return InvalidStationId;
       }
@@ -1991,6 +2020,70 @@ namespace MiniDb
       }
    }
 
+   void Renderer::DrawSidebarEvents(
+      const World& world,
+      const sf::FloatRect& panelBounds,
+      const SidebarSnapshot& snapshot)
+   {
+      const float sectionHeight = snapshot.eventsSectionHeightPixels;
+      if (sectionHeight <= 0.0f)
+      {
+         return;
+      }
+
+      const float sectionTop = panelBounds.size.y - sectionHeight;
+      sf::RectangleShape sectionBackground({panelBounds.size.x, sectionHeight});
+      sectionBackground.setPosition({panelBounds.position.x, panelBounds.position.y + sectionTop});
+      sectionBackground.setFillColor(sf::Color(255, 252, 245));
+      _pWindow->draw(sectionBackground);
+
+      sf::RectangleShape divider({panelBounds.size.x - 16.0f, 1.0f});
+      divider.setPosition({panelBounds.position.x + 8.0f, panelBounds.position.y + sectionTop + 2.0f});
+      divider.setFillColor(sf::Color(190, 180, 168));
+      _pWindow->draw(divider);
+
+      const float left = panelBounds.position.x + 12.0f;
+      const float headerY = panelBounds.position.y + sectionTop + 8.0f;
+      sf::Text eventsHeaderText(*_pFont, Utf8SfString("Events"), 14);
+      eventsHeaderText.setFillColor(sf::Color(35, 35, 35));
+      eventsHeaderText.setPosition({left, headerY});
+      _pWindow->draw(eventsHeaderText);
+
+      const StationEventList& activeEvents = snapshot.activeEvents;
+      if (activeEvents.empty())
+      {
+         sf::Text emptyEventsText(*_pFont, Utf8SfString("No events"), 13);
+         emptyEventsText.setFillColor(sf::Color(90, 85, 80));
+         emptyEventsText.setPosition({left, headerY + 20.0f});
+         _pWindow->draw(emptyEventsText);
+         return;
+      }
+
+      uint32_t shownEventRows = 0;
+      for (const StationEvent& entry : activeEvents)
+      {
+         if (shownEventRows >= EventStationMaxRows)
+         {
+            break;
+         }
+
+         const float rowY = headerY + 20.0f + (static_cast<float>(shownEventRows) * 20.0f);
+         std::string rowLine = StationCityName(world, entry.stationId);
+         const float remainingSeconds = entry.endTimeSeconds - world.GetSimulationTimeSeconds();
+         if (remainingSeconds > 0.0f)
+         {
+            rowLine += "  ";
+            rowLine += std::to_string(static_cast<int32_t>(remainingSeconds));
+            rowLine += "s";
+         }
+         sf::Text rowText(*_pFont, Utf8SfString(rowLine), 13);
+         rowText.setFillColor(sf::Color(110, 70, 40));
+         rowText.setPosition({left, rowY});
+         _pWindow->draw(rowText);
+         ++shownEventRows;
+      }
+   }
+
    void Renderer::DrawSidebar(
       const World& world,
       StationId inspectedStationId,
@@ -2039,16 +2132,17 @@ namespace MiniDb
       _pWindow->draw(titleText);
 
       const float rowsTop = listTop + 24.0f;
+      const float listBottom = bounds.size.y - snapshot.eventsSectionHeightPixels - 8.0f;
       if (snapshot.unconnectedIds.empty())
       {
          sf::Text emptyText(*_pFont, Utf8SfString("All stations connected"), 13);
          emptyText.setFillColor(sf::Color(90, 85, 80));
          emptyText.setPosition({bounds.position.x + 12.0f, rowsTop});
          _pWindow->draw(emptyText);
+         DrawSidebarEvents(world, bounds, snapshot);
          return;
       }
 
-      const float listBottom = bounds.size.y - 8.0f;
       const StationId hoveredRowId = HitTestUnconnectedRow(
          world,
          inspectedStationId,
@@ -2085,5 +2179,7 @@ namespace MiniDb
          rowText.setPosition({bounds.position.x + 12.0f, rowY + 2.0f});
          _pWindow->draw(rowText);
       }
+
+      DrawSidebarEvents(world, bounds, snapshot);
    }
 } // namespace MiniDb

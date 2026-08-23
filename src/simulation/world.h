@@ -26,6 +26,32 @@ namespace MiniDb
       Yes = true
    };
 
+   enum class RandomPool : bool
+   {
+      No = false,
+      Yes = true
+   };
+
+   enum class RandomOrder : bool
+   {
+      No = false,
+      Yes = true
+   };
+
+   enum class EventsEnabled : bool
+   {
+      No = false,
+      Yes = true
+   };
+
+   struct StationEvent
+   {
+      StationId stationId;
+      float endTimeSeconds;
+   };
+
+   using StationEventList = std::vector<StationEvent>;
+
    using WaitingPassengerQueue = std::vector<PassengerId>;
    using WaitingPassengerQueueList = std::vector<WaitingPassengerQueue>;
    using GravityWeightMatrix = std::vector<WeightList>;
@@ -67,12 +93,21 @@ namespace MiniDb
       void SetMaxStationCount(uint32_t maxStationCount);
 
       /*!
-       *\brief Spawns the first cities from the catalog.
+       *\brief Configures spawn pool, spawn order and destination events for a new run.
+       *
+       *\param[in] randomPool Whether to sample a random catalog subset.
+       *\param[in] randomOrder Whether to shuffle the spawn queue.
+       *\param[in] eventsEnabled Whether timed destination events are active.
+       */
+      void ConfigureNewGame(RandomPool randomPool, RandomOrder randomOrder, EventsEnabled eventsEnabled);
+
+      /*!
+       *\brief Spawns the first cities from the spawn queue.
        */
       Result SpawnInitialStations(void);
 
       /*!
-       *\brief Spawns the next catalog city if any remain under the station cap.
+       *\brief Spawns the next city from the spawn queue if any remain under the station cap.
        */
       Result SpawnNextStation(void);
 
@@ -290,6 +325,13 @@ namespace MiniDb
       Result CollectLineDemand(LineId lineId, DestinationDemandList& demand) const;
 
       /*!
+       *\brief Lists stations with an active destination event.
+       *
+       *\param[out] events Active events, soonest expiry first.
+       */
+      Result CollectActiveEvents(StationEventList& events) const;
+
+      /*!
        *\brief Finds a train by id.
        *
        *\param[in] trainId Train identifier.
@@ -349,6 +391,12 @@ namespace MiniDb
       LineSegmentHit FindNearestSegmentOnLineInternal(const Line& line, MapPoint point) const;
       void MaybeSpawnStations(float deltaSeconds);
       void MaybeSpawnPassengers(float deltaSeconds);
+      void MaybeUpdateEvents(float deltaSeconds);
+      void ExpireFinishedEvents(void);
+      void RefreshEventTargets(void);
+      bool IsStationEventActive(StationId stationId) const;
+      uint32_t TargetEventStationCount(void) const;
+      void BuildSpawnQueue(void);
       Result SpawnRandomPassenger(void);
       void UpdateTrains(float deltaSeconds);
       void AlightAndBoard(Train& train);
@@ -379,8 +427,14 @@ namespace MiniDb
       void TryBoardDwellingTrainsAt(StationId stationId);
 
       StationRecordList _catalog;
-      uint32_t _nextCatalogIndex = 0;
+      StationRecordList _spawnQueue;
+      uint32_t _nextSpawnIndex = 0;
       uint32_t _maxStationCount = DefaultMaxStationCount;
+      RandomPool _randomPool = RandomPool::No;
+      RandomOrder _randomOrder = RandomOrder::No;
+      EventsEnabled _eventsEnabled = EventsEnabled::No;
+      StationEventList _activeEvents;
+      float _eventCheckAccumulatorSeconds = 0.0f;
       Network _network;
       TrainList _trains;
       PassengerList _passengers;

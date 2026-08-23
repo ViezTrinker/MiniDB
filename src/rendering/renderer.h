@@ -77,8 +77,10 @@ namespace MiniDb
       DestinationDemandList lineDemand;
       DestinationDemandList globalDemand;
       StationCrowdingList crowdedStations;
+      StationEventList activeEvents;
       float inspectorHeightPixels = 72.0f;
       float unconnectedListTopPixels = 80.0f;
+      float eventsSectionHeightPixels = 0.0f;
    };
 
    class Renderer
@@ -374,6 +376,11 @@ namespace MiniDb
          LineId inspectedLineId,
          const sf::FloatRect& panelBounds,
          const SidebarSnapshot& snapshot);
+      void DrawSidebarEvents(
+         const World& world,
+         const sf::FloatRect& panelBounds,
+         const SidebarSnapshot& snapshot);
+      float EventsSectionHeightPixels(const StationEventList& activeEvents) const;
       float InspectorHeightPixels(
          const World& world,
          StationId inspectedStationId,

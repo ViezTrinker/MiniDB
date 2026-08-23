@@ -78,7 +78,6 @@ namespace MiniDb
       void StartNewGame(void);
       void ReturnToMenu(void);
       void ResetPlayInput(void);
-      void AdjustStationCap(StationLimitStep step);
       void SlowDownSimulation(void);
       void SpeedUpSimulation(void);
       void ToggleFullscreen(void);

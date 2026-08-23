@@ -1,6 +1,6 @@
 /*!
  *\file main_menu.h
- *\brief Start screen for launching a game and choosing the station cap.
+ *\brief Start screen, settings, and new-game options.
  */
 
 #ifndef MAIN_MENU_H
@@ -12,6 +12,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "core/constants.h"
+#include "simulation/world.h"
 
 namespace MiniDb
 {
@@ -47,6 +48,12 @@ namespace MiniDb
       Yes = true
    };
 
+   enum class MenuPage : uint8_t
+   {
+      Root = 0,
+      Settings = 1
+   };
+
    class MainMenu
    {
    public:
@@ -61,7 +68,7 @@ namespace MiniDb
       void Initialize(sf::RenderWindow* pWindow, sf::Font* pFont);
 
       /*!
-       *\brief Draws the start menu over the current default view.
+       *\brief Draws the start menu or settings over the current default view.
        *
        *\param[in] hasActiveGame Whether Resume should be offered.
        *\param[in] catalogStationCount Cities available in the loaded catalog.
@@ -101,31 +108,62 @@ namespace MiniDb
       void HandleTextEntered(char32_t unicode);
 
       /*!
-       *\brief Station cap chosen for the next new game, or applied on Resume.
+       *\brief Station cap chosen for the next new game.
        */
       uint32_t GetSelectedMaxStationCount(void) const;
 
       /*!
-       *\brief Sets the station-cap field shown on the menu.
+       *\brief Sets the station-cap field shown in settings.
        *
        *\param[in] maxStationCount Cap to display and commit.
        *\param[in] catalogStationCount Catalog size used for clamping.
        */
       void SetSelectedMaxStationCount(uint32_t maxStationCount, uint32_t catalogStationCount);
 
+      /*!
+       *\brief Whether the next new game uses a random station pool.
+       */
+      RandomPool GetRandomPool(void) const;
+
+      /*!
+       *\brief Whether the next new game shuffles spawn order.
+       */
+      RandomOrder GetRandomOrder(void) const;
+
+      /*!
+       *\brief Whether the next new game enables destination events.
+       */
+      EventsEnabled GetEventsEnabled(void) const;
+
+      /*!
+       *\brief Returns to the root menu page.
+       */
+      void ShowRootPage(void);
+
    private:
-      struct MenuBounds
+      struct RootBounds
+      {
+         sf::FloatRect panel;
+         sf::FloatRect start;
+         sf::FloatRect resume;
+         sf::FloatRect settings;
+         sf::FloatRect quit;
+      };
+
+      struct SettingsBounds
       {
          sf::FloatRect panel;
          sf::FloatRect decrease;
          sf::FloatRect value;
          sf::FloatRect increase;
-         sf::FloatRect start;
-         sf::FloatRect resume;
-         sf::FloatRect quit;
+         sf::FloatRect randomPool;
+         sf::FloatRect randomOrder;
+         sf::FloatRect events;
+         sf::FloatRect back;
       };
 
-      MenuBounds ComputeBounds(HasActiveGame hasActiveGame) const;
+      RootBounds ComputeRootBounds(HasActiveGame hasActiveGame) const;
+      SettingsBounds ComputeSettingsBounds(void) const;
       void CommitStationCount(uint32_t catalogStationCount);
       void CancelStationCountEdit(void);
       void AdjustStationCount(StationLimitStep step, uint32_t catalogStationCount);
@@ -133,12 +171,26 @@ namespace MiniDb
       uint32_t ParsedStationCount(void) const;
       std::string FormatStationCountField(void) const;
       bool ContainsPixel(const sf::FloatRect& bounds, sf::Vector2i pixel) const;
+      void DrawRoot(HasActiveGame hasActiveGame, sf::Vector2i cursorPixel);
+      void DrawSettings(uint32_t catalogStationCount, sf::Vector2i cursorPixel);
+      MenuAction HandleRootClick(sf::Vector2i pixel, HasActiveGame hasActiveGame);
+      MenuAction HandleSettingsClick(sf::Vector2i pixel, uint32_t catalogStationCount);
+      MenuAction HandleRootKeyPressed(
+         const sf::Event::KeyPressed& keyPressed,
+         HasActiveGame hasActiveGame);
+      MenuAction HandleSettingsKeyPressed(
+         const sf::Event::KeyPressed& keyPressed,
+         uint32_t catalogStationCount);
 
       sf::RenderWindow* _pWindow = nullptr;
       sf::Font* _pFont = nullptr;
+      MenuPage _page = MenuPage::Root;
       uint32_t _committedStationCount = DefaultMaxStationCount;
       std::string _stationCountText;
       StationCountFocus _stationCountFocus = StationCountFocus::No;
+      RandomPool _randomPool = RandomPool::No;
+      RandomOrder _randomOrder = RandomOrder::No;
+      EventsEnabled _eventsEnabled = EventsEnabled::No;
    };
 } // namespace MiniDb
 

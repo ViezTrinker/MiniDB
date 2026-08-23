@@ -10,7 +10,7 @@ SFML-facing code: `src/application/`, `src/input/`, `src/main.cpp`.
 
 Screens (`AppScreen`):
 
-- `Menu` — start / resume / quit and station cap.
+- `Menu` — start / resume / settings / quit.
 - `Playing` — map, drafting, simulation.
 
 Escape during play: cancel line or anchor drag, then cancel a draft, otherwise return to the menu. The current `World` stays so Resume works.
@@ -19,9 +19,14 @@ Escape during play: cancel line or anchor drag, then cancel a draft, otherwise r
 
 `MainMenu` draws a panel over a map backdrop.
 
-- **Start** resets the simulation, applies the cap, spawns the first cities.
-- **Resume** is shown only when `HasActiveGame` is `Yes`.
-- Station cap: click the number to type digits, or `<` / `>` (and arrow keys) in steps of 50. Default is `DefaultMaxStationCount` (100). The value is clamped between `MinimumStationCap` (2) and the catalog size. If the cap is below `InitialStationCount`, the first wave is only that many cities. During an active game, changing the cap and pressing **Resume** applies it without resetting the world. In play, `[` / `]` also adjust the cap (cannot go below the number of stations already spawned).
+- **Start** resets the simulation, applies Settings (cap, random pool, random order, events), builds the spawn queue, and spawns the first cities.
+- **Resume** is shown only when `HasActiveGame` is `Yes`. It continues the current world without re-applying Settings.
+- **Settings** opens a second page:
+  - Station cap: click the number to type digits, or `<` / `>` (and arrow keys) in steps of 50. Default is `DefaultMaxStationCount` (100). Clamped between `MinimumStationCap` (2) and catalog size. If the cap is below `InitialStationCount`, the first wave is only that many cities.
+  - **Random pool**: sample `cap` cities uniformly from the catalog instead of the largest ones.
+  - **Random order**: shuffle spawn order of the chosen pool.
+  - **Events**: timed destination boosts during play.
+- All Settings values apply only on **Start**.
 
 ## Line editor
 
@@ -56,7 +61,6 @@ Terminus extension is handled in `Game` via draggable anchors on the selected li
 | Delete | Delete selected line, or the inspected train’s line; cancels an in-progress line drag |
 | T | Extra train on the selected line |
 | Space | Pause |
-| `[` / `]` | Lower or raise the station cap by 50 |
 | 1 / 2 / 4 / 8 | Time scale |
 | Wheel | Zoom at cursor, or scroll the unconnected list |
 | `+` / `-` | Zoom in or out at the map center |
@@ -68,4 +72,4 @@ Unconnected stations are listed in the right sidebar. Clicking a name inspects t
 
 ## Station cap and performance
 
-The catalog can contain hundreds of cities. The menu cap limits how many become playable stations (minimum `MinimumStationCap`). That is the main performance lever; pathfinding and boarding scan passengers and trains each tick.
+The catalog can contain hundreds of cities. The Settings cap limits how many become playable stations (minimum `MinimumStationCap`). That is the main performance lever; pathfinding and boarding scan passengers and trains each tick.

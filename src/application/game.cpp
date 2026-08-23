@@ -298,7 +298,6 @@ namespace MiniDb
       }
       if (action == MenuAction::Resume)
       {
-         _world.SetMaxStationCount(_mainMenu.GetSelectedMaxStationCount());
          _mainMenu.SetSelectedMaxStationCount(
             _world.GetMaxStationCount(),
             _world.GetCatalogStationCount());
@@ -382,6 +381,10 @@ namespace MiniDb
    {
       _world.ResetSimulation();
       _world.SetMaxStationCount(_mainMenu.GetSelectedMaxStationCount());
+      _world.ConfigureNewGame(
+         _mainMenu.GetRandomPool(),
+         _mainMenu.GetRandomOrder(),
+         _mainMenu.GetEventsEnabled());
       const Result spawnResult = _world.SpawnInitialStations();
       if (IsErr(spawnResult))
       {
@@ -409,32 +412,9 @@ namespace MiniDb
       _mainMenu.SetSelectedMaxStationCount(
          _world.GetMaxStationCount(),
          _world.GetCatalogStationCount());
+      _mainMenu.ShowRootPage();
       _renderer.SetMapSidebar(MapSidebar::Hidden);
       _appScreen = AppScreen::Menu;
-   }
-
-   void Game::AdjustStationCap(StationLimitStep step)
-   {
-      const uint32_t catalogCount = _world.GetCatalogStationCount();
-      uint32_t nextCount = _world.GetMaxStationCount();
-      if (step == StationLimitStep::Decrease)
-      {
-         if (nextCount > (MinimumStationCap + StationCapStep))
-         {
-            nextCount -= StationCapStep;
-         }
-         else
-         {
-            nextCount = MinimumStationCap;
-         }
-      }
-      else
-      {
-         nextCount += StationCapStep;
-      }
-
-      _world.SetMaxStationCount(nextCount);
-      _mainMenu.SetSelectedMaxStationCount(_world.GetMaxStationCount(), catalogCount);
    }
 
    void Game::ConfigureWindow(void)
@@ -641,18 +621,6 @@ namespace MiniDb
       if (_appScreen == AppScreen::Menu)
       {
          _mainMenu.HandleTextEntered(textEntered.unicode);
-         return;
-      }
-
-      if (textEntered.unicode == U'[')
-      {
-         AdjustStationCap(StationLimitStep::Decrease);
-         return;
-      }
-      if (textEntered.unicode == U']')
-      {
-         AdjustStationCap(StationLimitStep::Increase);
-         return;
       }
    }
 
