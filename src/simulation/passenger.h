@@ -27,7 +27,8 @@ namespace MiniDb
       PassengerState state;
       Route route;
       uint32_t routeHopIndex;
-      uint64_t routeRevision;
+      uint64_t routeTopologyRevision;
+      uint64_t routeWaitRevision;
       float platformArrivalTimeSeconds;
    };
 

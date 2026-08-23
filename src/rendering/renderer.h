@@ -7,6 +7,8 @@
 #define RENDERER_H
 
 #include <string_view>
+#include <unordered_map>
+#include <vector>
 
 #include <SFML/Graphics.hpp>
 
@@ -64,6 +66,19 @@ namespace MiniDb
       LineId lineId = InvalidLineId;
       LineEnd end = LineEnd::Front;
       StationId hoverStationId = InvalidStationId;
+   };
+
+   struct SidebarSnapshot
+   {
+      StationIdList unconnectedIds;
+      DestinationDemandList stationDemand;
+      OnboardDemandList onboardDemand;
+      TrainOccupancyList lineOccupancy;
+      DestinationDemandList lineDemand;
+      DestinationDemandList globalDemand;
+      StationCrowdingList crowdedStations;
+      float inspectorHeightPixels = 72.0f;
+      float unconnectedListTopPixels = 80.0f;
    };
 
    class Renderer
@@ -342,13 +357,24 @@ namespace MiniDb
          LineId inspectedLineId,
          float unconnectedScrollPixels,
          sf::Vector2i cursorPixel);
+      SidebarSnapshot BuildSidebarSnapshot(
+         const World& world,
+         StationId inspectedStationId,
+         TrainId inspectedTrainId,
+         LineId inspectedLineId) const;
+      float ComputeInspectorHeightPixels(
+         const World& world,
+         StationId inspectedStationId,
+         TrainId inspectedTrainId,
+         LineId inspectedLineId,
+         const SidebarSnapshot& snapshot) const;
       void DrawSidebarInspector(
          const World& world,
          StationId inspectedStationId,
          TrainId inspectedTrainId,
          LineId inspectedLineId,
          const sf::FloatRect& panelBounds,
-         float inspectorHeight);
+         const SidebarSnapshot& snapshot);
       float InspectorHeightPixels(
          const World& world,
          StationId inspectedStationId,
@@ -361,6 +387,9 @@ namespace MiniDb
          LineId inspectedLineId) const;
       void DrawSegment(MapPoint from, MapPoint to, sf::Color color, float thicknessKm);
       void DrawScaledText(std::string_view text, MapPoint position, unsigned int characterSize, sf::Color color);
+      void RebuildParallelOffsetCache(const World& world);
+      void RebuildOutlineVertexArrays(void);
+      float ParallelOffsetKm(LineId lineId, uint32_t segmentIndex) const;
       const StationRecord* FindDraftStation(const World& world, StationId stationId) const;
       sf::FloatRect HelpButtonBounds(void) const;
       sf::FloatRect TrainTokenBounds(void) const;
@@ -383,6 +412,9 @@ namespace MiniDb
       sf::Font* _pFont = nullptr;
       sf::View _mapView;
       MapPolygonList _outlinePolygons;
+      std::vector<sf::VertexArray> _outlineVertexArrays;
+      std::unordered_map<uint64_t, float> _parallelOffsetKmBySegment;
+      uint64_t _parallelOffsetNetworkRevision = 0;
       MapSidebar _mapSidebar = MapSidebar::Hidden;
    };
 } // namespace MiniDb

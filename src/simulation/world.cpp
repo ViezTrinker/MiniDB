@@ -154,7 +154,14 @@ namespace MiniDb
       _nextTrainId = 1;
       _nextPassengerId = 1;
       _arrivedPassengerCount = 0;
-      _pathRevision = 0;
+      _topologyRevision = 0;
+      _waitRevision = 0;
+      _cachedLineWaits.clear();
+      _waitingCountByStationIndex.clear();
+      _waitingPassengersByStationIndex.clear();
+      _trainCountByLineId.clear();
+      _passengerSlotById.clear();
+      _gravityWeightsByOriginIndex.clear();
       _simulationTimeSeconds = 0.0f;
       _timeUntilNextStationSeconds = StationSpawnIntervalSeconds;
       _passengerSpawnAccumulator = 0.0f;
@@ -260,6 +267,8 @@ namespace MiniDb
       }
 
       ++_nextCatalogIndex;
+      EnsureWaitingCacheSize();
+      RebuildGravityWeightMatrix();
       return Result::Ok;
    }
 
@@ -301,6 +310,7 @@ namespace MiniDb
          return result;
       }
 
+      NoteTopologyChanged();
       return AddTrainToLine(lineId);
    }
 
@@ -322,7 +332,7 @@ namespace MiniDb
          AdjustTrainsAfterInsert(lineId, 0);
       }
 
-      NotePathChanged();
+      NoteTopologyChanged();
       return Result::Ok;
    }
 
@@ -420,6 +430,8 @@ namespace MiniDb
          if (dropStationId != InvalidStationId)
          {
             pPassenger->currentStationId = dropStationId;
+            IncrementWaitingCount(dropStationId);
+            AddPassengerToWaitingQueue(*pPassenger);
          }
       }
 
@@ -438,38 +450,202 @@ namespace MiniDb
          }
 
          UnloadTrainPassengers(_trains[index]);
+         DecrementTrainCount(lineId);
          _trains[index] = _trains.back();
          _trains.pop_back();
       }
    }
 
+   void World::EnsureWaitingCacheSize(void)
+   {
+      const auto stationCount = static_cast<uint32_t>(_network.GetStations().size());
+      if (_waitingCountByStationIndex.size() < stationCount)
+      {
+         _waitingCountByStationIndex.resize(stationCount, 0);
+      }
+      if (_waitingPassengersByStationIndex.size() < stationCount)
+      {
+         _waitingPassengersByStationIndex.resize(stationCount);
+      }
+   }
+
+   void World::IncrementWaitingCount(StationId stationId)
+   {
+      const uint32_t stationIndex = _network.GetStationVectorIndex(stationId);
+      if (stationIndex == InvalidIndex)
+      {
+         return;
+      }
+
+      EnsureWaitingCacheSize();
+      ++_waitingCountByStationIndex[stationIndex];
+   }
+
+   void World::DecrementWaitingCount(StationId stationId)
+   {
+      const uint32_t stationIndex = _network.GetStationVectorIndex(stationId);
+      if (stationIndex == InvalidIndex || stationIndex >= _waitingCountByStationIndex.size())
+      {
+         return;
+      }
+
+      if (_waitingCountByStationIndex[stationIndex] > 0)
+      {
+         --_waitingCountByStationIndex[stationIndex];
+      }
+   }
+
+   void World::AddPassengerToWaitingQueue(Passenger& passenger)
+   {
+      const uint32_t stationIndex = _network.GetStationVectorIndex(passenger.currentStationId);
+      if (stationIndex == InvalidIndex)
+      {
+         return;
+      }
+
+      EnsureWaitingCacheSize();
+      WaitingPassengerQueue& queue = _waitingPassengersByStationIndex[stationIndex];
+      uint32_t insertIndex = static_cast<uint32_t>(queue.size());
+      for (uint32_t index = 0; index < queue.size(); ++index)
+      {
+         const Passenger* pExisting = FindMutablePassenger(queue[index]);
+         if (pExisting == nullptr)
+         {
+            continue;
+         }
+         if (IsEarlierPlatformArrival(passenger, *pExisting))
+         {
+            insertIndex = index;
+            break;
+         }
+      }
+
+      queue.insert(queue.begin() + static_cast<int32_t>(insertIndex), passenger.id);
+   }
+
+   void World::RemovePassengerFromWaitingQueue(PassengerId passengerId, StationId stationId)
+   {
+      const uint32_t stationIndex = _network.GetStationVectorIndex(stationId);
+      if (stationIndex == InvalidIndex || stationIndex >= _waitingPassengersByStationIndex.size())
+      {
+         return;
+      }
+
+      WaitingPassengerQueue& queue = _waitingPassengersByStationIndex[stationIndex];
+      for (uint32_t index = 0; index < queue.size(); ++index)
+      {
+         if (queue[index] != passengerId)
+         {
+            continue;
+         }
+
+         queue.erase(queue.begin() + static_cast<int32_t>(index));
+         return;
+      }
+   }
+
+   void World::RebuildWaitingCaches(void)
+   {
+      _waitingCountByStationIndex.clear();
+      _waitingPassengersByStationIndex.clear();
+      EnsureWaitingCacheSize();
+
+      for (Passenger& passenger : _passengers)
+      {
+         if (passenger.state != PassengerState::Waiting)
+         {
+            continue;
+         }
+
+         IncrementWaitingCount(passenger.currentStationId);
+         AddPassengerToWaitingQueue(passenger);
+      }
+   }
+
+   void World::RebuildGravityWeightMatrix(void)
+   {
+      const StationRecordList& stations = _network.GetStations();
+      const GravityParameters parameters = DefaultGravityParameters();
+      _gravityWeightsByOriginIndex.clear();
+      _gravityWeightsByOriginIndex.resize(stations.size());
+
+      for (uint32_t originIndex = 0; originIndex < stations.size(); ++originIndex)
+      {
+         WeightList weights;
+         const Result result = ComputeGravityWeights(
+            stations[originIndex].id,
+            stations,
+            parameters,
+            weights);
+         if (IsOk(result))
+         {
+            _gravityWeightsByOriginIndex[originIndex] = weights;
+         }
+      }
+   }
+
+   void World::EnsureTrainCountCapacity(LineId lineId)
+   {
+      const auto requiredSize = static_cast<size_t>(lineId) + 1U;
+      if (_trainCountByLineId.size() < requiredSize)
+      {
+         _trainCountByLineId.resize(requiredSize, 0);
+      }
+   }
+
+   void World::IncrementTrainCount(LineId lineId)
+   {
+      EnsureTrainCountCapacity(lineId);
+      ++_trainCountByLineId[lineId];
+   }
+
+   void World::DecrementTrainCount(LineId lineId)
+   {
+      if (lineId >= _trainCountByLineId.size())
+      {
+         return;
+      }
+
+      if (_trainCountByLineId[lineId] > 0)
+      {
+         --_trainCountByLineId[lineId];
+      }
+   }
+
    void World::CollectLineWaits(LineWaitList& lineWaits) const
    {
-      lineWaits.clear();
+      lineWaits = _cachedLineWaits;
+   }
+
+   void World::RebuildLineWaitCache(void)
+   {
+      _cachedLineWaits.clear();
       for (const Line& line : _network.GetLines())
       {
          uint32_t trainCount = 0;
-         for (const Train& train : _trains)
+         if (line.id < _trainCountByLineId.size())
          {
-            if (train.lineId == line.id)
-            {
-               ++trainCount;
-            }
+            trainCount = _trainCountByLineId[line.id];
          }
 
          LineWait lineWait;
          lineWait.lineId = line.id;
-         lineWait.waitSeconds = ExpectedLineWaitSeconds(
-            LineCycleTimeSeconds(_network, line),
-            trainCount);
-         lineWaits.push_back(lineWait);
+         lineWait.waitSeconds = ExpectedLineWaitSeconds(line.cycleTimeSeconds, trainCount);
+         _cachedLineWaits.push_back(lineWait);
       }
    }
 
-   void World::NotePathChanged(void)
+   void World::NoteTopologyChanged(void)
    {
-      ++_pathRevision;
+      ++_topologyRevision;
+      RebuildLineWaitCache();
       RepathAllPassengers();
+   }
+
+   void World::NoteWaitChanged(void)
+   {
+      ++_waitRevision;
+      RebuildLineWaitCache();
    }
 
    void World::RepathAllPassengers(void)
@@ -478,8 +654,52 @@ namespace MiniDb
       CollectLineWaits(lineWaits);
       for (Passenger& passenger : _passengers)
       {
-         passenger.routeRevision = 0;
+         passenger.routeTopologyRevision = 0;
+         passenger.routeWaitRevision = 0;
          MaybeRepath(passenger, lineWaits);
+      }
+   }
+
+   void World::RegisterPassenger(Passenger& passenger)
+   {
+      const auto requiredSize = static_cast<size_t>(passenger.id) + 1U;
+      if (_passengerSlotById.size() < requiredSize)
+      {
+         _passengerSlotById.resize(requiredSize, InvalidIndex);
+      }
+
+      const uint32_t slot = static_cast<uint32_t>(_passengers.size()) - 1U;
+      _passengerSlotById[passenger.id] = slot;
+
+      if (passenger.state == PassengerState::Waiting)
+      {
+         IncrementWaitingCount(passenger.currentStationId);
+         AddPassengerToWaitingQueue(passenger);
+         TryBoardDwellingTrainsAt(passenger.currentStationId);
+      }
+   }
+
+   void World::TryBoardDwellingTrainsAt(StationId stationId)
+   {
+      for (Train& train : _trains)
+      {
+         if (train.motion != TrainMotion::Dwelling)
+         {
+            continue;
+         }
+
+         const Line* pLine = _network.FindLine(train.lineId);
+         if (pLine == nullptr)
+         {
+            continue;
+         }
+
+         if (CurrentStationOnLine(train, *pLine) != stationId)
+         {
+            continue;
+         }
+
+         AlightAndBoard(train);
       }
    }
 
@@ -497,7 +717,7 @@ namespace MiniDb
          return result;
       }
 
-      NotePathChanged();
+      NoteTopologyChanged();
       return Result::Ok;
    }
 
@@ -510,7 +730,7 @@ namespace MiniDb
       }
 
       AdjustTrainsAfterInsert(lineId, segmentIndex + 1);
-      NotePathChanged();
+      NoteTopologyChanged();
       return Result::Ok;
    }
 
@@ -536,7 +756,9 @@ namespace MiniDb
       train.dwellRemainingSeconds = TrainDwellSeconds;
       train.motion = TrainMotion::Dwelling;
       _trains.push_back(train);
-      NotePathChanged();
+      IncrementTrainCount(lineId);
+      NoteWaitChanged();
+      AlightAndBoard(_trains.back());
       return Result::Ok;
    }
 
@@ -574,7 +796,12 @@ namespace MiniDb
       }
       _trains.push_back(train);
       ClampTrainToCurrentSegment(_trains.back());
-      NotePathChanged();
+      IncrementTrainCount(lineId);
+      NoteWaitChanged();
+      if (_trains.back().motion == TrainMotion::Dwelling)
+      {
+         AlightAndBoard(_trains.back());
+      }
       return Result::Ok;
    }
 
@@ -598,12 +825,14 @@ namespace MiniDb
       passenger.trainId = InvalidTrainId;
       passenger.state = PassengerState::Waiting;
       passenger.routeHopIndex = 0;
-      passenger.routeRevision = 0;
+      passenger.routeTopologyRevision = 0;
+      passenger.routeWaitRevision = 0;
       passenger.platformArrivalTimeSeconds = _simulationTimeSeconds;
       LineWaitList lineWaits;
       CollectLineWaits(lineWaits);
       MaybeRepath(passenger, lineWaits);
       _passengers.push_back(passenger);
+      RegisterPassenger(_passengers.back());
       return Result::Ok;
    }
 
@@ -907,16 +1136,13 @@ namespace MiniDb
 
    uint32_t World::GetWaitingCountAt(StationId stationId) const
    {
-      uint32_t count = 0;
-      for (const Passenger& passenger : _passengers)
+      const uint32_t stationIndex = _network.GetStationVectorIndex(stationId);
+      if (stationIndex == InvalidIndex || stationIndex >= _waitingCountByStationIndex.size())
       {
-         if (passenger.state == PassengerState::Waiting && passenger.currentStationId == stationId)
-         {
-            ++count;
-         }
+         return 0;
       }
 
-      return count;
+      return _waitingCountByStationIndex[stationIndex];
    }
 
    Result World::CollectWaitingDemand(StationId stationId, DestinationDemandList& demand) const
@@ -1135,10 +1361,14 @@ namespace MiniDb
       }
 
       StationId destinationId = InvalidStationId;
-      const Result destinationResult = PickGravityDestination(
-         stations[originIndex].id,
+      if (originIndex >= _gravityWeightsByOriginIndex.size())
+      {
+         return Result::Error;
+      }
+
+      const Result destinationResult = PickGravityDestinationFromWeights(
+         _gravityWeightsByOriginIndex[originIndex],
          stations,
-         DefaultGravityParameters(),
          _unitDistribution(_generator),
          destinationId);
       if (IsErr(destinationResult))
@@ -1161,7 +1391,6 @@ namespace MiniDb
 
          if (train.motion == TrainMotion::Dwelling)
          {
-            AlightAndBoard(train);
             train.dwellRemainingSeconds -= deltaSeconds;
             if (train.dwellRemainingSeconds <= 0.0f)
             {
@@ -1218,39 +1447,52 @@ namespace MiniDb
 
       LineWaitList lineWaits;
       CollectLineWaits(lineWaits);
-      for (Passenger& passenger : _passengers)
+      const uint32_t stationIndex = _network.GetStationVectorIndex(stationId);
+      if (stationIndex != InvalidIndex && stationIndex < _waitingPassengersByStationIndex.size())
       {
-         if (passenger.state != PassengerState::Waiting)
+         const WaitingPassengerQueue& waitingQueue = _waitingPassengersByStationIndex[stationIndex];
+         for (PassengerId passengerId : waitingQueue)
          {
-            continue;
-         }
-         if (passenger.currentStationId != stationId)
-         {
-            continue;
-         }
+            Passenger* pPassenger = FindMutablePassenger(passengerId);
+            if (pPassenger == nullptr)
+            {
+               continue;
+            }
 
-         MaybeRepath(passenger, lineWaits);
+            MaybeRepath(*pPassenger, lineWaits);
+         }
       }
 
       while (train.passengerIds.size() < _trainCapacity)
       {
          Passenger* pBest = nullptr;
-         for (Passenger& passenger : _passengers)
+         if (stationIndex != InvalidIndex && stationIndex < _waitingPassengersByStationIndex.size())
          {
-            if (!PassengerWantsNextStation(passenger, stationId, nextStationId))
+            const WaitingPassengerQueue& waitingQueue = _waitingPassengersByStationIndex[stationIndex];
+            for (PassengerId passengerId : waitingQueue)
             {
-               continue;
-            }
-            if (pBest == nullptr || IsEarlierPlatformArrival(passenger, *pBest))
-            {
-               pBest = &passenger;
+               Passenger* pPassenger = FindMutablePassenger(passengerId);
+               if (pPassenger == nullptr)
+               {
+                  continue;
+               }
+               if (!PassengerWantsNextStation(*pPassenger, stationId, nextStationId))
+               {
+                  continue;
+               }
+
+               pBest = pPassenger;
+               break;
             }
          }
+
          if (pBest == nullptr)
          {
             break;
          }
 
+         RemovePassengerFromWaitingQueue(pBest->id, stationId);
+         DecrementWaitingCount(stationId);
          pBest->state = PassengerState::Onboard;
          pBest->trainId = train.id;
          pBest->route[pBest->routeHopIndex].lineId = train.lineId;
@@ -1290,6 +1532,9 @@ namespace MiniDb
          passenger.currentStationId = stationId;
          passenger.platformArrivalTimeSeconds = _simulationTimeSeconds;
          RemovePassengerIdFromList(train.passengerIds, passenger.id);
+         IncrementWaitingCount(stationId);
+         AddPassengerToWaitingQueue(passenger);
+         TryBoardDwellingTrainsAt(stationId);
       }
    }
 
@@ -1303,7 +1548,8 @@ namespace MiniDb
 
    void World::MaybeRepath(Passenger& passenger, const LineWaitList& lineWaits)
    {
-      if (passenger.routeRevision == _pathRevision)
+      if (passenger.routeTopologyRevision == _topologyRevision &&
+         passenger.routeWaitRevision == _waitRevision)
       {
          return;
       }
@@ -1315,7 +1561,8 @@ namespace MiniDb
          passenger.destinationId,
          lineWaits,
          route);
-      passenger.routeRevision = _pathRevision;
+      passenger.routeTopologyRevision = _topologyRevision;
+      passenger.routeWaitRevision = _waitRevision;
       passenger.routeHopIndex = 0;
       if (IsOk(result))
       {
@@ -1329,30 +1576,54 @@ namespace MiniDb
 
    Passenger* World::FindMutablePassenger(PassengerId passengerId)
    {
-      for (Passenger& passenger : _passengers)
+      if (passengerId >= _passengerSlotById.size())
       {
-         if (passenger.id == passengerId)
-         {
-            return &passenger;
-         }
+         return nullptr;
       }
 
-      return nullptr;
+      const uint32_t slot = _passengerSlotById[passengerId];
+      if (slot == InvalidIndex || slot >= _passengers.size())
+      {
+         return nullptr;
+      }
+
+      if (_passengers[slot].id != passengerId)
+      {
+         return nullptr;
+      }
+
+      return &_passengers[slot];
    }
 
    void World::RemovePassengerById(PassengerId passengerId)
    {
-      for (uint32_t index = 0; index < _passengers.size(); ++index)
+      if (passengerId >= _passengerSlotById.size())
       {
-         if (_passengers[index].id != passengerId)
-         {
-            continue;
-         }
-
-         _passengers[index] = _passengers.back();
-         _passengers.pop_back();
          return;
       }
+
+      const uint32_t slot = _passengerSlotById[passengerId];
+      if (slot == InvalidIndex || slot >= _passengers.size())
+      {
+         return;
+      }
+
+      if (_passengers[slot].id != passengerId)
+      {
+         return;
+      }
+
+      if (_passengers[slot].state == PassengerState::Waiting)
+      {
+         RemovePassengerFromWaitingQueue(passengerId, _passengers[slot].currentStationId);
+         DecrementWaitingCount(_passengers[slot].currentStationId);
+      }
+
+      const PassengerId movedPassengerId = _passengers.back().id;
+      _passengers[slot] = _passengers.back();
+      _passengers.pop_back();
+      _passengerSlotById[movedPassengerId] = slot;
+      _passengerSlotById[passengerId] = InvalidIndex;
    }
 
    void World::RemovePassengerIdFromList(PassengerIdList& passengerIds, PassengerId passengerId)

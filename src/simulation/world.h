@@ -15,6 +15,7 @@
 #include "core/types.h"
 #include "simulation/network.h"
 #include "simulation/passenger.h"
+#include "simulation/pathfinder.h"
 #include "simulation/train.h"
 
 namespace MiniDb
@@ -24,6 +25,10 @@ namespace MiniDb
       No = false,
       Yes = true
    };
+
+   using WaitingPassengerQueue = std::vector<PassengerId>;
+   using WaitingPassengerQueueList = std::vector<WaitingPassengerQueue>;
+   using GravityWeightMatrix = std::vector<WeightList>;
 
    class World
    {
@@ -317,16 +322,26 @@ namespace MiniDb
       void RemoveTrainsOnLine(LineId lineId);
 
       /*!
-       *\brief Fills expected platform waits from cycle time and train counts.
+       *\brief Fills expected platform waits from cached cycle times and train counts.
        *
        *\param[out] lineWaits One entry per finished line.
        */
       void CollectLineWaits(LineWaitList& lineWaits) const;
 
       /*!
-       *\brief Marks routes stale and recomputes them.
+       *\brief Rebuilds cached line waits after train or network changes.
        */
-      void NotePathChanged(void);
+      void RebuildLineWaitCache(void);
+
+      /*!
+       *\brief Marks routes stale and recomputes them after topology changes.
+       */
+      void NoteTopologyChanged(void);
+
+      /*!
+       *\brief Invalidates wait-sensitive routes after train count changes.
+       */
+      void NoteWaitChanged(void);
 
       void RepathAllPassengers(void);
       void AdjustTrainsAfterInsert(LineId lineId, uint32_t insertIndex);
@@ -341,15 +356,29 @@ namespace MiniDb
       void CompletePassenger(Passenger& passenger, Train& train);
 
       /*!
-       *\brief Rebuilds the passenger route when the path revision changed.
+       *\brief Rebuilds the passenger route when revisions changed.
        *
        *\param[in,out] passenger Passenger to update.
        *\param[in] lineWaits Expected wait per line.
        */
       void MaybeRepath(Passenger& passenger, const LineWaitList& lineWaits);
+
+      void RegisterPassenger(Passenger& passenger);
       Passenger* FindMutablePassenger(PassengerId passengerId);
       void RemovePassengerById(PassengerId passengerId);
       void RemovePassengerIdFromList(PassengerIdList& passengerIds, PassengerId passengerId);
+
+      void EnsureWaitingCacheSize(void);
+      void IncrementWaitingCount(StationId stationId);
+      void DecrementWaitingCount(StationId stationId);
+      void AddPassengerToWaitingQueue(Passenger& passenger);
+      void RemovePassengerFromWaitingQueue(PassengerId passengerId, StationId stationId);
+      void RebuildWaitingCaches(void);
+      void RebuildGravityWeightMatrix(void);
+      void IncrementTrainCount(LineId lineId);
+      void DecrementTrainCount(LineId lineId);
+      void EnsureTrainCountCapacity(LineId lineId);
+      void TryBoardDwellingTrainsAt(StationId stationId);
 
       StationRecordList _catalog;
       uint32_t _nextCatalogIndex = 0;
@@ -361,7 +390,14 @@ namespace MiniDb
       PassengerId _nextPassengerId = 1;
       uint32_t _arrivedPassengerCount = 0;
       uint32_t _trainCapacity = 0;
-      uint64_t _pathRevision = 0;
+      uint64_t _topologyRevision = 0;
+      uint64_t _waitRevision = 0;
+      LineWaitList _cachedLineWaits;
+      std::vector<uint32_t> _waitingCountByStationIndex;
+      WaitingPassengerQueueList _waitingPassengersByStationIndex;
+      std::vector<uint32_t> _trainCountByLineId;
+      std::vector<uint32_t> _passengerSlotById;
+      GravityWeightMatrix _gravityWeightsByOriginIndex;
       float _simulationTimeSeconds = 0.0f;
       float _timeUntilNextStationSeconds = 0.0f;
       float _passengerSpawnAccumulator = 0.0f;

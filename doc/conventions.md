@@ -23,7 +23,7 @@ These match the rules used in this repository. New code should follow them so th
 | --- | --- | --- |
 | Types, enums, functions, constexpr values, namespaces | PascalCase | `FindRoute`, `LineLoop`, `TrainCapacity` |
 | Variables | camelCase | `stationId` |
-| Private members | leading `_` | `_pathRevision` |
+| Private members | leading `_` | `_topologyRevision` |
 | Pointers | leading `p` | `pStation`, `pFont` |
 | Macros | CAPITAL_CASE | — |
 

@@ -6,6 +6,7 @@
 #include "simulation/network.h"
 
 #include "core/constants.h"
+#include "simulation/pathfinder.h"
 
 namespace MiniDb
 {
@@ -70,9 +71,34 @@ namespace MiniDb
       _stations.clear();
       _lines.clear();
       _adjacency.clear();
+      _lineVectorIndexById.clear();
       _nextLineId = 1;
       _revision = 0;
       _createdLineCount = 0;
+   }
+
+   void Network::EnsureLineIndexCapacity(LineId lineId)
+   {
+      const auto requiredSize = static_cast<size_t>(lineId) + 1U;
+      if (_lineVectorIndexById.size() < requiredSize)
+      {
+         _lineVectorIndexById.resize(requiredSize, InvalidIndex);
+      }
+   }
+
+   void Network::RebuildLineIndexMap(void)
+   {
+      _lineVectorIndexById.clear();
+      for (uint32_t index = 0; index < _lines.size(); ++index)
+      {
+         EnsureLineIndexCapacity(_lines[index].id);
+         _lineVectorIndexById[_lines[index].id] = index;
+      }
+   }
+
+   uint32_t Network::GetStationVectorIndex(StationId stationId) const
+   {
+      return StationVectorIndex(stationId);
    }
 
    uint32_t Network::StationVectorIndex(StationId stationId) const
@@ -135,8 +161,9 @@ namespace MiniDb
       _adjacency.clear();
       _adjacency.resize(_stations.size());
 
-      for (const Line& line : _lines)
+      for (Line& line : _lines)
       {
+         line.cycleTimeSeconds = LineCycleTimeSeconds(*this, line);
          if (line.stationIds.size() < MinimumLineStations)
          {
             continue;
@@ -194,6 +221,7 @@ namespace MiniDb
          }
       }
 
+      RebuildLineIndexMap();
       ++_revision;
    }
 
@@ -380,28 +408,44 @@ namespace MiniDb
 
    const Line* Network::FindLine(LineId lineId) const
    {
-      for (const Line& line : _lines)
+      if (lineId >= _lineVectorIndexById.size())
       {
-         if (line.id == lineId)
-         {
-            return &line;
-         }
+         return nullptr;
       }
 
-      return nullptr;
+      const uint32_t index = _lineVectorIndexById[lineId];
+      if (index == InvalidIndex || index >= _lines.size())
+      {
+         return nullptr;
+      }
+
+      if (_lines[index].id != lineId)
+      {
+         return nullptr;
+      }
+
+      return &_lines[index];
    }
 
    Line* Network::FindMutableLine(LineId lineId)
    {
-      for (Line& line : _lines)
+      if (lineId >= _lineVectorIndexById.size())
       {
-         if (line.id == lineId)
-         {
-            return &line;
-         }
+         return nullptr;
       }
 
-      return nullptr;
+      const uint32_t index = _lineVectorIndexById[lineId];
+      if (index == InvalidIndex || index >= _lines.size())
+      {
+         return nullptr;
+      }
+
+      if (_lines[index].id != lineId)
+      {
+         return nullptr;
+      }
+
+      return &_lines[index];
    }
 
    uint32_t Network::StationIndexOnLine(const Line& line, StationId stationId) const

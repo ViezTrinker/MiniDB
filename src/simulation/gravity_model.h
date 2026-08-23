@@ -76,6 +76,20 @@ namespace MiniDb
       GravityParameters parameters,
       float randomZeroToOne,
       StationId& destinationId);
+
+   /*!
+    *\brief Samples a destination from precomputed gravity weights.
+    *
+    *\param[in] weights One weight per station, same order as stations.
+    *\param[in] stations Active stations.
+    *\param[in] randomZeroToOne Value in [0, 1].
+    *\param[out] destinationId Chosen destination.
+    */
+   Result PickGravityDestinationFromWeights(
+      const WeightList& weights,
+      const StationRecordList& stations,
+      float randomZeroToOne,
+      StationId& destinationId);
 } // namespace MiniDb
 
 #endif // GRAVITY_MODEL_H

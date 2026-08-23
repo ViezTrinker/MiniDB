@@ -5,6 +5,10 @@
 
 #include "simulation/pathfinder.h"
 
+#include <queue>
+#include <unordered_map>
+#include <unordered_set>
+
 #include "core/constants.h"
 
 namespace MiniDb
@@ -21,57 +25,41 @@ namespace MiniDb
       };
 
       using SearchNodeList = std::vector<SearchNode>;
+      using OpenNodeIndexMap = std::unordered_map<uint64_t, uint32_t>;
+      using ClosedNodeKeySet = std::unordered_set<uint64_t>;
 
-      uint32_t FindOpenNodeIndex(const SearchNodeList& nodes, StationId stationId, LineId lineId)
+      uint64_t NodeKey(StationId stationId, LineId lineId)
       {
-         for (uint32_t index = 0; index < nodes.size(); ++index)
-         {
-            if (nodes[index].isClosed)
-            {
-               continue;
-            }
-            if (nodes[index].stationId == stationId && nodes[index].lineId == lineId)
-            {
-               return index;
-            }
-         }
-
-         return InvalidIndex;
+         return (static_cast<uint64_t>(stationId) << 32) |
+            static_cast<uint64_t>(lineId);
       }
 
-      bool HasClosedNode(const SearchNodeList& nodes, StationId stationId, LineId lineId)
+      struct OpenNodeCompare
       {
-         for (const SearchNode& node : nodes)
+         const SearchNodeList* pNodes;
+
+         bool operator()(uint32_t leftIndex, uint32_t rightIndex) const
          {
-            if (node.isClosed && node.stationId == stationId && node.lineId == lineId)
-            {
-               return true;
-            }
+            return (*pNodes)[leftIndex].costSeconds > (*pNodes)[rightIndex].costSeconds;
+         }
+      };
+
+      using OpenNodeHeap = std::priority_queue<uint32_t, std::vector<uint32_t>, OpenNodeCompare>;
+
+      uint32_t FindOpenNodeIndex(const OpenNodeIndexMap& openIndexByKey, StationId stationId, LineId lineId)
+      {
+         const auto iterator = openIndexByKey.find(NodeKey(stationId, lineId));
+         if (iterator == openIndexByKey.end())
+         {
+            return InvalidIndex;
          }
 
-         return false;
+         return iterator->second;
       }
 
-      uint32_t FindCheapestOpenIndex(const SearchNodeList& nodes)
+      bool HasClosedNode(const ClosedNodeKeySet& closedKeys, StationId stationId, LineId lineId)
       {
-         uint32_t bestIndex = InvalidIndex;
-         float bestCost = 0.0f;
-         bool hasBest = false;
-         for (uint32_t index = 0; index < nodes.size(); ++index)
-         {
-            if (nodes[index].isClosed)
-            {
-               continue;
-            }
-            if (!hasBest || nodes[index].costSeconds < bestCost)
-            {
-               bestCost = nodes[index].costSeconds;
-               bestIndex = index;
-               hasBest = true;
-            }
-         }
-
-         return bestIndex;
+         return closedKeys.find(NodeKey(stationId, lineId)) != closedKeys.end();
       }
 
       uint32_t StationListIndex(const StationRecordList& stations, StationId stationId)
@@ -234,17 +222,30 @@ namespace MiniDb
       start.isClosed = false;
       nodes.push_back(start);
 
+      OpenNodeCompare compare;
+      compare.pNodes = &nodes;
+      OpenNodeHeap openHeap(compare);
+      openHeap.push(0);
+
+      OpenNodeIndexMap openIndexByKey;
+      openIndexByKey[NodeKey(originId, InvalidLineId)] = 0;
+
+      ClosedNodeKeySet closedKeys;
       uint32_t destinationNodeIndex = InvalidIndex;
 
-      while (true)
+      while (!openHeap.empty())
       {
-         const uint32_t currentIndex = FindCheapestOpenIndex(nodes);
-         if (currentIndex == InvalidIndex)
+         const uint32_t currentIndex = openHeap.top();
+         openHeap.pop();
+         if (nodes[currentIndex].isClosed)
          {
-            break;
+            continue;
          }
 
          nodes[currentIndex].isClosed = true;
+         closedKeys.insert(NodeKey(nodes[currentIndex].stationId, nodes[currentIndex].lineId));
+         openIndexByKey.erase(NodeKey(nodes[currentIndex].stationId, nodes[currentIndex].lineId));
+
          if (nodes[currentIndex].stationId == destinationId)
          {
             destinationNodeIndex = currentIndex;
@@ -260,7 +261,7 @@ namespace MiniDb
          const LineId currentLineId = nodes[currentIndex].lineId;
          for (const NetworkEdge& edge : adjacency[stationIndex])
          {
-            if (HasClosedNode(nodes, edge.toStationId, edge.lineId))
+            if (HasClosedNode(closedKeys, edge.toStationId, edge.lineId))
             {
                continue;
             }
@@ -276,13 +277,14 @@ namespace MiniDb
             }
 
             const float newCost = nodes[currentIndex].costSeconds + extraCost;
-            const uint32_t existingIndex = FindOpenNodeIndex(nodes, edge.toStationId, edge.lineId);
+            const uint32_t existingIndex = FindOpenNodeIndex(openIndexByKey, edge.toStationId, edge.lineId);
             if (existingIndex != InvalidIndex)
             {
                if (newCost < nodes[existingIndex].costSeconds)
                {
                   nodes[existingIndex].costSeconds = newCost;
                   nodes[existingIndex].previousIndex = currentIndex;
+                  openHeap.push(existingIndex);
                }
                continue;
             }
@@ -293,7 +295,10 @@ namespace MiniDb
             nextNode.costSeconds = newCost;
             nextNode.previousIndex = currentIndex;
             nextNode.isClosed = false;
+            const uint32_t nextIndex = static_cast<uint32_t>(nodes.size());
             nodes.push_back(nextNode);
+            openIndexByKey[NodeKey(edge.toStationId, edge.lineId)] = nextIndex;
+            openHeap.push(nextIndex);
          }
       }
 

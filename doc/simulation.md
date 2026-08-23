@@ -30,7 +30,7 @@ A line is an ordered station list plus a color index and `LineLoop` (`Yes` / `No
 - Open line: at least two stations. Trains reverse at the terminals. Graph edges are **undirected**.
 - Loop: at least three unique stations, stored without a duplicated closing id. `LineSegmentCount` includes the closer back to the first station. Trains keep direction and wrap. Graph edges are **directed** in draw order, so passengers only route the way trains actually run.
 
-`AddLine` / `ExtendLine` / `InsertStationOnLine` / `RemoveLine` rebuild the graph and bump `Network::GetRevision()`. `World` also keeps `_pathRevision` so adding or removing trains invalidates passenger routes.
+`AddLine` / `ExtendLine` / `InsertStationOnLine` / `RemoveLine` rebuild the graph and bump `Network::GetRevision()`. `World` keeps `_topologyRevision` for network edits and `_waitRevision` for train-count changes so passengers repath lazily when waits change.
 
 `World::AddLine` assigns the next palette color and places one train at the start of the line.
 
@@ -76,7 +76,7 @@ wait = 0.5 * cycleTime / trainCount
 
 `LineCycleTimeSeconds` is one circuit on a loop, or a full out-and-back on a shuttle (travel plus dwell at each stop). With zero trains the wait is a full cycle.
 
-Routes are a list of adjacent `RouteHop` values (`lineId`, `fromStationId`, `toStationId`). They are recomputed when `_pathRevision` changes (network or train count). Crowding is not part of the cost.
+Routes are a list of adjacent `RouteHop` values (`lineId`, `fromStationId`, `toStationId`). They are recomputed when `_topologyRevision` or `_waitRevision` changes (network topology or train headways). Crowding is not part of the cost.
 
 ## Boarding
 

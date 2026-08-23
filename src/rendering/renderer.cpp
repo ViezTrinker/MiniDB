@@ -294,7 +294,14 @@ namespace MiniDb
 
    Result Renderer::LoadOutline(std::string_view filePath)
    {
-      return LoadOutlineFromFile(filePath, _outlinePolygons);
+      const Result result = LoadOutlineFromFile(filePath, _outlinePolygons);
+      if (IsErr(result))
+      {
+         return result;
+      }
+
+      RebuildOutlineVertexArrays();
+      return Result::Ok;
    }
 
    float Renderer::SidebarWidthPixels(void) const
@@ -618,6 +625,15 @@ namespace MiniDb
          return;
       }
 
+      for (const sf::VertexArray& vertices : _outlineVertexArrays)
+      {
+         _pWindow->draw(vertices);
+      }
+   }
+
+   void Renderer::RebuildOutlineVertexArrays(void)
+   {
+      _outlineVertexArrays.clear();
       for (const MapPolygon& polygon : _outlinePolygons)
       {
          if (polygon.size() < 2)
@@ -631,8 +647,71 @@ namespace MiniDb
             vertices[index].position = {polygon[index].xKm, polygon[index].yKm};
             vertices[index].color = sf::Color(150, 140, 128);
          }
-         _pWindow->draw(vertices);
+         _outlineVertexArrays.push_back(vertices);
       }
+   }
+
+   namespace
+   {
+      uint64_t SegmentOffsetKey(LineId lineId, uint32_t segmentIndex)
+      {
+         return (static_cast<uint64_t>(lineId) << 32) |
+            static_cast<uint64_t>(segmentIndex);
+      }
+   } // namespace
+
+   void Renderer::RebuildParallelOffsetCache(const World& world)
+   {
+      const uint64_t revision = world.GetNetwork().GetRevision();
+      if (_parallelOffsetNetworkRevision == revision)
+      {
+         return;
+      }
+
+      _parallelOffsetKmBySegment.clear();
+      const LineList& lines = world.GetNetwork().GetLines();
+      for (const Line& line : lines)
+      {
+         const uint32_t segmentCount = LineSegmentCount(line);
+         for (uint32_t segmentIndex = 0; segmentIndex < segmentCount; ++segmentIndex)
+         {
+            StationId fromId = InvalidStationId;
+            StationId toId = InvalidStationId;
+            const Result endpointResult = LineSegmentEndpoints(line, segmentIndex, fromId, toId);
+            if (IsErr(endpointResult))
+            {
+               continue;
+            }
+
+            StationId pairLow = InvalidStationId;
+            StationId pairHigh = InvalidStationId;
+            CanonicalStationPair(fromId, toId, pairLow, pairHigh);
+            const uint32_t sharedCount = SharedLineCountOnPair(lines, pairLow, pairHigh);
+            const uint32_t slotIndex = SharedLineSlotOnPair(lines, line.id, pairLow, pairHigh);
+            float offsetKm = 0.0f;
+            if (sharedCount > 1)
+            {
+               const auto centeredSlot =
+                  static_cast<float>(slotIndex) - (static_cast<float>(sharedCount - 1) * 0.5f);
+               offsetKm = centeredSlot * PixelsToKm(ParallelLineOffsetPixels);
+            }
+
+            _parallelOffsetKmBySegment[SegmentOffsetKey(line.id, segmentIndex)] = offsetKm;
+         }
+      }
+
+      _parallelOffsetNetworkRevision = revision;
+   }
+
+   float Renderer::ParallelOffsetKm(LineId lineId, uint32_t segmentIndex) const
+   {
+      const auto iterator = _parallelOffsetKmBySegment.find(SegmentOffsetKey(lineId, segmentIndex));
+      if (iterator == _parallelOffsetKmBySegment.end())
+      {
+         return 0.0f;
+      }
+
+      return iterator->second;
    }
 
    void Renderer::DrawSegment(MapPoint from, MapPoint to, sf::Color color, float thicknessKm)
@@ -664,6 +743,7 @@ namespace MiniDb
       LineDrag lineDrag,
       const LineDragPreview& lineDragPreview)
    {
+      RebuildParallelOffsetCache(world);
       for (const Line& line : world.GetNetwork().GetLines())
       {
          const sf::Color color = ColorForLine(line.colorIndex);
@@ -698,19 +778,7 @@ namespace MiniDb
                continue;
             }
 
-            StationId pairLow = InvalidStationId;
-            StationId pairHigh = InvalidStationId;
-            CanonicalStationPair(fromId, toId, pairLow, pairHigh);
-            const LineList& lines = world.GetNetwork().GetLines();
-            const uint32_t sharedCount = SharedLineCountOnPair(lines, pairLow, pairHigh);
-            const uint32_t slotIndex = SharedLineSlotOnPair(lines, line.id, pairLow, pairHigh);
-            float offsetKm = 0.0f;
-            if (sharedCount > 1)
-            {
-               const auto centeredSlot =
-                  static_cast<float>(slotIndex) - (static_cast<float>(sharedCount - 1) * 0.5f);
-               offsetKm = centeredSlot * PixelsToKm(ParallelLineOffsetPixels);
-            }
+            const float offsetKm = ParallelOffsetKm(line.id, segmentIndex);
 
             const MapPoint fromPoint = OffsetAlongPerpendicular(
                pFrom->position,
@@ -1347,11 +1415,12 @@ namespace MiniDb
       _pWindow->draw(trainShape);
    }
 
-   float Renderer::InspectorHeightPixels(
+   float Renderer::ComputeInspectorHeightPixels(
       const World& world,
       StationId inspectedStationId,
       TrainId inspectedTrainId,
-      LineId inspectedLineId) const
+      LineId inspectedLineId,
+      const SidebarSnapshot& snapshot) const
    {
       if (_pWindow == nullptr)
       {
@@ -1362,37 +1431,25 @@ namespace MiniDb
       float height = 72.0f;
       if (inspectedStationId != InvalidStationId)
       {
-         DestinationDemandList demand;
-         world.CollectWaitingDemand(inspectedStationId, demand);
-         const uint32_t rowCount = ClampedInspectorRowCount(static_cast<uint32_t>(demand.size()));
+         const uint32_t rowCount = ClampedInspectorRowCount(static_cast<uint32_t>(snapshot.stationDemand.size()));
          height = 86.0f + (static_cast<float>(rowCount) * 20.0f);
       }
       else if (inspectedTrainId != InvalidTrainId)
       {
-         OnboardDemandList demand;
-         world.CollectOnboardDemand(inspectedTrainId, demand);
-         const uint32_t rowCount = ClampedInspectorRowCount(static_cast<uint32_t>(demand.size()));
+         const uint32_t rowCount = ClampedInspectorRowCount(static_cast<uint32_t>(snapshot.onboardDemand.size()));
          height = 108.0f + (static_cast<float>(rowCount) * 36.0f);
       }
       else if (inspectedLineId != InvalidLineId)
       {
-         TrainOccupancyList occupancy;
-         world.CollectTrainsOnLine(inspectedLineId, occupancy);
-         DestinationDemandList demand;
-         world.CollectLineDemand(inspectedLineId, demand);
-         const uint32_t trainRows = ClampedInspectorRowCount(static_cast<uint32_t>(occupancy.size()));
-         const uint32_t destRows = ClampedInspectorRowCount(static_cast<uint32_t>(demand.size()));
+         const uint32_t trainRows = ClampedInspectorRowCount(static_cast<uint32_t>(snapshot.lineOccupancy.size()));
+         const uint32_t destRows = ClampedInspectorRowCount(static_cast<uint32_t>(snapshot.lineDemand.size()));
          height = 86.0f + (static_cast<float>(trainRows) * 20.0f) + 24.0f +
             (static_cast<float>(destRows) * 20.0f);
       }
       else
       {
-         DestinationDemandList demand;
-         world.CollectGlobalWaitingDemand(demand);
-         StationCrowdingList crowded;
-         world.CollectCrowdedStations(crowded);
-         const uint32_t destRows = ClampedInspectorRowCount(static_cast<uint32_t>(demand.size()));
-         const uint32_t crowdedRows = ClampedCrowdedStationRowCount(static_cast<uint32_t>(crowded.size()));
+         const uint32_t destRows = ClampedInspectorRowCount(static_cast<uint32_t>(snapshot.globalDemand.size()));
+         const uint32_t crowdedRows = ClampedCrowdedStationRowCount(static_cast<uint32_t>(snapshot.crowdedStations.size()));
          height = 86.0f + (static_cast<float>(destRows) * 20.0f) + 24.0f +
             (static_cast<float>(crowdedRows) * 20.0f);
       }
@@ -1410,13 +1467,70 @@ namespace MiniDb
       return height;
    }
 
+   SidebarSnapshot Renderer::BuildSidebarSnapshot(
+      const World& world,
+      StationId inspectedStationId,
+      TrainId inspectedTrainId,
+      LineId inspectedLineId) const
+   {
+      SidebarSnapshot snapshot;
+      world.CollectUnconnectedStations(snapshot.unconnectedIds);
+
+      if (inspectedStationId != InvalidStationId)
+      {
+         world.CollectWaitingDemand(inspectedStationId, snapshot.stationDemand);
+      }
+      else if (inspectedTrainId != InvalidTrainId)
+      {
+         world.CollectOnboardDemand(inspectedTrainId, snapshot.onboardDemand);
+      }
+      else if (inspectedLineId != InvalidLineId)
+      {
+         world.CollectTrainsOnLine(inspectedLineId, snapshot.lineOccupancy);
+         world.CollectLineDemand(inspectedLineId, snapshot.lineDemand);
+      }
+      else
+      {
+         world.CollectGlobalWaitingDemand(snapshot.globalDemand);
+         world.CollectCrowdedStations(snapshot.crowdedStations);
+      }
+
+      snapshot.inspectorHeightPixels = ComputeInspectorHeightPixels(
+         world,
+         inspectedStationId,
+         inspectedTrainId,
+         inspectedLineId,
+         snapshot);
+      snapshot.unconnectedListTopPixels = snapshot.inspectorHeightPixels + 8.0f;
+      return snapshot;
+   }
+
+   float Renderer::InspectorHeightPixels(
+      const World& world,
+      StationId inspectedStationId,
+      TrainId inspectedTrainId,
+      LineId inspectedLineId) const
+   {
+      const SidebarSnapshot snapshot = BuildSidebarSnapshot(
+         world,
+         inspectedStationId,
+         inspectedTrainId,
+         inspectedLineId);
+      return snapshot.inspectorHeightPixels;
+   }
+
    float Renderer::UnconnectedListTopPixels(
       const World& world,
       StationId inspectedStationId,
       TrainId inspectedTrainId,
       LineId inspectedLineId) const
    {
-      return InspectorHeightPixels(world, inspectedStationId, inspectedTrainId, inspectedLineId) + 8.0f;
+      const SidebarSnapshot snapshot = BuildSidebarSnapshot(
+         world,
+         inspectedStationId,
+         inspectedTrainId,
+         inspectedLineId);
+      return snapshot.unconnectedListTopPixels;
    }
 
    sf::FloatRect Renderer::UnconnectedPanelBounds(void) const
@@ -1464,17 +1578,16 @@ namespace MiniDb
          return 0.0f;
       }
 
-      StationIdList unconnectedIds;
-      world.CollectUnconnectedStations(unconnectedIds);
-      const sf::FloatRect bounds = UnconnectedPanelBounds();
-      const float listTop = UnconnectedListTopPixels(
+      const SidebarSnapshot snapshot = BuildSidebarSnapshot(
          world,
          inspectedStationId,
          inspectedTrainId,
          inspectedLineId);
+      const sf::FloatRect bounds = UnconnectedPanelBounds();
+      const float listTop = snapshot.unconnectedListTopPixels;
       const float rowsTop = listTop + 24.0f;
       const float listHeight = bounds.size.y - rowsTop - 12.0f;
-      const float contentHeight = static_cast<float>(unconnectedIds.size()) * UnconnectedRowHeightPixels;
+      const float contentHeight = static_cast<float>(snapshot.unconnectedIds.size()) * UnconnectedRowHeightPixels;
       float maxScroll = contentHeight - listHeight;
       if (maxScroll < 0.0f)
       {
@@ -1507,14 +1620,13 @@ namespace MiniDb
          return InvalidStationId;
       }
 
-      StationIdList unconnectedIds;
-      world.CollectUnconnectedStations(unconnectedIds);
-      const sf::FloatRect bounds = UnconnectedPanelBounds();
-      const float listTop = UnconnectedListTopPixels(
+      const SidebarSnapshot snapshot = BuildSidebarSnapshot(
          world,
          inspectedStationId,
          inspectedTrainId,
          inspectedLineId);
+      const sf::FloatRect bounds = UnconnectedPanelBounds();
+      const float listTop = snapshot.unconnectedListTopPixels;
       const float rowsTop = listTop + 24.0f;
       const float localY =
          static_cast<float>(pixel.y) - bounds.position.y - rowsTop + unconnectedScrollPixels;
@@ -1524,12 +1636,12 @@ namespace MiniDb
       }
 
       const auto rowIndex = static_cast<uint32_t>(localY / UnconnectedRowHeightPixels);
-      if (rowIndex >= unconnectedIds.size())
+      if (rowIndex >= snapshot.unconnectedIds.size())
       {
          return InvalidStationId;
       }
 
-      return unconnectedIds[rowIndex];
+      return snapshot.unconnectedIds[rowIndex];
    }
 
    void Renderer::DrawSidebarInspector(
@@ -1538,8 +1650,9 @@ namespace MiniDb
       TrainId inspectedTrainId,
       LineId inspectedLineId,
       const sf::FloatRect& panelBounds,
-      float inspectorHeight)
+      const SidebarSnapshot& snapshot)
    {
+      const float inspectorHeight = snapshot.inspectorHeightPixels;
       sf::RectangleShape inspector({panelBounds.size.x, inspectorHeight});
       inspector.setPosition(panelBounds.position);
       inspector.setFillColor(sf::Color(255, 252, 245));
@@ -1566,8 +1679,7 @@ namespace MiniDb
          waitingText.setPosition({left, 36.0f});
          _pWindow->draw(waitingText);
 
-         DestinationDemandList demand;
-         world.CollectWaitingDemand(inspectedStationId, demand);
+         DestinationDemandList demand = snapshot.stationDemand;
          if (demand.empty())
          {
             sf::Text emptyText(*_pFont, Utf8SfString("No destinations yet"), 13);
@@ -1643,8 +1755,7 @@ namespace MiniDb
          nextText.setPosition({left, 56.0f});
          _pWindow->draw(nextText);
 
-         OnboardDemandList demand;
-         world.CollectOnboardDemand(inspectedTrainId, demand);
+         OnboardDemandList demand = snapshot.onboardDemand;
          if (demand.empty())
          {
             sf::Text emptyText(*_pFont, Utf8SfString("No passengers onboard"), 13);
@@ -1704,8 +1815,7 @@ namespace MiniDb
          titleText.setPosition({left, 10.0f});
          _pWindow->draw(titleText);
 
-         TrainOccupancyList occupancy;
-         world.CollectTrainsOnLine(inspectedLineId, occupancy);
+         TrainOccupancyList occupancy = snapshot.lineOccupancy;
          std::string trainsLine = "Trains " + std::to_string(occupancy.size());
          sf::Text trainsText(*_pFont, Utf8SfString(trainsLine), 14);
          trainsText.setFillColor(sf::Color(35, 35, 35));
@@ -1758,8 +1868,7 @@ namespace MiniDb
          destHeaderText.setPosition({left, destHeaderY});
          _pWindow->draw(destHeaderText);
 
-         DestinationDemandList demand;
-         world.CollectLineDemand(inspectedLineId, demand);
+         DestinationDemandList demand = snapshot.lineDemand;
          if (demand.empty())
          {
             sf::Text emptyDestText(*_pFont, Utf8SfString("No destinations yet"), 13);
@@ -1795,10 +1904,8 @@ namespace MiniDb
          return;
       }
 
-      DestinationDemandList demand;
-      world.CollectGlobalWaitingDemand(demand);
-      StationCrowdingList crowded;
-      world.CollectCrowdedStations(crowded);
+      DestinationDemandList demand = snapshot.globalDemand;
+      StationCrowdingList crowded = snapshot.crowdedStations;
 
       sf::Text titleText(*_pFont, Utf8SfString("Overview"), 18);
       titleText.setFillColor(sf::Color(25, 25, 25));
@@ -1908,7 +2015,7 @@ namespace MiniDb
       panel.setOutlineThickness(1.0f);
       _pWindow->draw(panel);
 
-      const float inspectorHeight = InspectorHeightPixels(
+      const SidebarSnapshot snapshot = BuildSidebarSnapshot(
          world,
          inspectedStationId,
          inspectedTrainId,
@@ -1919,28 +2026,22 @@ namespace MiniDb
          inspectedTrainId,
          inspectedLineId,
          bounds,
-         inspectorHeight);
+         snapshot);
 
-      const float listTop = UnconnectedListTopPixels(
-         world,
-         inspectedStationId,
-         inspectedTrainId,
-         inspectedLineId);
+      const float listTop = snapshot.unconnectedListTopPixels;
       sf::RectangleShape divider({bounds.size.x - 16.0f, 1.0f});
       divider.setPosition({bounds.position.x + 8.0f, listTop - 6.0f});
       divider.setFillColor(sf::Color(190, 180, 168));
       _pWindow->draw(divider);
 
-      StationIdList unconnectedIds;
-      world.CollectUnconnectedStations(unconnectedIds);
-      std::string title = "Unconnected  " + std::to_string(unconnectedIds.size());
+      std::string title = "Unconnected  " + std::to_string(snapshot.unconnectedIds.size());
       sf::Text titleText(*_pFont, Utf8SfString(title), 15);
       titleText.setFillColor(sf::Color(35, 35, 35));
       titleText.setPosition({bounds.position.x + 12.0f, listTop});
       _pWindow->draw(titleText);
 
       const float rowsTop = listTop + 24.0f;
-      if (unconnectedIds.empty())
+      if (snapshot.unconnectedIds.empty())
       {
          sf::Text emptyText(*_pFont, Utf8SfString("All stations connected"), 13);
          emptyText.setFillColor(sf::Color(90, 85, 80));
@@ -1957,7 +2058,7 @@ namespace MiniDb
          inspectedLineId,
          cursorPixel,
          unconnectedScrollPixels);
-      for (uint32_t index = 0; index < unconnectedIds.size(); ++index)
+      for (uint32_t index = 0; index < snapshot.unconnectedIds.size(); ++index)
       {
          const float rowY = rowsTop + (static_cast<float>(index) * UnconnectedRowHeightPixels) - unconnectedScrollPixels;
          if ((rowY + UnconnectedRowHeightPixels) < rowsTop || rowY > listBottom)
@@ -1965,14 +2066,14 @@ namespace MiniDb
             continue;
          }
 
-         const StationRecord* pStation = world.GetNetwork().FindStation(unconnectedIds[index]);
+         const StationRecord* pStation = world.GetNetwork().FindStation(snapshot.unconnectedIds[index]);
          if (pStation == nullptr)
          {
             continue;
          }
 
          sf::Color rowColor(40, 40, 40);
-         if (unconnectedIds[index] == inspectedStationId || unconnectedIds[index] == hoveredRowId)
+         if (snapshot.unconnectedIds[index] == inspectedStationId || snapshot.unconnectedIds[index] == hoveredRowId)
          {
             sf::RectangleShape rowHighlight({bounds.size.x - 8.0f, UnconnectedRowHeightPixels});
             rowHighlight.setPosition({bounds.position.x + 4.0f, rowY});

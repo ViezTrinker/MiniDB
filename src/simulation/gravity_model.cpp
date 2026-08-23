@@ -195,4 +195,29 @@ namespace MiniDb
       destinationId = stations[index].id;
       return Result::Ok;
    }
+
+   Result PickGravityDestinationFromWeights(
+      const WeightList& weights,
+      const StationRecordList& stations,
+      float randomZeroToOne,
+      StationId& destinationId)
+   {
+      if (weights.size() != stations.size())
+      {
+         return Result::InvalidArgument;
+      }
+      if (stations.size() < 2)
+      {
+         return Result::InvalidArgument;
+      }
+
+      const uint32_t index = PickWeightedIndex(weights, randomZeroToOne);
+      if (index == InvalidIndex || index >= stations.size())
+      {
+         return Result::Error;
+      }
+
+      destinationId = stations[index].id;
+      return Result::Ok;
+   }
 } // namespace MiniDb

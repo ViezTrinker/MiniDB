@@ -891,3 +891,103 @@ TEST(WorldTest, BerlinHamburgPassengerBoardsShuttleInsteadOfWaitingForLoop)
 
    EXPECT_TRUE(boardedShuttle);
 }
+
+TEST(WorldTest, PassengerBoardsDuringMultiTickDwell)
+{
+   MiniDb::World world(11);
+   world.SetPassengerAutoSpawn(MiniDb::PassengerAutoSpawn::No);
+   world.SetTrainCapacity(1);
+   ASSERT_TRUE(MiniDb::IsOk(world.LoadCatalogFromString(CatalogJson)));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+
+   MiniDb::StationIdList lineStations;
+   lineStations.push_back(3);
+   lineStations.push_back(4);
+   MiniDb::LineId lineId = MiniDb::InvalidLineId;
+   ASSERT_TRUE(MiniDb::IsOk(world.AddLine(lineStations, lineId)));
+
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnPassenger(4, 3)));
+   EXPECT_EQ(world.GetWaitingCountAt(4), 1u);
+
+   bool boardedDuringDwell = false;
+   for (uint32_t step = 0; step < 400; ++step)
+   {
+      world.Tick(0.05f);
+      for (const MiniDb::Train& train : world.GetTrains())
+      {
+         if (train.lineId == lineId && train.motion == MiniDb::TrainMotion::Dwelling && !train.passengerIds.empty())
+         {
+            boardedDuringDwell = true;
+            break;
+         }
+      }
+      if (boardedDuringDwell)
+      {
+         break;
+      }
+   }
+
+   EXPECT_TRUE(boardedDuringDwell);
+   EXPECT_EQ(world.GetWaitingCountAt(4), 0u);
+   EXPECT_EQ(world.GetArrivedPassengerCount(), 0u);
+}
+
+TEST(WorldTest, WaitingCountTracksTransferAndArrival)
+{
+   MiniDb::World world(13);
+   world.SetPassengerAutoSpawn(MiniDb::PassengerAutoSpawn::No);
+   ASSERT_TRUE(MiniDb::IsOk(world.LoadCatalogFromString(CatalogJson)));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+
+   MiniDb::StationIdList lineStations;
+   lineStations.push_back(3);
+   lineStations.push_back(4);
+   lineStations.push_back(5);
+   MiniDb::LineId lineId = MiniDb::InvalidLineId;
+   ASSERT_TRUE(MiniDb::IsOk(world.AddLine(lineStations, lineId)));
+
+   for (uint32_t step = 0; step < 200; ++step)
+   {
+      world.Tick(0.05f);
+      if (world.GetTrains().empty())
+      {
+         continue;
+      }
+      const MiniDb::Train& train = world.GetTrains().front();
+      if (train.motion == MiniDb::TrainMotion::Moving)
+      {
+         break;
+      }
+   }
+
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnPassenger(3, 5)));
+   EXPECT_EQ(world.GetWaitingCountAt(3), 1u);
+   EXPECT_EQ(world.GetWaitingCountAt(4), 0u);
+   EXPECT_EQ(world.GetWaitingCountAt(5), 0u);
+
+   bool arrived = false;
+   for (uint32_t step = 0; step < 800; ++step)
+   {
+      world.Tick(0.05f);
+      if (world.GetArrivedPassengerCount() >= 1)
+      {
+         arrived = true;
+         break;
+      }
+   }
+
+   EXPECT_TRUE(arrived);
+   EXPECT_EQ(world.GetWaitingCountAt(3), 0u);
+   EXPECT_EQ(world.GetWaitingCountAt(4), 0u);
+   EXPECT_EQ(world.GetWaitingCountAt(5), 0u);
+}

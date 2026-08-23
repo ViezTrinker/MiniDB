@@ -41,6 +41,7 @@ namespace MiniDb
       StationIdList stationIds;
       uint32_t colorIndex;
       LineLoop loop = LineLoop::No;
+      float cycleTimeSeconds = 0.0f;
    };
 
    using LineList = std::vector<Line>;
@@ -214,6 +215,13 @@ namespace MiniDb
       const AdjacencyList& GetAdjacency(void) const;
 
       /*!
+       *\brief Returns the vector index of a station, or InvalidIndex.
+       *
+       *\param[in] stationId Station identifier.
+       */
+      uint32_t GetStationVectorIndex(StationId stationId) const;
+
+      /*!
        *\brief Increments whenever lines change.
        */
       uint64_t GetRevision(void) const;
@@ -225,12 +233,15 @@ namespace MiniDb
 
    private:
       void RebuildGraph(void);
+      void RebuildLineIndexMap(void);
+      void EnsureLineIndexCapacity(LineId lineId);
       uint32_t StationVectorIndex(StationId stationId) const;
       Result ValidateLineStations(const StationIdList& stationIds) const;
 
       StationRecordList _stations;
       LineList _lines;
       AdjacencyList _adjacency;
+      std::vector<uint32_t> _lineVectorIndexById;
       LineId _nextLineId = 1;
       uint64_t _revision = 0;
       uint32_t _createdLineCount = 0;
