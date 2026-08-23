@@ -1416,7 +1416,6 @@ namespace MiniDb
    }
 
    float Renderer::ComputeInspectorHeightPixels(
-      const World& world,
       StationId inspectedStationId,
       TrainId inspectedTrainId,
       LineId inspectedLineId,
@@ -1496,7 +1495,6 @@ namespace MiniDb
       }
 
       snapshot.inspectorHeightPixels = ComputeInspectorHeightPixels(
-         world,
          inspectedStationId,
          inspectedTrainId,
          inspectedLineId,

@@ -363,7 +363,6 @@ namespace MiniDb
          TrainId inspectedTrainId,
          LineId inspectedLineId) const;
       float ComputeInspectorHeightPixels(
-         const World& world,
          StationId inspectedStationId,
          TrainId inspectedTrainId,
          LineId inspectedLineId,
