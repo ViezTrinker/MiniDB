@@ -8,7 +8,7 @@ Cities in Germany with at least 10,000 inhabitants, matched to a nearby railway 
 
 - **Populated places:** [GeoNames](https://www.geonames.org/) dump `DE.zip` (`https://download.geonames.org/export/dump/DE.zip`). Feature codes `PPLC`, `PPLA`, `PPLA2`, `PPLA3`, `PPLA4`, `PPL` with population >= 10,000. License: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
 - **Railway stations:** same GeoNames dump, feature codes `RSTN` and `RSTP`.
-- **Matching:** for each city, pick the best station within 15 km (name contains the city and/or Hauptbahnhof preferred). Cities without a station are omitted.
+- **Matching:** for each city (largest population first), pick the best unused station within 15 km. Stations whose name contains the city are preferred over a nearby unrelated Hauptbahnhof. Each station coordinate/name may only be assigned once, so cities no longer stack on the same map point (for example Marl no longer shares Recklinghausen Hbf). Cities without an unused station are omitted.
 - **Suburb filter:** a smaller place within 15 km of a much larger city (population below 30% of the larger city) is dropped so Berlin/Hamburg districts do not appear as separate cities.
 
 This is a stand-in for Destatis GV-ISys municipality lists plus DB StaDa station coordinates. Those official tables can replace GeoNames later without changing the JSON schema.

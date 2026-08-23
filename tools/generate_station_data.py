@@ -148,17 +148,33 @@ def station_score(city: dict, station: dict, distance_km: float) -> float:
     is_hbf = ("hauptbahnhof" in station_norm) or ("hbf" in station_norm.split())
     if has_city_name and is_hbf:
         score -= 80.0
-    elif is_hbf:
-        score -= 25.0
     elif has_city_name:
-        score -= 15.0
+        score -= 40.0
+    elif is_hbf:
+        # Nearby Hauptbahnhof of another city must not beat a named local stop.
+        score -= 5.0
     return score
 
 
-def match_station(city: dict, stations: list[dict]) -> dict | None:
+def station_claim_key(station: dict) -> tuple[float, float, str]:
+    return (
+        round(station["latitude"], 5),
+        round(station["longitude"], 5),
+        normalize_name(station["name"]),
+    )
+
+
+def match_station(
+    city: dict,
+    stations: list[dict],
+    claimed_station_keys: set[tuple[float, float, str]],
+) -> dict | None:
     best_station = None
     best_score = None
     for station in stations:
+        claim_key = station_claim_key(station)
+        if claim_key in claimed_station_keys:
+            continue
         distance = haversine_km(
             city["latitude"],
             city["longitude"],
@@ -177,11 +193,14 @@ def match_station(city: dict, stations: list[dict]) -> dict | None:
 def build_records(cities: list[dict], stations: list[dict]) -> list[dict]:
     records: list[dict] = []
     skipped_without_station = 0
-    for city in cities:
-        station = match_station(city, stations)
+    claimed_station_keys: set[tuple[float, float, str]] = set()
+    ordered_cities = sorted(cities, key=lambda city: city["population"], reverse=True)
+    for city in ordered_cities:
+        station = match_station(city, stations, claimed_station_keys)
         if station is None:
             skipped_without_station += 1
             continue
+        claimed_station_keys.add(station_claim_key(station))
         records.append(
             {
                 "cityName": city["name"],

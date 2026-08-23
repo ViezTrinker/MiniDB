@@ -92,3 +92,50 @@ TEST(StationCatalogTest, LoadsUmlautCityNamesFromCatalog)
    EXPECT_TRUE(foundKoeln);
    EXPECT_TRUE(foundLuebeck);
 }
+
+TEST(StationCatalogTest, CatalogStationsHaveUniqueMapPositions)
+{
+   const std::string filePath = std::string(MINIDB_SOURCE_DIR) + "/data/stations.json";
+   MiniDb::StationRecordList stations;
+   ASSERT_TRUE(MiniDb::IsOk(MiniDb::LoadStationCatalogFromFile(filePath, stations)));
+   ASSERT_FALSE(stations.empty());
+
+   for (uint32_t leftIndex = 0; leftIndex < stations.size(); ++leftIndex)
+   {
+      for (uint32_t rightIndex = leftIndex + 1; rightIndex < stations.size(); ++rightIndex)
+      {
+         EXPECT_FALSE(
+            stations[leftIndex].latitude == stations[rightIndex].latitude &&
+            stations[leftIndex].longitude == stations[rightIndex].longitude)
+            << stations[leftIndex].cityName << " and " << stations[rightIndex].cityName
+            << " share coordinates";
+      }
+   }
+}
+
+TEST(StationCatalogTest, MarlDoesNotShareRecklinghausenStation)
+{
+   const std::string filePath = std::string(MINIDB_SOURCE_DIR) + "/data/stations.json";
+   MiniDb::StationRecordList stations;
+   ASSERT_TRUE(MiniDb::IsOk(MiniDb::LoadStationCatalogFromFile(filePath, stations)));
+
+   const MiniDb::StationRecord* pMarl = nullptr;
+   const MiniDb::StationRecord* pRecklinghausen = nullptr;
+   for (const MiniDb::StationRecord& station : stations)
+   {
+      if (station.cityName == "Marl")
+      {
+         pMarl = &station;
+      }
+      if (station.cityName == "Recklinghausen")
+      {
+         pRecklinghausen = &station;
+      }
+   }
+
+   ASSERT_NE(pMarl, nullptr);
+   ASSERT_NE(pRecklinghausen, nullptr);
+   EXPECT_NE(pMarl->latitude, pRecklinghausen->latitude);
+   EXPECT_NE(pMarl->longitude, pRecklinghausen->longitude);
+   EXPECT_NE(pMarl->stationName, pRecklinghausen->stationName);
+}
