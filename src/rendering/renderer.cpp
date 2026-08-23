@@ -7,6 +7,7 @@
 
 #include <array>
 #include <cmath>
+#include <cstdint>
 #include <string>
 
 #include "core/constants.h"
@@ -71,6 +72,69 @@ namespace MiniDb
          }
 
          return rowCount;
+      }
+
+      enum class BottomHudControl : uint32_t
+      {
+         Help = 0,
+         Train = 1,
+         SlowDown = 2,
+         SpeedLabel = 3,
+         SpeedUp = 4,
+         Pause = 5,
+         Resume = 6,
+         Menu = 7
+      };
+
+      float BottomHudControlWidth(BottomHudControl control)
+      {
+         if (control == BottomHudControl::Train)
+         {
+            return TrainTokenWidthPixels;
+         }
+         if (control == BottomHudControl::SpeedLabel)
+         {
+            return HudSpeedLabelWidthPixels;
+         }
+         if (control == BottomHudControl::Pause ||
+            control == BottomHudControl::Resume ||
+            control == BottomHudControl::Menu)
+         {
+            return HudTextButtonWidthPixels;
+         }
+
+         return HudButtonSizePixels;
+      }
+
+      void DrawHudButtonFrame(
+         sf::RenderWindow& window,
+         const sf::FloatRect& bounds,
+         const sf::Color& fillColor)
+      {
+         sf::RectangleShape button(bounds.size);
+         button.setPosition(bounds.position);
+         button.setFillColor(fillColor);
+         button.setOutlineColor(sf::Color(30, 30, 30));
+         button.setOutlineThickness(1.0f);
+         window.draw(button);
+      }
+
+      void DrawCenteredHudLabel(
+         sf::RenderWindow& window,
+         const sf::Font& font,
+         const sf::FloatRect& bounds,
+         std::string_view label,
+         unsigned int characterSize,
+         const sf::Color& color)
+      {
+         sf::Text text(font, Utf8SfString(label), characterSize);
+         text.setFillColor(color);
+         const sf::FloatRect textBounds = text.getLocalBounds();
+         text.setPosition({
+            bounds.position.x + ((bounds.size.x - textBounds.size.x) * 0.5f) - textBounds.position.x,
+            bounds.position.y + ((bounds.size.y - textBounds.size.y) * 0.5f) - textBounds.position.y
+         });
+         window.draw(text);
       }
 
       sf::Color ColorForLine(uint32_t colorIndex)
@@ -466,6 +530,8 @@ namespace MiniDb
          LineId highlightLineId,
          std::string_view statusText,
          HelpVisible helpVisible,
+         SimulationPause pause,
+         float timeScale,
          TrainDrag trainDrag,
          LineDrag lineDrag,
          const LineDragPreview& lineDragPreview,
@@ -496,6 +562,7 @@ namespace MiniDb
       DrawHud(statusText);
       DrawHelpButton(helpVisible);
       DrawTrainToken(trainDrag);
+      DrawPlaybackControls(pause, timeScale);
       if (helpVisible == HelpVisible::Yes)
       {
          DrawHelpPopup();
@@ -820,6 +887,29 @@ namespace MiniDb
       _pWindow->draw(text);
    }
 
+   float Renderer::BottomHudBarTop(void) const
+   {
+      if (_pWindow == nullptr)
+      {
+         return 0.0f;
+      }
+
+      const float windowHeight = static_cast<float>(_pWindow->getSize().y);
+      return windowHeight - HudButtonMarginPixels - HudButtonSizePixels;
+   }
+
+   float Renderer::BottomHudControlLeft(uint32_t controlIndex) const
+   {
+      float left = HudButtonMarginPixels;
+      for (uint32_t index = 0; index < controlIndex; ++index)
+      {
+         left += BottomHudControlWidth(static_cast<BottomHudControl>(index));
+         left += HudControlGapPixels;
+      }
+
+      return left;
+   }
+
    sf::FloatRect Renderer::HelpButtonBounds(void) const
    {
       if (_pWindow == nullptr)
@@ -827,9 +917,9 @@ namespace MiniDb
          return sf::FloatRect({0.0f, 0.0f}, {0.0f, 0.0f});
       }
 
-      const float windowHeight = static_cast<float>(_pWindow->getSize().y);
-      const float top = windowHeight - HudButtonMarginPixels - HudButtonSizePixels;
-      return sf::FloatRect({HudButtonMarginPixels, top}, {HudButtonSizePixels, HudButtonSizePixels});
+      return sf::FloatRect(
+         {BottomHudControlLeft(static_cast<uint32_t>(BottomHudControl::Help)), BottomHudBarTop()},
+         {BottomHudControlWidth(BottomHudControl::Help), HudButtonSizePixels});
    }
 
    sf::FloatRect Renderer::TrainTokenBounds(void) const
@@ -839,10 +929,81 @@ namespace MiniDb
          return sf::FloatRect({0.0f, 0.0f}, {0.0f, 0.0f});
       }
 
-      const float windowHeight = static_cast<float>(_pWindow->getSize().y);
-      const float top = windowHeight - HudButtonMarginPixels - HudButtonSizePixels;
-      const float left = HudButtonMarginPixels + HudButtonSizePixels + 8.0f;
-      return sf::FloatRect({left, top}, {TrainTokenWidthPixels, HudButtonSizePixels});
+      return sf::FloatRect(
+         {BottomHudControlLeft(static_cast<uint32_t>(BottomHudControl::Train)), BottomHudBarTop()},
+         {BottomHudControlWidth(BottomHudControl::Train), HudButtonSizePixels});
+   }
+
+   sf::FloatRect Renderer::SlowDownButtonBounds(void) const
+   {
+      if (_pWindow == nullptr)
+      {
+         return sf::FloatRect({0.0f, 0.0f}, {0.0f, 0.0f});
+      }
+
+      return sf::FloatRect(
+         {BottomHudControlLeft(static_cast<uint32_t>(BottomHudControl::SlowDown)), BottomHudBarTop()},
+         {BottomHudControlWidth(BottomHudControl::SlowDown), HudButtonSizePixels});
+   }
+
+   sf::FloatRect Renderer::SpeedLabelBounds(void) const
+   {
+      if (_pWindow == nullptr)
+      {
+         return sf::FloatRect({0.0f, 0.0f}, {0.0f, 0.0f});
+      }
+
+      return sf::FloatRect(
+         {BottomHudControlLeft(static_cast<uint32_t>(BottomHudControl::SpeedLabel)), BottomHudBarTop()},
+         {BottomHudControlWidth(BottomHudControl::SpeedLabel), HudButtonSizePixels});
+   }
+
+   sf::FloatRect Renderer::SpeedUpButtonBounds(void) const
+   {
+      if (_pWindow == nullptr)
+      {
+         return sf::FloatRect({0.0f, 0.0f}, {0.0f, 0.0f});
+      }
+
+      return sf::FloatRect(
+         {BottomHudControlLeft(static_cast<uint32_t>(BottomHudControl::SpeedUp)), BottomHudBarTop()},
+         {BottomHudControlWidth(BottomHudControl::SpeedUp), HudButtonSizePixels});
+   }
+
+   sf::FloatRect Renderer::PauseButtonBounds(void) const
+   {
+      if (_pWindow == nullptr)
+      {
+         return sf::FloatRect({0.0f, 0.0f}, {0.0f, 0.0f});
+      }
+
+      return sf::FloatRect(
+         {BottomHudControlLeft(static_cast<uint32_t>(BottomHudControl::Pause)), BottomHudBarTop()},
+         {BottomHudControlWidth(BottomHudControl::Pause), HudButtonSizePixels});
+   }
+
+   sf::FloatRect Renderer::ResumeButtonBounds(void) const
+   {
+      if (_pWindow == nullptr)
+      {
+         return sf::FloatRect({0.0f, 0.0f}, {0.0f, 0.0f});
+      }
+
+      return sf::FloatRect(
+         {BottomHudControlLeft(static_cast<uint32_t>(BottomHudControl::Resume)), BottomHudBarTop()},
+         {BottomHudControlWidth(BottomHudControl::Resume), HudButtonSizePixels});
+   }
+
+   sf::FloatRect Renderer::MenuButtonBounds(void) const
+   {
+      if (_pWindow == nullptr)
+      {
+         return sf::FloatRect({0.0f, 0.0f}, {0.0f, 0.0f});
+      }
+
+      return sf::FloatRect(
+         {BottomHudControlLeft(static_cast<uint32_t>(BottomHudControl::Menu)), BottomHudBarTop()},
+         {BottomHudControlWidth(BottomHudControl::Menu), HudButtonSizePixels});
    }
 
    bool Renderer::ContainsPixel(const sf::FloatRect& bounds, sf::Vector2i pixel) const
@@ -861,6 +1022,31 @@ namespace MiniDb
       return ContainsPixel(TrainTokenBounds(), pixel);
    }
 
+   bool Renderer::IsSlowDownButtonHit(sf::Vector2i pixel) const
+   {
+      return ContainsPixel(SlowDownButtonBounds(), pixel);
+   }
+
+   bool Renderer::IsSpeedUpButtonHit(sf::Vector2i pixel) const
+   {
+      return ContainsPixel(SpeedUpButtonBounds(), pixel);
+   }
+
+   bool Renderer::IsPauseButtonHit(sf::Vector2i pixel) const
+   {
+      return ContainsPixel(PauseButtonBounds(), pixel);
+   }
+
+   bool Renderer::IsResumeButtonHit(sf::Vector2i pixel) const
+   {
+      return ContainsPixel(ResumeButtonBounds(), pixel);
+   }
+
+   bool Renderer::IsMenuButtonHit(sf::Vector2i pixel) const
+   {
+      return ContainsPixel(MenuButtonBounds(), pixel);
+   }
+
    void Renderer::DrawHelpButton(HelpVisible helpVisible)
    {
       if (_pWindow == nullptr || _pFont == nullptr)
@@ -869,28 +1055,15 @@ namespace MiniDb
       }
 
       const sf::FloatRect bounds = HelpButtonBounds();
-      sf::RectangleShape button(bounds.size);
-      button.setPosition(bounds.position);
       if (helpVisible == HelpVisible::Yes)
       {
-         button.setFillColor(sf::Color(45, 45, 45));
+         DrawHudButtonFrame(*_pWindow, bounds, sf::Color(45, 45, 45));
       }
       else
       {
-         button.setFillColor(sf::Color(70, 70, 70));
+         DrawHudButtonFrame(*_pWindow, bounds, sf::Color(70, 70, 70));
       }
-      button.setOutlineColor(sf::Color(30, 30, 30));
-      button.setOutlineThickness(1.0f);
-      _pWindow->draw(button);
-
-      sf::Text label(*_pFont, Utf8SfString("?"), 20);
-      label.setFillColor(sf::Color(250, 250, 250));
-      const sf::FloatRect textBounds = label.getLocalBounds();
-      label.setPosition({
-         bounds.position.x + ((bounds.size.x - textBounds.size.x) * 0.5f) - textBounds.position.x,
-         bounds.position.y + ((bounds.size.y - textBounds.size.y) * 0.5f) - textBounds.position.y
-      });
-      _pWindow->draw(label);
+      DrawCenteredHudLabel(*_pWindow, *_pFont, bounds, "?", 20, sf::Color(250, 250, 250));
    }
 
    void Renderer::DrawTrainToken(TrainDrag trainDrag)
@@ -901,19 +1074,14 @@ namespace MiniDb
       }
 
       const sf::FloatRect bounds = TrainTokenBounds();
-      sf::RectangleShape token(bounds.size);
-      token.setPosition(bounds.position);
       if (trainDrag == TrainDrag::Yes)
       {
-         token.setFillColor(sf::Color(200, 200, 200, 120));
+         DrawHudButtonFrame(*_pWindow, bounds, sf::Color(200, 200, 200, 120));
       }
       else
       {
-         token.setFillColor(sf::Color(50, 50, 50));
+         DrawHudButtonFrame(*_pWindow, bounds, sf::Color(50, 50, 50));
       }
-      token.setOutlineColor(sf::Color(30, 30, 30));
-      token.setOutlineThickness(1.0f);
-      _pWindow->draw(token);
 
       sf::RectangleShape trainShape({28.0f, 12.0f});
       trainShape.setOrigin({14.0f, 6.0f});
@@ -925,6 +1093,78 @@ namespace MiniDb
       _pWindow->draw(trainShape);
    }
 
+   void Renderer::DrawPlaybackControls(SimulationPause pause, float timeScale)
+   {
+      if (_pWindow == nullptr || _pFont == nullptr)
+      {
+         return;
+      }
+
+      DrawHudButtonFrame(*_pWindow, SlowDownButtonBounds(), sf::Color(70, 70, 70));
+      DrawCenteredHudLabel(
+         *_pWindow,
+         *_pFont,
+         SlowDownButtonBounds(),
+         "<",
+         20,
+         sf::Color(250, 250, 250));
+
+      const sf::FloatRect speedBounds = SpeedLabelBounds();
+      DrawHudButtonFrame(*_pWindow, speedBounds, sf::Color(236, 230, 218));
+      std::string speedLabel = std::to_string(static_cast<int32_t>(timeScale));
+      speedLabel += "x";
+      DrawCenteredHudLabel(
+         *_pWindow,
+         *_pFont,
+         speedBounds,
+         speedLabel,
+         14,
+         sf::Color(35, 35, 35));
+
+      DrawHudButtonFrame(*_pWindow, SpeedUpButtonBounds(), sf::Color(70, 70, 70));
+      DrawCenteredHudLabel(
+         *_pWindow,
+         *_pFont,
+         SpeedUpButtonBounds(),
+         ">",
+         20,
+         sf::Color(250, 250, 250));
+
+      if (pause == SimulationPause::Yes)
+      {
+         DrawHudButtonFrame(*_pWindow, PauseButtonBounds(), sf::Color(90, 90, 90));
+         DrawHudButtonFrame(*_pWindow, ResumeButtonBounds(), sf::Color(45, 45, 45));
+      }
+      else
+      {
+         DrawHudButtonFrame(*_pWindow, PauseButtonBounds(), sf::Color(45, 45, 45));
+         DrawHudButtonFrame(*_pWindow, ResumeButtonBounds(), sf::Color(90, 90, 90));
+      }
+      DrawCenteredHudLabel(
+         *_pWindow,
+         *_pFont,
+         PauseButtonBounds(),
+         "Pause",
+         14,
+         sf::Color(250, 250, 250));
+      DrawCenteredHudLabel(
+         *_pWindow,
+         *_pFont,
+         ResumeButtonBounds(),
+         "Resume",
+         14,
+         sf::Color(250, 250, 250));
+
+      DrawHudButtonFrame(*_pWindow, MenuButtonBounds(), sf::Color(70, 70, 70));
+      DrawCenteredHudLabel(
+         *_pWindow,
+         *_pFont,
+         MenuButtonBounds(),
+         "Menu",
+         14,
+         sf::Color(250, 250, 250));
+   }
+
    void Renderer::DrawHelpPopup(void)
    {
       if (_pWindow == nullptr || _pFont == nullptr)
@@ -934,7 +1174,7 @@ namespace MiniDb
 
       const sf::FloatRect helpButton = HelpButtonBounds();
       const float panelWidth = 340.0f;
-      const float panelHeight = 220.0f;
+      const float panelHeight = 236.0f;
       const float panelLeft = HudButtonMarginPixels;
       const float panelTop = helpButton.position.y - panelHeight - 8.0f;
       sf::RectangleShape panel({panelWidth, panelHeight});
@@ -951,6 +1191,7 @@ namespace MiniDb
          "Enter or right-click to finish a line.\n"
          "Drag the train onto a line to place it there.\n"
          "Click a train, station, or line for details on the right.\n"
+         "Bottom bar: speed, pause, resume, menu.\n"
          "Del deletes the selected line.\n"
          "Ctrl+Z / Ctrl+Y undo or redo a draft click.\n"
          "Wheel zoom, middle-drag pan. F11 fullscreen.\n"

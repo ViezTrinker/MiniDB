@@ -38,6 +38,7 @@ The game opens on a start menu. The default station cap is 100 (enough for perfo
 - Del deletes the selected line (or the line of an inspected train)
 - Ctrl+Z undoes the last station in a draft, Ctrl+Y restores it
 - Drag the train token (bottom left) onto an existing line to place a train at the drop point
+- Bottom-left bar: `<` / `>` change speed, Pause, Resume, and Menu
 - Unconnected stations are listed below the inspector on the right; click a name to inspect it
 - `?` opens a short help popup
 - Mouse wheel zooms (station markers stay a constant pixel size), middle-mouse drag pans

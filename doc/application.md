@@ -47,6 +47,9 @@ Drafting:
 | Left-click line (no drag) | Select the line; inspect trains, occupancy, and destinations |
 | Drag line onto a station | `InsertStationOnLine` on that segment |
 | Drag train token onto a line | `AddTrainToLineAt` at the cursor |
+| Bottom bar `<` / `>` | Slow down or speed up (1x / 2x / 4x / 8x) |
+| Bottom bar Pause / Resume | Pause or resume the simulation |
+| Bottom bar Menu | Return to the start menu |
 | Ctrl+Z / Ctrl+Y | Undo or redo the last draft station |
 | Delete | Delete selected line, or the inspected train’s line; cancels an in-progress line drag |
 | T | Extra train on the selected line |

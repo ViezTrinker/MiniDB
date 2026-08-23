@@ -22,6 +22,12 @@ namespace MiniDb
       Yes = true
    };
 
+   enum class SimulationPause : bool
+   {
+      No = false,
+      Yes = true
+   };
+
    enum class TrainDrag : bool
    {
       No = false,
@@ -155,6 +161,8 @@ namespace MiniDb
        *\param[in] highlightLineId Line to emphasize (selected or drop target).
        *\param[in] statusText Compact status overlay.
        *\param[in] helpVisible Whether the help popup is open.
+       *\param[in] pause Whether the simulation is paused.
+       *\param[in] timeScale Current simulation speed multiplier.
        *\param[in] trainDrag Whether a train token is being dragged.
        *\param[in] lineDrag Whether a line segment is being dragged.
        *\param[in] lineDragPreview Line insert preview while dragging.
@@ -171,6 +179,8 @@ namespace MiniDb
          LineId highlightLineId,
          std::string_view statusText,
          HelpVisible helpVisible,
+         SimulationPause pause,
+         float timeScale,
          TrainDrag trainDrag,
          LineDrag lineDrag,
          const LineDragPreview& lineDragPreview,
@@ -190,6 +200,41 @@ namespace MiniDb
        *\param[in] pixel Screen location.
        */
       bool IsTrainTokenHit(sf::Vector2i pixel) const;
+
+      /*!
+       *\brief Returns true when the pixel is on the slow-down control.
+       *
+       *\param[in] pixel Screen location.
+       */
+      bool IsSlowDownButtonHit(sf::Vector2i pixel) const;
+
+      /*!
+       *\brief Returns true when the pixel is on the speed-up control.
+       *
+       *\param[in] pixel Screen location.
+       */
+      bool IsSpeedUpButtonHit(sf::Vector2i pixel) const;
+
+      /*!
+       *\brief Returns true when the pixel is on the pause control.
+       *
+       *\param[in] pixel Screen location.
+       */
+      bool IsPauseButtonHit(sf::Vector2i pixel) const;
+
+      /*!
+       *\brief Returns true when the pixel is on the resume control.
+       *
+       *\param[in] pixel Screen location.
+       */
+      bool IsResumeButtonHit(sf::Vector2i pixel) const;
+
+      /*!
+       *\brief Returns true when the pixel is on the menu control.
+       *
+       *\param[in] pixel Screen location.
+       */
+      bool IsMenuButtonHit(sf::Vector2i pixel) const;
 
       /*!
        *\brief Returns true when the pixel is on the map area, not the sidebar.
@@ -257,6 +302,7 @@ namespace MiniDb
       void DrawHud(std::string_view statusText);
       void DrawHelpButton(HelpVisible helpVisible);
       void DrawTrainToken(TrainDrag trainDrag);
+      void DrawPlaybackControls(SimulationPause pause, float timeScale);
       void DrawHelpPopup(void);
       void DrawSidebar(
          const World& world,
@@ -287,6 +333,14 @@ namespace MiniDb
       const StationRecord* FindDraftStation(const World& world, StationId stationId) const;
       sf::FloatRect HelpButtonBounds(void) const;
       sf::FloatRect TrainTokenBounds(void) const;
+      sf::FloatRect SlowDownButtonBounds(void) const;
+      sf::FloatRect SpeedLabelBounds(void) const;
+      sf::FloatRect SpeedUpButtonBounds(void) const;
+      sf::FloatRect PauseButtonBounds(void) const;
+      sf::FloatRect ResumeButtonBounds(void) const;
+      sf::FloatRect MenuButtonBounds(void) const;
+      float BottomHudBarTop(void) const;
+      float BottomHudControlLeft(uint32_t controlIndex) const;
       sf::FloatRect UnconnectedPanelBounds(void) const;
       float SidebarWidthPixels(void) const;
       float MapWidthPixels(void) const;

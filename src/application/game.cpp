@@ -288,6 +288,48 @@ namespace MiniDb
       _inspectedLineId = InvalidLineId;
    }
 
+   void Game::SlowDownSimulation(void)
+   {
+      if (_timeScale >= TimeScaleVeryFast)
+      {
+         _timeScale = TimeScaleFast;
+         return;
+      }
+      if (_timeScale >= TimeScaleFast)
+      {
+         _timeScale = TimeScaleMedium;
+         return;
+      }
+      if (_timeScale >= TimeScaleMedium)
+      {
+         _timeScale = TimeScaleSlow;
+         return;
+      }
+
+      _timeScale = TimeScaleSlow;
+   }
+
+   void Game::SpeedUpSimulation(void)
+   {
+      if (_timeScale <= TimeScaleSlow)
+      {
+         _timeScale = TimeScaleMedium;
+         return;
+      }
+      if (_timeScale <= TimeScaleMedium)
+      {
+         _timeScale = TimeScaleFast;
+         return;
+      }
+      if (_timeScale <= TimeScaleFast)
+      {
+         _timeScale = TimeScaleVeryFast;
+         return;
+      }
+
+      _timeScale = TimeScaleVeryFast;
+   }
+
    void Game::StartNewGame(void)
    {
       _world.ResetSimulation();
@@ -459,22 +501,22 @@ namespace MiniDb
       }
       if (keyPressed.code == sf::Keyboard::Key::Num1)
       {
-         _timeScale = 1.0f;
+         _timeScale = TimeScaleSlow;
          return;
       }
       if (keyPressed.code == sf::Keyboard::Key::Num2)
       {
-         _timeScale = 2.0f;
+         _timeScale = TimeScaleMedium;
          return;
       }
       if (keyPressed.code == sf::Keyboard::Key::Num4)
       {
-         _timeScale = 4.0f;
+         _timeScale = TimeScaleFast;
          return;
       }
       if (keyPressed.code == sf::Keyboard::Key::Num8)
       {
-         _timeScale = 8.0f;
+         _timeScale = TimeScaleVeryFast;
       }
    }
 
@@ -525,6 +567,40 @@ namespace MiniDb
             _helpVisible = HelpVisible::No;
             _lineDrag = LineDrag::No;
             _lineGrabPending = LineGrabPending::No;
+            return;
+         }
+
+         if (_renderer.IsSlowDownButtonHit(mousePressed.position))
+         {
+            SlowDownSimulation();
+            _helpVisible = HelpVisible::No;
+            return;
+         }
+
+         if (_renderer.IsSpeedUpButtonHit(mousePressed.position))
+         {
+            SpeedUpSimulation();
+            _helpVisible = HelpVisible::No;
+            return;
+         }
+
+         if (_renderer.IsPauseButtonHit(mousePressed.position))
+         {
+            _pause = SimulationPause::Yes;
+            _helpVisible = HelpVisible::No;
+            return;
+         }
+
+         if (_renderer.IsResumeButtonHit(mousePressed.position))
+         {
+            _pause = SimulationPause::No;
+            _helpVisible = HelpVisible::No;
+            return;
+         }
+
+         if (_renderer.IsMenuButtonHit(mousePressed.position))
+         {
+            ReturnToMenu();
             return;
          }
 
@@ -839,6 +915,8 @@ namespace MiniDb
          highlightLineId,
          statusText,
          _helpVisible,
+         _pause,
+         _timeScale,
          _trainDrag,
          _lineDrag,
          lineDragPreview,

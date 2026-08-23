@@ -59,7 +59,14 @@ namespace MiniDb
    inline constexpr float TrainHitRadiusPixels = 14.0f;
    inline constexpr float HudButtonSizePixels = 36.0f;
    inline constexpr float TrainTokenWidthPixels = 56.0f;
+   inline constexpr float HudTextButtonWidthPixels = 78.0f;
+   inline constexpr float HudSpeedLabelWidthPixels = 40.0f;
+   inline constexpr float HudControlGapPixels = 8.0f;
    inline constexpr float HudButtonMarginPixels = 12.0f;
+   inline constexpr float TimeScaleSlow = 1.0f;
+   inline constexpr float TimeScaleMedium = 2.0f;
+   inline constexpr float TimeScaleFast = 4.0f;
+   inline constexpr float TimeScaleVeryFast = 8.0f;
    inline constexpr float LineDropHitPixels = 16.0f;
    inline constexpr float LineDragStartPixels = 8.0f;
    inline constexpr float UnconnectedPanelWidthPixels = 280.0f;

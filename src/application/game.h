@@ -21,12 +21,6 @@
 
 namespace MiniDb
 {
-   enum class SimulationPause : bool
-   {
-      No = false,
-      Yes = true
-   };
-
    enum class PanState : bool
    {
       No = false,
@@ -78,6 +72,8 @@ namespace MiniDb
       void StartNewGame(void);
       void ReturnToMenu(void);
       void ResetPlayInput(void);
+      void SlowDownSimulation(void);
+      void SpeedUpSimulation(void);
       void ToggleFullscreen(void);
       void ConfigureWindow(void);
       void Update(float deltaSeconds);
