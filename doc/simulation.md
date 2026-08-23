@@ -98,3 +98,5 @@ The right-hand inspector reads these `World` helpers:
 - `CollectOnboardDemand` — riders on one train, grouped by destination and first transfer.
 - `CollectTrainsOnLine` — trains on a line with occupancy and next stop, ordered by train id.
 - `CollectLineDemand` — passengers currently riding trains on that line, grouped by destination.
+- `CollectGlobalWaitingDemand` — all waiting passengers grouped by destination.
+- `CollectCrowdedStations` — up to ten stations with the most waiting passengers.

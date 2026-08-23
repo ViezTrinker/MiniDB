@@ -55,6 +55,7 @@ namespace MiniDb
    inline constexpr float WaitingLabelCharacterPixels = 12.0f;
    inline constexpr uint32_t DemandPanelMaxRows = 6;
    inline constexpr uint32_t InspectorMaxRows = 8;
+   inline constexpr uint32_t CrowdedStationMaxRows = 10;
    inline constexpr float DemandPanelWidthPixels = 220.0f;
    inline constexpr float TrainHitRadiusPixels = 14.0f;
    inline constexpr float HudButtonSizePixels = 36.0f;

@@ -24,7 +24,7 @@ Station markers and labels are drawn in map space but scaled by kilometres-per-p
 - Help button (`?`) and popup.
 - Train token (bottom left) for dropping a new train.
 - Playback controls next to the train token: slow down, speed label, speed up, Pause, Resume, Menu.
-- Sidebar (play only): inspector (station demand, train onboard / next / transfers, or line trains / occupancy / destinations) and the unconnected list.
+- Sidebar (play only): inspector default overview (top waiting destinations and ten busiest stations), station demand, train onboard / next / transfers, or line trains / occupancy / destinations, plus the unconnected list.
 
 `SetMapSidebar` shrinks the map viewport when the sidebar is visible so Germany stays framed.
 

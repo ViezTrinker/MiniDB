@@ -477,6 +477,90 @@ TEST(WorldTest, CollectLineDemandRejectsUnknownLine)
    EXPECT_TRUE(MiniDb::IsErr(world.CollectLineDemand(99, demand)));
 }
 
+TEST(WorldTest, CollectGlobalWaitingDemandGroupsAllWaitingPassengers)
+{
+   MiniDb::World world(7);
+   world.SetPassengerAutoSpawn(MiniDb::PassengerAutoSpawn::No);
+   ASSERT_TRUE(MiniDb::IsOk(world.LoadCatalogFromString(CatalogJson)));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnPassenger(3, 4)));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnPassenger(3, 4)));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnPassenger(4, 5)));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnPassenger(5, 3)));
+
+   MiniDb::DestinationDemandList demand;
+   ASSERT_TRUE(MiniDb::IsOk(world.CollectGlobalWaitingDemand(demand)));
+   ASSERT_EQ(demand.size(), 3u);
+   EXPECT_EQ(demand[0].destinationId, 4u);
+   EXPECT_EQ(demand[0].waitingCount, 2u);
+   EXPECT_EQ(demand[1].destinationId, 5u);
+   EXPECT_EQ(demand[1].waitingCount, 1u);
+   EXPECT_EQ(demand[2].destinationId, 3u);
+   EXPECT_EQ(demand[2].waitingCount, 1u);
+}
+
+TEST(WorldTest, CollectGlobalWaitingDemandIgnoresOnboardPassengers)
+{
+   MiniDb::World world(7);
+   world.SetPassengerAutoSpawn(MiniDb::PassengerAutoSpawn::No);
+   ASSERT_TRUE(MiniDb::IsOk(world.LoadCatalogFromString(CatalogJson)));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+
+   MiniDb::StationIdList stationIds;
+   stationIds.push_back(3);
+   stationIds.push_back(4);
+   MiniDb::LineId lineId = MiniDb::InvalidLineId;
+   ASSERT_TRUE(MiniDb::IsOk(world.AddLine(stationIds, lineId)));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnPassenger(3, 4)));
+   world.Tick(0.0f);
+
+   MiniDb::DestinationDemandList demand;
+   ASSERT_TRUE(MiniDb::IsOk(world.CollectGlobalWaitingDemand(demand)));
+   EXPECT_TRUE(demand.empty());
+}
+
+TEST(WorldTest, CollectCrowdedStationsListsTopTenByWaitingCount)
+{
+   MiniDb::World world(7);
+   world.SetPassengerAutoSpawn(MiniDb::PassengerAutoSpawn::No);
+   ASSERT_TRUE(MiniDb::IsOk(world.LoadCatalogFromString(CatalogJson)));
+   for (uint32_t stationIndex = 0; stationIndex < 7; ++stationIndex)
+   {
+      ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+   }
+
+   for (uint32_t passengerIndex = 0; passengerIndex < 3; ++passengerIndex)
+   {
+      ASSERT_TRUE(MiniDb::IsOk(world.SpawnPassenger(3, 4)));
+   }
+   for (uint32_t passengerIndex = 0; passengerIndex < 2; ++passengerIndex)
+   {
+      ASSERT_TRUE(MiniDb::IsOk(world.SpawnPassenger(4, 5)));
+   }
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnPassenger(5, 6)));
+
+   MiniDb::StationCrowdingList crowded;
+   ASSERT_TRUE(MiniDb::IsOk(world.CollectCrowdedStations(crowded)));
+   ASSERT_EQ(crowded.size(), 3u);
+   EXPECT_EQ(crowded[0].stationId, 3u);
+   EXPECT_EQ(crowded[0].waitingCount, 3u);
+   EXPECT_EQ(crowded[1].stationId, 4u);
+   EXPECT_EQ(crowded[1].waitingCount, 2u);
+   EXPECT_EQ(crowded[2].stationId, 5u);
+   EXPECT_EQ(crowded[2].waitingCount, 1u);
+}
+
 TEST(WorldTest, FindNearestLineHitsSegmentAndMissesFarPoint)
 {
    MiniDb::World world(7);

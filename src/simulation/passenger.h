@@ -41,6 +41,14 @@ namespace MiniDb
 
    using DestinationDemandList = std::vector<DestinationDemand>;
 
+   struct StationCrowding
+   {
+      StationId stationId;
+      uint32_t waitingCount;
+   };
+
+   using StationCrowdingList = std::vector<StationCrowding>;
+
    struct OnboardDemand
    {
       StationId destinationId;

@@ -31,6 +31,16 @@ namespace MiniDb
          return left.trainId < right.trainId;
       }
 
+      bool CompareCrowdingDescending(const StationCrowding& left, const StationCrowding& right)
+      {
+         if (left.waitingCount != right.waitingCount)
+         {
+            return left.waitingCount > right.waitingCount;
+         }
+
+         return left.stationId < right.stationId;
+      }
+
       void AddDestinationCount(DestinationDemandList& demand, StationId destinationId)
       {
          for (DestinationDemand& entry : demand)
@@ -859,6 +869,49 @@ namespace MiniDb
       }
 
       std::sort(demand.begin(), demand.end(), CompareDemandDescending);
+      return Result::Ok;
+   }
+
+   Result World::CollectGlobalWaitingDemand(DestinationDemandList& demand) const
+   {
+      demand.clear();
+      for (const Passenger& passenger : _passengers)
+      {
+         if (passenger.state != PassengerState::Waiting)
+         {
+            continue;
+         }
+
+         AddDestinationCount(demand, passenger.destinationId);
+      }
+
+      std::sort(demand.begin(), demand.end(), CompareDemandDescending);
+      return Result::Ok;
+   }
+
+   Result World::CollectCrowdedStations(StationCrowdingList& crowded) const
+   {
+      crowded.clear();
+      for (const StationRecord& station : _network.GetStations())
+      {
+         const uint32_t waitingCount = GetWaitingCountAt(station.id);
+         if (waitingCount == 0)
+         {
+            continue;
+         }
+
+         StationCrowding entry;
+         entry.stationId = station.id;
+         entry.waitingCount = waitingCount;
+         crowded.push_back(entry);
+      }
+
+      std::sort(crowded.begin(), crowded.end(), CompareCrowdingDescending);
+      if (crowded.size() > CrowdedStationMaxRows)
+      {
+         crowded.resize(CrowdedStationMaxRows);
+      }
+
       return Result::Ok;
    }
 

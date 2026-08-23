@@ -210,6 +210,20 @@ namespace MiniDb
       Result CollectWaitingDemand(StationId stationId, DestinationDemandList& demand) const;
 
       /*!
+       *\brief Groups all waiting passengers by destination, largest first.
+       *
+       *\param[out] demand Destination counts for passengers not riding trains.
+       */
+      Result CollectGlobalWaitingDemand(DestinationDemandList& demand) const;
+
+      /*!
+       *\brief Lists the busiest stations by waiting passengers, up to ten.
+       *
+       *\param[out] crowded Station crowding counts, busiest first.
+       */
+      Result CollectCrowdedStations(StationCrowdingList& crowded) const;
+
+      /*!
        *\brief Groups onboard passengers by destination and first transfer.
        *
        *\param[in] trainId Train to inspect.

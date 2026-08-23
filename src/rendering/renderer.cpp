@@ -74,6 +74,20 @@ namespace MiniDb
          return rowCount;
       }
 
+      uint32_t ClampedCrowdedStationRowCount(uint32_t rowCount)
+      {
+         if (rowCount == 0)
+         {
+            return 1;
+         }
+         if (rowCount > CrowdedStationMaxRows)
+         {
+            return CrowdedStationMaxRows;
+         }
+
+         return rowCount;
+      }
+
       enum class BottomHudControl : uint32_t
       {
          Help = 0,
@@ -1260,6 +1274,17 @@ namespace MiniDb
          height = 86.0f + (static_cast<float>(trainRows) * 20.0f) + 24.0f +
             (static_cast<float>(destRows) * 20.0f);
       }
+      else
+      {
+         DestinationDemandList demand;
+         world.CollectGlobalWaitingDemand(demand);
+         StationCrowdingList crowded;
+         world.CollectCrowdedStations(crowded);
+         const uint32_t destRows = ClampedInspectorRowCount(static_cast<uint32_t>(demand.size()));
+         const uint32_t crowdedRows = ClampedCrowdedStationRowCount(static_cast<uint32_t>(crowded.size()));
+         height = 86.0f + (static_cast<float>(destRows) * 20.0f) + 24.0f +
+            (static_cast<float>(crowdedRows) * 20.0f);
+      }
 
       const float maximumHeight = windowHeight * 0.45f;
       if (height > maximumHeight)
@@ -1659,14 +1684,95 @@ namespace MiniDb
          return;
       }
 
-      sf::Text titleText(*_pFont, Utf8SfString("Details"), 18);
+      DestinationDemandList demand;
+      world.CollectGlobalWaitingDemand(demand);
+      StationCrowdingList crowded;
+      world.CollectCrowdedStations(crowded);
+
+      sf::Text titleText(*_pFont, Utf8SfString("Overview"), 18);
       titleText.setFillColor(sf::Color(25, 25, 25));
       titleText.setPosition({left, 10.0f});
       _pWindow->draw(titleText);
-      sf::Text hintText(*_pFont, Utf8SfString("Click a station, train, or line."), 13);
-      hintText.setFillColor(sf::Color(90, 85, 80));
-      hintText.setPosition({left, 38.0f});
-      _pWindow->draw(hintText);
+
+      std::string waitingLine = "Waiting " + std::to_string(world.GetWaitingPassengerCount());
+      sf::Text waitingText(*_pFont, Utf8SfString(waitingLine), 14);
+      waitingText.setFillColor(sf::Color(180, 40, 40));
+      waitingText.setPosition({left, 36.0f});
+      _pWindow->draw(waitingText);
+
+      const uint32_t destRowSlots = ClampedInspectorRowCount(static_cast<uint32_t>(demand.size()));
+      if (demand.empty())
+      {
+         sf::Text emptyDestText(*_pFont, Utf8SfString("No destinations yet"), 13);
+         emptyDestText.setFillColor(sf::Color(90, 85, 80));
+         emptyDestText.setPosition({left, 56.0f});
+         _pWindow->draw(emptyDestText);
+      }
+      else
+      {
+         uint32_t shownDestRows = 0;
+         for (const DestinationDemand& entry : demand)
+         {
+            if (shownDestRows >= InspectorMaxRows)
+            {
+               break;
+            }
+
+            const float rowY = 56.0f + (static_cast<float>(shownDestRows) * 20.0f);
+            if (rowY + 18.0f > inspectorHeight)
+            {
+               break;
+            }
+
+            std::string rowLine = StationCityName(world, entry.destinationId);
+            rowLine += "  x";
+            rowLine += std::to_string(entry.waitingCount);
+            sf::Text rowText(*_pFont, Utf8SfString(rowLine), 13);
+            rowText.setFillColor(sf::Color(40, 40, 40));
+            rowText.setPosition({left, rowY});
+            _pWindow->draw(rowText);
+            ++shownDestRows;
+         }
+      }
+
+      const float crowdedHeaderY = 56.0f + (static_cast<float>(destRowSlots) * 20.0f) + 4.0f;
+      sf::Text crowdedHeaderText(*_pFont, Utf8SfString("Crowded stations"), 14);
+      crowdedHeaderText.setFillColor(sf::Color(35, 35, 35));
+      crowdedHeaderText.setPosition({left, crowdedHeaderY});
+      _pWindow->draw(crowdedHeaderText);
+
+      if (crowded.empty())
+      {
+         sf::Text emptyCrowdedText(*_pFont, Utf8SfString("No crowded stations"), 13);
+         emptyCrowdedText.setFillColor(sf::Color(90, 85, 80));
+         emptyCrowdedText.setPosition({left, crowdedHeaderY + 20.0f});
+         _pWindow->draw(emptyCrowdedText);
+         return;
+      }
+
+      uint32_t shownCrowdedRows = 0;
+      for (const StationCrowding& entry : crowded)
+      {
+         if (shownCrowdedRows >= CrowdedStationMaxRows)
+         {
+            break;
+         }
+
+         const float rowY = crowdedHeaderY + 20.0f + (static_cast<float>(shownCrowdedRows) * 20.0f);
+         if (rowY + 18.0f > inspectorHeight)
+         {
+            break;
+         }
+
+         std::string rowLine = StationCityName(world, entry.stationId);
+         rowLine += "  x";
+         rowLine += std::to_string(entry.waitingCount);
+         sf::Text rowText(*_pFont, Utf8SfString(rowLine), 13);
+         rowText.setFillColor(sf::Color(40, 40, 40));
+         rowText.setPosition({left, rowY});
+         _pWindow->draw(rowText);
+         ++shownCrowdedRows;
+      }
    }
 
    void Renderer::DrawSidebar(

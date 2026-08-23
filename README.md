@@ -27,11 +27,11 @@ The game opens on a start menu. The default station cap is 100 (enough for perfo
 
 ## Controls
 
-- Left-click a station to draft a line; waiting passengers appear in the right-hand panel
+- Left-click a station to draft a line; the right panel shows that station while it is selected
 - Click a train to inspect onboard passengers, destinations and transfers in that panel
 - Click a line to inspect its trains, occupancy, and destinations by passenger count
 - Click the first station of a draft again to close a loop (`A, B, C, A`)
-- Click empty map to clear the inspector
+- Click empty map to return to the overview panel (top waiting destinations and ten busiest stations)
 - Enter or right-click to finish a line (one train is added automatically)
 - Click the end station of the selected line to extend it, or click the first station to close a loop
 - Drag a line onto a station to insert it between the two segment ends

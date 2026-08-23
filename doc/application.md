@@ -57,7 +57,7 @@ Drafting:
 | 1 / 2 / 4 / 8 | Time scale |
 | Wheel | Zoom at cursor, or scroll the unconnected list |
 | Middle-drag | Pan |
-| Click empty map | Clear inspector and help |
+| Click empty map | Return to the overview panel and close help |
 
 Unconnected stations are listed in the right sidebar. Clicking a name inspects that station.
 
