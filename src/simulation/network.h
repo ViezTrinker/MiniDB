@@ -29,6 +29,12 @@ namespace MiniDb
       Yes = true
    };
 
+   enum class LineEnd
+   {
+      Front,
+      Back
+   };
+
    struct Line
    {
       LineId id;
@@ -123,6 +129,15 @@ namespace MiniDb
        *\param[in] stationId Station to append.
        */
       Result ExtendLine(LineId lineId, StationId stationId);
+
+      /*!
+       *\brief Prepends or appends a station at one end of an existing line.
+       *
+       *\param[in] lineId Line to extend.
+       *\param[in] end Which terminus receives the station.
+       *\param[in] stationId Station to add.
+       */
+      Result ExtendLineAt(LineId lineId, LineEnd end, StationId stationId);
 
       /*!
        *\brief Inserts a station into a line between the two ends of a segment.

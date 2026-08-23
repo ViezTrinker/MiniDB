@@ -109,6 +109,34 @@ TEST(WorldTest, StationCapStopsFurtherSpawns)
    EXPECT_TRUE(MiniDb::IsErr(world.SpawnNextStation()));
 }
 
+TEST(WorldTest, RaisingStationCapAllowsFurtherSpawns)
+{
+   MiniDb::World world(7);
+   world.SetPassengerAutoSpawn(MiniDb::PassengerAutoSpawn::No);
+   ASSERT_TRUE(MiniDb::IsOk(world.LoadCatalogFromString(CatalogJson)));
+   world.SetMaxStationCount(MiniDb::InitialStationCount);
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnInitialStations()));
+   EXPECT_EQ(world.GetNetwork().GetStations().size(), MiniDb::InitialStationCount);
+
+   world.SetMaxStationCount(MiniDb::InitialStationCount + 1);
+   EXPECT_EQ(world.GetStationCap(), MiniDb::InitialStationCount + 1);
+   world.Tick(MiniDb::StationSpawnIntervalSeconds + 0.1f);
+   EXPECT_EQ(world.GetNetwork().GetStations().size(), MiniDb::InitialStationCount + 1);
+}
+
+TEST(WorldTest, LoweringStationCapCannotDropBelowActiveCount)
+{
+   MiniDb::World world(7);
+   world.SetPassengerAutoSpawn(MiniDb::PassengerAutoSpawn::No);
+   ASSERT_TRUE(MiniDb::IsOk(world.LoadCatalogFromString(CatalogJson)));
+   world.SetMaxStationCount(MiniDb::InitialStationCount);
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnInitialStations()));
+
+   world.SetMaxStationCount(2);
+   EXPECT_EQ(world.GetMaxStationCount(), MiniDb::InitialStationCount);
+   EXPECT_EQ(world.GetNetwork().GetStations().size(), MiniDb::InitialStationCount);
+}
+
 TEST(WorldTest, StationCapBelowInitialCount)
 {
    MiniDb::World world(7);
@@ -181,6 +209,35 @@ TEST(WorldTest, CollectWaitingDemandRejectsUnknownStation)
 
    MiniDb::DestinationDemandList demand;
    EXPECT_TRUE(MiniDb::IsErr(world.CollectWaitingDemand(99, demand)));
+}
+
+TEST(WorldTest, PrependAtFrontShiftsTrainSegmentIndex)
+{
+   MiniDb::World world(7);
+   world.SetPassengerAutoSpawn(MiniDb::PassengerAutoSpawn::No);
+   ASSERT_TRUE(MiniDb::IsOk(world.LoadCatalogFromString(CatalogJson)));
+   for (uint32_t stationIndex = 0; stationIndex < 5; ++stationIndex)
+   {
+      ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+   }
+
+   MiniDb::StationIdList stationIds;
+   stationIds.push_back(3);
+   stationIds.push_back(4);
+   MiniDb::LineId lineId = MiniDb::InvalidLineId;
+   ASSERT_TRUE(MiniDb::IsOk(world.AddLine(stationIds, lineId)));
+   ASSERT_EQ(world.GetTrains().size(), 1u);
+   EXPECT_EQ(world.GetTrains()[0].fromIndex, 0);
+
+   ASSERT_TRUE(MiniDb::IsOk(world.ExtendLineAt(lineId, MiniDb::LineEnd::Front, 2)));
+   ASSERT_EQ(world.GetTrains().size(), 1u);
+   EXPECT_EQ(world.GetTrains()[0].fromIndex, 1);
+
+   const MiniDb::Line* pLine = world.GetNetwork().FindLine(lineId);
+   ASSERT_NE(pLine, nullptr);
+   EXPECT_EQ(pLine->stationIds[0], 2u);
+   EXPECT_EQ(pLine->stationIds[1], 3u);
+   EXPECT_EQ(pLine->stationIds[2], 4u);
 }
 
 TEST(WorldTest, InsertStationOnLineUpdatesOrder)

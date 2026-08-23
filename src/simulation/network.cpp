@@ -237,6 +237,11 @@ namespace MiniDb
 
    Result Network::ExtendLine(LineId lineId, StationId stationId)
    {
+      return ExtendLineAt(lineId, LineEnd::Back, stationId);
+   }
+
+   Result Network::ExtendLineAt(LineId lineId, LineEnd end, StationId stationId)
+   {
       Line* pLine = FindMutableLine(lineId);
       if (pLine == nullptr)
       {
@@ -249,12 +254,20 @@ namespace MiniDb
       if (ContainsStationId(pLine->stationIds, stationId))
       {
          if (pLine->loop == LineLoop::No &&
-            stationId == pLine->stationIds.front() &&
             pLine->stationIds.size() >= MinimumLoopStations)
          {
-            pLine->loop = LineLoop::Yes;
-            RebuildGraph();
-            return Result::Ok;
+            if (end == LineEnd::Back && stationId == pLine->stationIds.front())
+            {
+               pLine->loop = LineLoop::Yes;
+               RebuildGraph();
+               return Result::Ok;
+            }
+            if (end == LineEnd::Front && stationId == pLine->stationIds.back())
+            {
+               pLine->loop = LineLoop::Yes;
+               RebuildGraph();
+               return Result::Ok;
+            }
          }
 
          return Result::DuplicateStation;
@@ -265,7 +278,15 @@ namespace MiniDb
          return Result::DuplicateStation;
       }
 
-      pLine->stationIds.push_back(stationId);
+      if (end == LineEnd::Back)
+      {
+         pLine->stationIds.push_back(stationId);
+      }
+      else
+      {
+         pLine->stationIds.insert(pLine->stationIds.begin(), stationId);
+      }
+
       RebuildGraph();
       return Result::Ok;
    }

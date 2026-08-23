@@ -109,6 +109,41 @@ namespace MiniDb
       Result ExtendLine(LineId lineId, StationId stationId);
 
       /*!
+       *\brief Prepends or appends a station at one end of an existing line.
+       *
+       *\param[in] lineId Line to extend.
+       *\param[in] end Which terminus receives the station.
+       *\param[in] stationId Station to add.
+       */
+      Result ExtendLineAt(LineId lineId, LineEnd end, StationId stationId);
+
+      /*!
+       *\brief Returns the map position of a terminus anchor handle.
+       *
+       *\param[in] lineId Line that owns the anchor.
+       *\param[in] end Which terminus anchor to locate.
+       *\param[in] offsetKm Outward offset from the station in kilometres.
+       *\param[out] anchorPoint Anchor position in map kilometres.
+       */
+      Result GetTerminusAnchorPosition(LineId lineId, LineEnd end, float offsetKm, MapPoint& anchorPoint) const;
+
+      /*!
+       *\brief Returns true when a point hits a terminus anchor on the given line.
+       *
+       *\param[in] lineId Line to test.
+       *\param[in] point Map location in kilometres.
+       *\param[in] radiusKm Hit radius around each anchor.
+       *\param[in] offsetKm Outward anchor offset from each terminus station.
+       *\param[out] outEnd Which anchor was hit.
+       */
+      bool HitTestTerminusAnchor(
+         LineId lineId,
+         MapPoint point,
+         float radiusKm,
+         float offsetKm,
+         LineEnd& outEnd) const;
+
+      /*!
        *\brief Inserts a station into a line between the two ends of a segment.
        *
        *\param[in] lineId Line to change.

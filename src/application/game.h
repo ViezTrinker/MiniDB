@@ -33,6 +33,12 @@ namespace MiniDb
       Yes = true
    };
 
+   enum class AnchorGrabPending : bool
+   {
+      No = false,
+      Yes = true
+   };
+
    enum class FullscreenMode : bool
    {
       No = false,
@@ -72,11 +78,13 @@ namespace MiniDb
       void StartNewGame(void);
       void ReturnToMenu(void);
       void ResetPlayInput(void);
+      void AdjustStationCap(StationLimitStep step);
       void SlowDownSimulation(void);
       void SpeedUpSimulation(void);
       void ToggleFullscreen(void);
       void ConfigureWindow(void);
       void Update(float deltaSeconds);
+      void UpdateKeyboardCamera(float deltaSeconds);
       void Render(void);
       std::string BuildHudText(void) const;
 
@@ -96,11 +104,17 @@ namespace MiniDb
       TrainDrag _trainDrag = TrainDrag::No;
       LineDrag _lineDrag = LineDrag::No;
       LineGrabPending _lineGrabPending = LineGrabPending::No;
+      AnchorGrabPending _anchorGrabPending = AnchorGrabPending::No;
+      AnchorDrag _anchorDrag = AnchorDrag::No;
       LineId _dropTargetLineId = InvalidLineId;
       LineId _lineDragLineId = InvalidLineId;
+      LineId _anchorDragLineId = InvalidLineId;
+      LineEnd _anchorDragEnd = LineEnd::Front;
       uint32_t _lineDragSegmentIndex = InvalidIndex;
       StationId _lineDragHoverStationId = InvalidStationId;
+      StationId _anchorDragHoverStationId = InvalidStationId;
       sf::Vector2i _lineDragStartPixel;
+      sf::Vector2i _anchorDragStartPixel;
       float _unconnectedScrollPixels = 0.0f;
       sf::Vector2i _lastMousePixel;
       StationId _inspectedStationId = InvalidStationId;

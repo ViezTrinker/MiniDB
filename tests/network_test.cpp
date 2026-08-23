@@ -79,6 +79,68 @@ TEST(NetworkTest, ExtendToFirstStationClosesLoop)
    EXPECT_EQ(pLine->stationIds.size(), 3u);
 }
 
+TEST(NetworkTest, PrependStationAddsAtFront)
+{
+   MiniDb::Network network;
+   ASSERT_TRUE(MiniDb::IsOk(network.AddStation(MiniDb::Test::MakeStation(0, "A", 51.00f, 10.00f, 100000))));
+   ASSERT_TRUE(MiniDb::IsOk(network.AddStation(MiniDb::Test::MakeStation(1, "B", 51.10f, 10.00f, 100000))));
+   ASSERT_TRUE(MiniDb::IsOk(network.AddStation(MiniDb::Test::MakeStation(2, "C", 51.20f, 10.00f, 100000))));
+   ASSERT_TRUE(MiniDb::IsOk(network.AddStation(MiniDb::Test::MakeStation(3, "X", 50.90f, 10.00f, 100000))));
+
+   MiniDb::StationIdList stationIds;
+   stationIds.push_back(0);
+   stationIds.push_back(1);
+   stationIds.push_back(2);
+   MiniDb::LineId lineId = MiniDb::InvalidLineId;
+   ASSERT_TRUE(MiniDb::IsOk(network.AddLine(stationIds, 0, lineId)));
+   ASSERT_TRUE(MiniDb::IsOk(network.ExtendLineAt(lineId, MiniDb::LineEnd::Front, 3)));
+
+   const MiniDb::Line* pLine = network.FindLine(lineId);
+   ASSERT_NE(pLine, nullptr);
+   ASSERT_EQ(pLine->stationIds.size(), 4u);
+   EXPECT_EQ(pLine->stationIds[0], 3u);
+   EXPECT_EQ(pLine->stationIds[1], 0u);
+   EXPECT_EQ(pLine->stationIds[2], 1u);
+   EXPECT_EQ(pLine->stationIds[3], 2u);
+}
+
+TEST(NetworkTest, PrependRejectsDuplicateStation)
+{
+   MiniDb::Network network;
+   ASSERT_TRUE(MiniDb::IsOk(network.AddStation(MiniDb::Test::MakeStation(0, "A", 51.00f, 10.00f, 100000))));
+   ASSERT_TRUE(MiniDb::IsOk(network.AddStation(MiniDb::Test::MakeStation(1, "B", 51.10f, 10.00f, 100000))));
+   ASSERT_TRUE(MiniDb::IsOk(network.AddStation(MiniDb::Test::MakeStation(2, "C", 51.20f, 10.00f, 100000))));
+
+   MiniDb::StationIdList stationIds;
+   stationIds.push_back(0);
+   stationIds.push_back(1);
+   stationIds.push_back(2);
+   MiniDb::LineId lineId = MiniDb::InvalidLineId;
+   ASSERT_TRUE(MiniDb::IsOk(network.AddLine(stationIds, 0, lineId)));
+   EXPECT_TRUE(MiniDb::IsErr(network.ExtendLineAt(lineId, MiniDb::LineEnd::Front, 1)));
+}
+
+TEST(NetworkTest, PrependToBackTerminusClosesLoop)
+{
+   MiniDb::Network network;
+   ASSERT_TRUE(MiniDb::IsOk(network.AddStation(MiniDb::Test::MakeStation(0, "A", 51.00f, 10.00f, 100000))));
+   ASSERT_TRUE(MiniDb::IsOk(network.AddStation(MiniDb::Test::MakeStation(1, "B", 51.10f, 10.00f, 100000))));
+   ASSERT_TRUE(MiniDb::IsOk(network.AddStation(MiniDb::Test::MakeStation(2, "C", 51.20f, 10.00f, 100000))));
+
+   MiniDb::StationIdList stationIds;
+   stationIds.push_back(0);
+   stationIds.push_back(1);
+   stationIds.push_back(2);
+   MiniDb::LineId lineId = MiniDb::InvalidLineId;
+   ASSERT_TRUE(MiniDb::IsOk(network.AddLine(stationIds, 0, lineId)));
+   ASSERT_TRUE(MiniDb::IsOk(network.ExtendLineAt(lineId, MiniDb::LineEnd::Front, 2)));
+
+   const MiniDb::Line* pLine = network.FindLine(lineId);
+   ASSERT_NE(pLine, nullptr);
+   EXPECT_EQ(pLine->loop, MiniDb::LineLoop::Yes);
+   EXPECT_EQ(pLine->stationIds.size(), 3u);
+}
+
 TEST(NetworkTest, RejectsInsertOfStationAlreadyOnLine)
 {
    MiniDb::Network network;

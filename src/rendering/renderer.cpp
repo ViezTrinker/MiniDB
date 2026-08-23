@@ -499,6 +499,20 @@ namespace MiniDb
       return PixelsToKm(StationHitRadiusPixels);
    }
 
+   sf::Vector2i Renderer::MapViewCenterPixel(void) const
+   {
+      if (_pWindow == nullptr)
+      {
+         return {0, 0};
+      }
+
+      const auto windowHeight = static_cast<int32_t>(_pWindow->getSize().y);
+      return {
+         static_cast<int32_t>(MapWidthPixels() * 0.5f),
+         windowHeight / 2
+      };
+   }
+
    void Renderer::DrawScaledText(std::string_view text, MapPoint position, unsigned int characterSize, sf::Color color)
    {
       if (_pWindow == nullptr || _pFont == nullptr)
@@ -549,6 +563,8 @@ namespace MiniDb
          TrainDrag trainDrag,
          LineDrag lineDrag,
          const LineDragPreview& lineDragPreview,
+         AnchorDrag anchorDrag,
+         const TerminusAnchorPreview& anchorDragPreview,
          float unconnectedScrollPixels,
          sf::Vector2i cursorPixel)
    {
@@ -566,6 +582,11 @@ namespace MiniDb
       {
          DrawLineInsertPreview(world, lineDragPreview, cursorPixel);
       }
+      if (anchorDrag == AnchorDrag::Yes)
+      {
+         DrawTerminusExtendPreview(world, anchorDragPreview, cursorPixel);
+      }
+      DrawTerminusAnchors(world, highlightLineId, anchorDrag, anchorDragPreview);
       DrawDraft(world, draftStationIds);
       DrawStations(world, hoveredStationId, inspectedStationId);
       DrawTrains(world, inspectedTrainId);
@@ -743,6 +764,93 @@ namespace MiniDb
       const float thicknessKm = PixelsToKm(SelectedLineThicknessPixels);
       DrawSegment(pFrom->position, midPoint, color, thicknessKm);
       DrawSegment(midPoint, pTo->position, color, thicknessKm);
+   }
+
+   void Renderer::DrawTerminusAnchors(
+      const World& world,
+      LineId highlightLineId,
+      AnchorDrag anchorDrag,
+      const TerminusAnchorPreview& anchorDragPreview)
+   {
+      if (_pWindow == nullptr || highlightLineId == InvalidLineId)
+      {
+         return;
+      }
+
+      const Line* pLine = world.GetNetwork().FindLine(highlightLineId);
+      if (pLine == nullptr || pLine->loop == LineLoop::Yes || pLine->stationIds.size() < MinimumLineStations)
+      {
+         return;
+      }
+
+      const sf::Color color = ColorForLine(pLine->colorIndex);
+      const float offsetKm = PixelsToKm(TerminusAnchorOffsetPixels);
+      const float radiusKm = PixelsToKm(TerminusAnchorRadiusPixels);
+      const LineEnd ends[] = {LineEnd::Front, LineEnd::Back};
+
+      for (LineEnd end : ends)
+      {
+         MapPoint anchorPoint;
+         if (IsErr(world.GetTerminusAnchorPosition(highlightLineId, end, offsetKm, anchorPoint)))
+         {
+            continue;
+         }
+
+         float drawRadiusKm = radiusKm;
+         if (anchorDrag == AnchorDrag::Yes &&
+            anchorDragPreview.lineId == highlightLineId &&
+            anchorDragPreview.end == end)
+         {
+            drawRadiusKm = PixelsToKm(TerminusAnchorDragRadiusPixels);
+         }
+
+         sf::CircleShape anchor(drawRadiusKm);
+         anchor.setOrigin({drawRadiusKm, drawRadiusKm});
+         anchor.setPosition({anchorPoint.xKm, anchorPoint.yKm});
+         anchor.setFillColor(color);
+         anchor.setOutlineColor(sf::Color(255, 255, 255, 220));
+         anchor.setOutlineThickness(PixelsToKm(1.0f));
+         _pWindow->draw(anchor);
+      }
+   }
+
+   void Renderer::DrawTerminusExtendPreview(
+      const World& world,
+      const TerminusAnchorPreview& anchorDragPreview,
+      sf::Vector2i cursorPixel)
+   {
+      const Line* pLine = world.GetNetwork().FindLine(anchorDragPreview.lineId);
+      if (pLine == nullptr || pLine->loop == LineLoop::Yes || pLine->stationIds.size() < MinimumLineStations)
+      {
+         return;
+      }
+
+      StationId terminalId = InvalidStationId;
+      if (anchorDragPreview.end == LineEnd::Front)
+      {
+         terminalId = pLine->stationIds.front();
+      }
+      else
+      {
+         terminalId = pLine->stationIds.back();
+      }
+
+      const StationRecord* pTerminal = world.GetNetwork().FindStation(terminalId);
+      if (pTerminal == nullptr)
+      {
+         return;
+      }
+
+      MapPoint targetPoint = ScreenToMap(cursorPixel);
+      const StationRecord* pHover = world.GetNetwork().FindStation(anchorDragPreview.hoverStationId);
+      if (pHover != nullptr)
+      {
+         targetPoint = pHover->position;
+      }
+
+      const sf::Color color = ColorForLine(pLine->colorIndex);
+      const float thicknessKm = PixelsToKm(SelectedLineThicknessPixels);
+      DrawSegment(pTerminal->position, targetPoint, color, thicknessKm);
    }
 
    const StationRecord* Renderer::FindDraftStation(const World& world, StationId stationId) const
@@ -1188,7 +1296,7 @@ namespace MiniDb
 
       const sf::FloatRect helpButton = HelpButtonBounds();
       const float panelWidth = 340.0f;
-      const float panelHeight = 236.0f;
+      const float panelHeight = 284.0f;
       const float panelLeft = HudButtonMarginPixels;
       const float panelTop = helpButton.position.y - panelHeight - 8.0f;
       sf::RectangleShape panel({panelWidth, panelHeight});
@@ -1202,6 +1310,7 @@ namespace MiniDb
          "Click stations to draft a line.\n"
          "Click the first station again to close a loop.\n"
          "Drag a line onto a station to insert it.\n"
+         "Drag a terminus anchor to extend a selected line.\n"
          "Enter or right-click to finish a line.\n"
          "Drag the train onto a line to place it there.\n"
          "Click a train, station, or line for details on the right.\n"
@@ -1209,6 +1318,8 @@ namespace MiniDb
          "Del deletes the selected line.\n"
          "Ctrl+Z / Ctrl+Y undo or redo a draft click.\n"
          "Wheel zoom, middle-drag pan. F11 fullscreen.\n"
+         "Arrows pan. + / - zoom.\n"
+         "[ / ] change station cap by 50.\n"
          "Space pause. 1 / 2 / 4 / 8 speed.\n"
          "Esc returns to the menu.";
       sf::Text text(*_pFont, Utf8SfString(helpText), 14);

@@ -63,6 +63,32 @@ namespace MiniDb
    }
 
    /*!
+    *\brief Map point offset outward from a line terminus along the line direction.
+    *
+    *\param[in] terminalPosition Terminus station position.
+    *\param[in] inwardPosition Next station toward the line interior.
+    *\param[in] offsetKm Distance past the terminus in kilometres.
+    */
+   inline MapPoint TerminusAnchorPosition(MapPoint terminalPosition, MapPoint inwardPosition, float offsetKm)
+   {
+      float deltaX = terminalPosition.xKm - inwardPosition.xKm;
+      float deltaY = terminalPosition.yKm - inwardPosition.yKm;
+      const float lengthKm = std::sqrt((deltaX * deltaX) + (deltaY * deltaY));
+      if (lengthKm <= 0.000001f)
+      {
+         return terminalPosition;
+      }
+
+      const float scale = offsetKm / lengthKm;
+      deltaX *= scale;
+      deltaY *= scale;
+      MapPoint anchorPoint;
+      anchorPoint.xKm = terminalPosition.xKm + deltaX;
+      anchorPoint.yKm = terminalPosition.yKm + deltaY;
+      return anchorPoint;
+   }
+
+   /*!
     *\brief Shortest distance from a point to a line segment in kilometres.
     *
     *\param[in] point Query location.

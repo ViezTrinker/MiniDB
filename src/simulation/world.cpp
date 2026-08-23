@@ -162,13 +162,25 @@ namespace MiniDb
 
    void World::SetMaxStationCount(uint32_t maxStationCount)
    {
-      if (maxStationCount == 0)
+      uint32_t clamped = maxStationCount;
+      if (clamped < MinimumStationCap)
       {
-         _maxStationCount = 1;
-         return;
+         clamped = MinimumStationCap;
       }
 
-      _maxStationCount = maxStationCount;
+      const uint32_t catalogSize = GetCatalogStationCount();
+      if (catalogSize > 0 && clamped > catalogSize)
+      {
+         clamped = catalogSize;
+      }
+
+      const auto activeStationCount = static_cast<uint32_t>(_network.GetStations().size());
+      if (activeStationCount > clamped)
+      {
+         clamped = activeStationCount;
+      }
+
+      _maxStationCount = clamped;
    }
 
    Result World::LoadCatalogFromFile(std::string_view filePath)
@@ -294,14 +306,94 @@ namespace MiniDb
 
    Result World::ExtendLine(LineId lineId, StationId stationId)
    {
-      const Result result = _network.ExtendLine(lineId, stationId);
+      return ExtendLineAt(lineId, LineEnd::Back, stationId);
+   }
+
+   Result World::ExtendLineAt(LineId lineId, LineEnd end, StationId stationId)
+   {
+      const Result result = _network.ExtendLineAt(lineId, end, stationId);
       if (IsErr(result))
       {
          return result;
       }
 
+      if (end == LineEnd::Front)
+      {
+         AdjustTrainsAfterInsert(lineId, 0);
+      }
+
       NotePathChanged();
       return Result::Ok;
+   }
+
+   Result World::GetTerminusAnchorPosition(LineId lineId, LineEnd end, float offsetKm, MapPoint& anchorPoint) const
+   {
+      const Line* pLine = _network.FindLine(lineId);
+      if (pLine == nullptr)
+      {
+         return Result::InvalidArgument;
+      }
+      if (pLine->loop == LineLoop::Yes || pLine->stationIds.size() < MinimumLineStations)
+      {
+         return Result::InvalidArgument;
+      }
+
+      const StationRecord* pTerminal = nullptr;
+      const StationRecord* pInward = nullptr;
+      if (end == LineEnd::Front)
+      {
+         pTerminal = _network.FindStation(pLine->stationIds.front());
+         pInward = _network.FindStation(pLine->stationIds[1]);
+      }
+      else
+      {
+         pTerminal = _network.FindStation(pLine->stationIds.back());
+         pInward = _network.FindStation(pLine->stationIds[pLine->stationIds.size() - 2]);
+      }
+
+      if (pTerminal == nullptr || pInward == nullptr)
+      {
+         return Result::Error;
+      }
+
+      anchorPoint = TerminusAnchorPosition(pTerminal->position, pInward->position, offsetKm);
+      return Result::Ok;
+   }
+
+   bool World::HitTestTerminusAnchor(
+      LineId lineId,
+      MapPoint point,
+      float radiusKm,
+      float offsetKm,
+      LineEnd& outEnd) const
+   {
+      const LineEnd ends[] = {LineEnd::Front, LineEnd::Back};
+      bool found = false;
+      float bestDistanceKm = 0.0f;
+
+      for (LineEnd end : ends)
+      {
+         MapPoint anchorPoint;
+         if (IsErr(GetTerminusAnchorPosition(lineId, end, offsetKm, anchorPoint)))
+         {
+            continue;
+         }
+
+         const float distanceKm = DistanceKm(point, anchorPoint);
+         if (distanceKm > radiusKm)
+         {
+            continue;
+         }
+
+         if (!found || distanceKm < bestDistanceKm)
+         {
+            bestDistanceKm = distanceKm;
+            outEnd = end;
+            found = true;
+         }
+      }
+
+      return found;
    }
 
    void World::UnloadTrainPassengers(Train& train)

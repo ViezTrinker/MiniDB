@@ -30,7 +30,6 @@ namespace MiniDb
       constexpr float MenuStepSize = 40.0f;
       constexpr float MenuValueWidth = 148.0f;
       constexpr float MenuStepperGap = 8.0f;
-      constexpr uint32_t MenuStationCountStep = 50;
       constexpr uint32_t MenuStationCountMaxDigits = 5;
 
       enum class ButtonHover : bool
@@ -227,9 +226,9 @@ namespace MiniDb
       uint32_t nextCount = _committedStationCount;
       if (step == StationLimitStep::Decrease)
       {
-         if (nextCount > (MinimumStationCap + MenuStationCountStep))
+         if (nextCount > (MinimumStationCap + StationCapStep))
          {
-            nextCount -= MenuStationCountStep;
+            nextCount -= StationCapStep;
          }
          else
          {
@@ -238,7 +237,7 @@ namespace MiniDb
       }
       else
       {
-         nextCount += MenuStationCountStep;
+         nextCount += StationCapStep;
       }
 
       _committedStationCount = ClampStationCount(nextCount, catalogStationCount);
@@ -264,6 +263,13 @@ namespace MiniDb
    uint32_t MainMenu::GetSelectedMaxStationCount(void) const
    {
       return ParsedStationCount();
+   }
+
+   void MainMenu::SetSelectedMaxStationCount(uint32_t maxStationCount, uint32_t catalogStationCount)
+   {
+      _committedStationCount = ClampStationCount(maxStationCount, catalogStationCount);
+      _stationCountText = std::to_string(_committedStationCount);
+      _stationCountFocus = StationCountFocus::No;
    }
 
    void MainMenu::HandleTextEntered(char32_t unicode)

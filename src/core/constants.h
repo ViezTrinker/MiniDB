@@ -22,6 +22,7 @@ namespace MiniDb
    inline constexpr uint32_t MinimumStationCap = 2;
    inline constexpr uint32_t InitialStationCount = 6;
    inline constexpr uint32_t DefaultMaxStationCount = 100;
+   inline constexpr uint32_t StationCapStep = 50;
    inline constexpr uint32_t UnlimitedStationCount = 0xFFFFFFFFu;
    inline constexpr float StationSpawnIntervalSeconds = 5.0f;
    inline constexpr float GlobalPassengerSpawnPerSecond = 1.5f;
@@ -41,8 +42,8 @@ namespace MiniDb
    inline constexpr uint32_t DefaultWindowHeight = 720;
    inline constexpr float DefaultTimeScale = 1.0f;
 
-   inline constexpr float StationRadiusBasePixels = 6.0f;
-   inline constexpr float StationRadiusMaxPixels = 10.0f;
+   inline constexpr float StationRadiusBasePixels = 3.0f;
+   inline constexpr float StationRadiusMaxPixels = 5.0f;
    inline constexpr float StationHitRadiusPixels = 12.0f;
    inline constexpr float LineThicknessPixels = 3.0f;
    inline constexpr float ParallelLineOffsetPixels = 3.0f;
@@ -70,6 +71,12 @@ namespace MiniDb
    inline constexpr float TimeScaleVeryFast = 8.0f;
    inline constexpr float LineDropHitPixels = 16.0f;
    inline constexpr float LineDragStartPixels = 8.0f;
+   inline constexpr float KeyboardPanSpeedPixelsPerSecond = 480.0f;
+   inline constexpr float KeyboardZoomInFactor = 0.9f;
+   inline constexpr float KeyboardZoomOutFactor = 1.1f;
+   inline constexpr float TerminusAnchorRadiusPixels = 7.0f;
+   inline constexpr float TerminusAnchorOffsetPixels = 14.0f;
+   inline constexpr float TerminusAnchorDragRadiusPixels = 10.0f;
    inline constexpr float UnconnectedPanelWidthPixels = 280.0f;
    inline constexpr float UnconnectedRowHeightPixels = 22.0f;
 } // namespace MiniDb

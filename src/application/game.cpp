@@ -77,6 +77,45 @@ namespace MiniDb
 
          return world.GetNetwork().StationIndexOnLine(*pLine, stationId) == InvalidIndex;
       }
+
+      bool IsValidAnchorTarget(const World& world, LineId lineId, LineEnd end, StationId stationId)
+      {
+         if (stationId == InvalidStationId)
+         {
+            return false;
+         }
+
+         const Line* pLine = world.GetNetwork().FindLine(lineId);
+         if (pLine == nullptr || pLine->loop == LineLoop::Yes)
+         {
+            return false;
+         }
+         if (world.GetNetwork().FindStation(stationId) == nullptr)
+         {
+            return false;
+         }
+
+         if (world.GetNetwork().StationIndexOnLine(*pLine, stationId) == InvalidIndex)
+         {
+            return true;
+         }
+
+         if (pLine->stationIds.size() < MinimumLoopStations)
+         {
+            return false;
+         }
+
+         if (end == LineEnd::Back && stationId == pLine->stationIds.front())
+         {
+            return true;
+         }
+         if (end == LineEnd::Front && stationId == pLine->stationIds.back())
+         {
+            return true;
+         }
+
+         return false;
+      }
    } // namespace
 
    Game::Game(void) :
@@ -259,6 +298,11 @@ namespace MiniDb
       }
       if (action == MenuAction::Resume)
       {
+         _world.SetMaxStationCount(_mainMenu.GetSelectedMaxStationCount());
+         _mainMenu.SetSelectedMaxStationCount(
+            _world.GetMaxStationCount(),
+            _world.GetCatalogStationCount());
+         _renderer.SetMapSidebar(MapSidebar::Visible);
          _appScreen = AppScreen::Playing;
          return;
       }
@@ -278,10 +322,14 @@ namespace MiniDb
       _trainDrag = TrainDrag::No;
       _lineDrag = LineDrag::No;
       _lineGrabPending = LineGrabPending::No;
+      _anchorGrabPending = AnchorGrabPending::No;
+      _anchorDrag = AnchorDrag::No;
       _dropTargetLineId = InvalidLineId;
       _lineDragLineId = InvalidLineId;
+      _anchorDragLineId = InvalidLineId;
       _lineDragSegmentIndex = InvalidIndex;
       _lineDragHoverStationId = InvalidStationId;
+      _anchorDragHoverStationId = InvalidStationId;
       _unconnectedScrollPixels = 0.0f;
       _inspectedStationId = InvalidStationId;
       _inspectedTrainId = InvalidTrainId;
@@ -351,12 +399,42 @@ namespace MiniDb
       _trainDrag = TrainDrag::No;
       _lineDrag = LineDrag::No;
       _lineGrabPending = LineGrabPending::No;
+      _anchorGrabPending = AnchorGrabPending::No;
+      _anchorDrag = AnchorDrag::No;
       _dropTargetLineId = InvalidLineId;
       _lineDragHoverStationId = InvalidStationId;
+      _anchorDragHoverStationId = InvalidStationId;
       _panState = PanState::No;
       _helpVisible = HelpVisible::No;
+      _mainMenu.SetSelectedMaxStationCount(
+         _world.GetMaxStationCount(),
+         _world.GetCatalogStationCount());
       _renderer.SetMapSidebar(MapSidebar::Hidden);
       _appScreen = AppScreen::Menu;
+   }
+
+   void Game::AdjustStationCap(StationLimitStep step)
+   {
+      const uint32_t catalogCount = _world.GetCatalogStationCount();
+      uint32_t nextCount = _world.GetMaxStationCount();
+      if (step == StationLimitStep::Decrease)
+      {
+         if (nextCount > (MinimumStationCap + StationCapStep))
+         {
+            nextCount -= StationCapStep;
+         }
+         else
+         {
+            nextCount = MinimumStationCap;
+         }
+      }
+      else
+      {
+         nextCount += StationCapStep;
+      }
+
+      _world.SetMaxStationCount(nextCount);
+      _mainMenu.SetSelectedMaxStationCount(_world.GetMaxStationCount(), catalogCount);
    }
 
    void Game::ConfigureWindow(void)
@@ -420,6 +498,13 @@ namespace MiniDb
             _lineDragHoverStationId = InvalidStationId;
             return;
          }
+         if (_anchorDrag == AnchorDrag::Yes || _anchorGrabPending == AnchorGrabPending::Yes)
+         {
+            _anchorDrag = AnchorDrag::No;
+            _anchorGrabPending = AnchorGrabPending::No;
+            _anchorDragHoverStationId = InvalidStationId;
+            return;
+         }
          if (_lineEditor.IsDrafting())
          {
             _lineEditor.Cancel();
@@ -460,6 +545,12 @@ namespace MiniDb
             _lineDrag = LineDrag::No;
             _lineGrabPending = LineGrabPending::No;
             _lineDragHoverStationId = InvalidStationId;
+         }
+         if (_anchorDrag == AnchorDrag::Yes || _anchorGrabPending == AnchorGrabPending::Yes)
+         {
+            _anchorDrag = AnchorDrag::No;
+            _anchorGrabPending = AnchorGrabPending::No;
+            _anchorDragHoverStationId = InvalidStationId;
          }
 
          LineId lineId = _lineEditor.GetSelectedLineId();
@@ -517,6 +608,29 @@ namespace MiniDb
       if (keyPressed.code == sf::Keyboard::Key::Num8)
       {
          _timeScale = TimeScaleVeryFast;
+         return;
+      }
+      if (keyPressed.code == sf::Keyboard::Key::Equal ||
+         keyPressed.code == sf::Keyboard::Key::Add)
+      {
+         _renderer.ZoomAt(_renderer.MapViewCenterPixel(), KeyboardZoomInFactor);
+         return;
+      }
+      if (keyPressed.code == sf::Keyboard::Key::Hyphen ||
+         keyPressed.code == sf::Keyboard::Key::Subtract)
+      {
+         _renderer.ZoomAt(_renderer.MapViewCenterPixel(), KeyboardZoomOutFactor);
+         return;
+      }
+      if (keyPressed.code == sf::Keyboard::Key::LBracket)
+      {
+         AdjustStationCap(StationLimitStep::Decrease);
+         return;
+      }
+      if (keyPressed.code == sf::Keyboard::Key::RBracket)
+      {
+         AdjustStationCap(StationLimitStep::Increase);
+         return;
       }
    }
 
@@ -567,6 +681,8 @@ namespace MiniDb
             _helpVisible = HelpVisible::No;
             _lineDrag = LineDrag::No;
             _lineGrabPending = LineGrabPending::No;
+            _anchorGrabPending = AnchorGrabPending::No;
+            _anchorDrag = AnchorDrag::No;
             return;
          }
 
@@ -633,6 +749,32 @@ namespace MiniDb
          }
 
          const MapPoint mapPoint = _renderer.ScreenToMap(mousePressed.position);
+         if (!_lineEditor.IsDrafting())
+         {
+            const LineId selectedLineId = _lineEditor.GetSelectedLineId();
+            if (selectedLineId != InvalidLineId)
+            {
+               LineEnd anchorEnd = LineEnd::Front;
+               if (_world.HitTestTerminusAnchor(
+                  selectedLineId,
+                  mapPoint,
+                  _renderer.PixelsToKm(TerminusAnchorDragRadiusPixels),
+                  _renderer.PixelsToKm(TerminusAnchorOffsetPixels),
+                  anchorEnd))
+               {
+                  _anchorGrabPending = AnchorGrabPending::Yes;
+                  _anchorDragLineId = selectedLineId;
+                  _anchorDragEnd = anchorEnd;
+                  _anchorDragStartPixel = mousePressed.position;
+                  _anchorDragHoverStationId = InvalidStationId;
+                  _lineDrag = LineDrag::No;
+                  _lineGrabPending = LineGrabPending::No;
+                  _helpVisible = HelpVisible::No;
+                  return;
+               }
+            }
+         }
+
          const StationId stationId = _world.HitTestStation(mapPoint, _renderer.HitRadiusKm());
          if (stationId != InvalidStationId)
          {
@@ -711,6 +853,30 @@ namespace MiniDb
       }
 
       if (mouseReleased.button == sf::Mouse::Button::Left &&
+         (_anchorDrag == AnchorDrag::Yes || _anchorGrabPending == AnchorGrabPending::Yes))
+      {
+         if (_anchorDrag == AnchorDrag::Yes &&
+            IsValidAnchorTarget(_world, _anchorDragLineId, _anchorDragEnd, _anchorDragHoverStationId))
+         {
+            const Result extendResult = _world.ExtendLineAt(
+               _anchorDragLineId,
+               _anchorDragEnd,
+               _anchorDragHoverStationId);
+            if (IsOk(extendResult))
+            {
+               _lineEditor.SelectLine(_anchorDragLineId);
+               _inspectedStationId = _anchorDragHoverStationId;
+               _inspectedTrainId = InvalidTrainId;
+               _inspectedLineId = InvalidLineId;
+            }
+         }
+
+         _anchorDrag = AnchorDrag::No;
+         _anchorGrabPending = AnchorGrabPending::No;
+         _anchorDragHoverStationId = InvalidStationId;
+      }
+
+      if (mouseReleased.button == sf::Mouse::Button::Left &&
          (_lineDrag == LineDrag::Yes || _lineGrabPending == LineGrabPending::Yes))
       {
          if (_lineDrag == LineDrag::Yes &&
@@ -756,6 +922,28 @@ namespace MiniDb
       {
          const MapPoint mapPoint = _renderer.ScreenToMap(mouseMoved.position);
          _dropTargetLineId = _world.FindNearestLine(mapPoint, _renderer.PixelsToKm(LineDropHitPixels));
+      }
+      else if (_anchorGrabPending == AnchorGrabPending::Yes || _anchorDrag == AnchorDrag::Yes)
+      {
+         const float startDistanceSquared = PixelDistanceSquared(_anchorDragStartPixel, mouseMoved.position);
+         const float startThreshold = LineDragStartPixels * LineDragStartPixels;
+         if (_anchorDrag == AnchorDrag::No && startDistanceSquared >= startThreshold)
+         {
+            _anchorDrag = AnchorDrag::Yes;
+            _lineEditor.Cancel();
+            _lineEditor.SelectLine(_anchorDragLineId);
+         }
+
+         const MapPoint mapPoint = _renderer.ScreenToMap(mouseMoved.position);
+         const StationId stationId = _world.HitTestStation(mapPoint, _renderer.HitRadiusKm());
+         if (IsValidAnchorTarget(_world, _anchorDragLineId, _anchorDragEnd, stationId))
+         {
+            _anchorDragHoverStationId = stationId;
+         }
+         else
+         {
+            _anchorDragHoverStationId = InvalidStationId;
+         }
       }
       else if (_lineGrabPending == LineGrabPending::Yes || _lineDrag == LineDrag::Yes)
       {
@@ -833,6 +1021,8 @@ namespace MiniDb
          return;
       }
 
+      UpdateKeyboardCamera(deltaSeconds);
+
       float clampedDelta = deltaSeconds;
       if (clampedDelta > 0.05f)
       {
@@ -846,6 +1036,47 @@ namespace MiniDb
       }
 
       _world.Tick(simulationDelta);
+   }
+
+   void Game::UpdateKeyboardCamera(float deltaSeconds)
+   {
+      if (deltaSeconds <= 0.0f)
+      {
+         return;
+      }
+
+      const auto stepPixels = static_cast<int32_t>(KeyboardPanSpeedPixelsPerSecond * deltaSeconds);
+      if (stepPixels <= 0)
+      {
+         return;
+      }
+
+      int32_t deltaX = 0;
+      int32_t deltaY = 0;
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
+      {
+         deltaX -= stepPixels;
+      }
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
+      {
+         deltaX += stepPixels;
+      }
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up))
+      {
+         deltaY -= stepPixels;
+      }
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down))
+      {
+         deltaY += stepPixels;
+      }
+
+      if (deltaX == 0 && deltaY == 0)
+      {
+         return;
+      }
+
+      const sf::Vector2f mapDelta = _renderer.PixelDeltaToMapDelta({deltaX, deltaY});
+      _renderer.Pan(mapDelta);
    }
 
    std::string Game::BuildHudText(void) const
@@ -884,6 +1115,10 @@ namespace MiniDb
       {
          hoveredStationId = _lineDragHoverStationId;
       }
+      if (_anchorDragHoverStationId != InvalidStationId)
+      {
+         hoveredStationId = _anchorDragHoverStationId;
+      }
       const std::string statusText = BuildHudText();
       LineId highlightLineId = _lineEditor.GetSelectedLineId();
       if (_trainDrag == TrainDrag::Yes)
@@ -894,11 +1129,19 @@ namespace MiniDb
       {
          highlightLineId = _lineDragLineId;
       }
+      else if (_anchorDrag == AnchorDrag::Yes)
+      {
+         highlightLineId = _anchorDragLineId;
+      }
 
       LineDragPreview lineDragPreview;
       lineDragPreview.lineId = _lineDragLineId;
       lineDragPreview.segmentIndex = _lineDragSegmentIndex;
       lineDragPreview.hoverStationId = _lineDragHoverStationId;
+      TerminusAnchorPreview anchorDragPreview;
+      anchorDragPreview.lineId = _anchorDragLineId;
+      anchorDragPreview.end = _anchorDragEnd;
+      anchorDragPreview.hoverStationId = _anchorDragHoverStationId;
       _unconnectedScrollPixels = _renderer.ClampUnconnectedScroll(
          _world,
          _inspectedStationId,
@@ -920,6 +1163,8 @@ namespace MiniDb
          _trainDrag,
          _lineDrag,
          lineDragPreview,
+         _anchorDrag,
+         anchorDragPreview,
          _unconnectedScrollPixels,
          _lastMousePixel);
       _window.display();

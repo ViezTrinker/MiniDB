@@ -40,6 +40,12 @@ namespace MiniDb
       Yes = true
    };
 
+   enum class AnchorDrag : bool
+   {
+      No = false,
+      Yes = true
+   };
+
    enum class MapSidebar : bool
    {
       Hidden = false,
@@ -50,6 +56,13 @@ namespace MiniDb
    {
       LineId lineId = InvalidLineId;
       uint32_t segmentIndex = InvalidIndex;
+      StationId hoverStationId = InvalidStationId;
+   };
+
+   struct TerminusAnchorPreview
+   {
+      LineId lineId = InvalidLineId;
+      LineEnd end = LineEnd::Front;
       StationId hoverStationId = InvalidStationId;
    };
 
@@ -166,6 +179,8 @@ namespace MiniDb
        *\param[in] trainDrag Whether a train token is being dragged.
        *\param[in] lineDrag Whether a line segment is being dragged.
        *\param[in] lineDragPreview Line insert preview while dragging.
+       *\param[in] anchorDrag Whether a terminus anchor is being dragged.
+       *\param[in] anchorDragPreview Terminus extension preview while dragging.
        *\param[in] unconnectedScrollPixels Vertical list scroll in pixels.
        *\param[in] cursorPixel Current mouse position in screen pixels.
        */
@@ -184,8 +199,15 @@ namespace MiniDb
          TrainDrag trainDrag,
          LineDrag lineDrag,
          const LineDragPreview& lineDragPreview,
+         AnchorDrag anchorDrag,
+         const TerminusAnchorPreview& anchorDragPreview,
          float unconnectedScrollPixels,
          sf::Vector2i cursorPixel);
+
+      /*!
+       *\brief Screen pixel at the center of the map viewport.
+       */
+      sf::Vector2i MapViewCenterPixel(void) const;
 
       /*!
        *\brief Returns true when the pixel is on the help button.
@@ -294,6 +316,15 @@ namespace MiniDb
       void DrawLineInsertPreview(
          const World& world,
          const LineDragPreview& lineDragPreview,
+         sf::Vector2i cursorPixel);
+      void DrawTerminusAnchors(
+         const World& world,
+         LineId highlightLineId,
+         AnchorDrag anchorDrag,
+         const TerminusAnchorPreview& anchorDragPreview);
+      void DrawTerminusExtendPreview(
+         const World& world,
+         const TerminusAnchorPreview& anchorDragPreview,
          sf::Vector2i cursorPixel);
       void DrawDraft(const World& world, const StationIdList& draftStationIds);
       void DrawStations(const World& world, StationId hoveredStationId, StationId inspectedStationId);

@@ -1,6 +1,6 @@
 /*!
  *\file line_editor.h
- *\brief Mouse-driven line drafting and extension.
+ *\brief Mouse-driven line drafting.
  */
 
 #ifndef LINE_EDITOR_H
@@ -24,7 +24,7 @@ namespace MiniDb
       Result OnStationClicked(World& world, StationId stationId);
 
       /*!
-       *\brief Finishes the current draft as a new or extended line.
+       *\brief Finishes the current draft as a new line.
        *
        *\param[in,out] world Simulation to mutate.
        */
@@ -80,14 +80,11 @@ namespace MiniDb
       LineId GetSelectedLineId(void) const;
 
    private:
-      bool IsTerminalOfLine(const World& world, LineId lineId, StationId stationId) const;
       void ClearRedo(void);
       void AppendDraftStation(StationId stationId);
 
       StationIdList _draftStationIds;
       StationIdList _redoStationIds;
-      LineId _extendLineId = InvalidLineId;
-      LineId _redoExtendLineId = InvalidLineId;
       LineId _selectedLineId = InvalidLineId;
    };
 } // namespace MiniDb

@@ -33,7 +33,7 @@ The game opens on a start menu. The default station cap is 100 (enough for perfo
 - Click the first station of a draft again to close a loop (`A, B, C, A`)
 - Click empty map to return to the overview panel (top waiting destinations and ten busiest stations)
 - Enter or right-click to finish a line (one train is added automatically)
-- Click the end station of the selected line to extend it, or click the first station to close a loop
+- Select a line, then drag a terminus anchor (small handle past each end) onto a station to extend at the front or back
 - Drag a line onto a station to insert it between the two segment ends
 - Del deletes the selected line (or the line of an inspected train)
 - Ctrl+Z undoes the last station in a draft, Ctrl+Y restores it
@@ -42,7 +42,10 @@ The game opens on a start menu. The default station cap is 100 (enough for perfo
 - Unconnected stations are listed below the inspector on the right; click a name to inspect it
 - `?` opens a short help popup
 - Mouse wheel zooms (station markers stay a constant pixel size), middle-mouse drag pans
+- Arrow keys pan the map; `+` / `-` (and numpad) zoom in and out
 - Space pauses, `1` / `2` / `4` / `8` set simulation speed (default is 1x)
+- `[` / `]` lower or raise the station cap by 50 (cannot go below stations already on the map)
+- Or open Menu, change the station count, and Resume — new cities keep spawning over time
 - F11 toggles fullscreen
 - Esc cancels a draft, or returns to the start menu
 

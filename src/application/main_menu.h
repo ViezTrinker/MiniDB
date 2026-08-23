@@ -101,9 +101,17 @@ namespace MiniDb
       void HandleTextEntered(char32_t unicode);
 
       /*!
-       *\brief Station cap chosen for the next new game.
+       *\brief Station cap chosen for the next new game, or applied on Resume.
        */
       uint32_t GetSelectedMaxStationCount(void) const;
+
+      /*!
+       *\brief Sets the station-cap field shown on the menu.
+       *
+       *\param[in] maxStationCount Cap to display and commit.
+       *\param[in] catalogStationCount Catalog size used for clamping.
+       */
+      void SetSelectedMaxStationCount(uint32_t maxStationCount, uint32_t catalogStationCount);
 
    private:
       struct MenuBounds

@@ -1,6 +1,6 @@
 /*!
  *\file line_editor.cpp
- *\brief Mouse-driven line drafting and extension.
+ *\brief Mouse-driven line drafting.
  */
 
 #include "input/line_editor.h"
@@ -9,21 +9,6 @@
 
 namespace MiniDb
 {
-   bool LineEditor::IsTerminalOfLine(const World& world, LineId lineId, StationId stationId) const
-   {
-      const Line* pLine = world.GetNetwork().FindLine(lineId);
-      if (pLine == nullptr || pLine->stationIds.size() < MinimumLineStations)
-      {
-         return false;
-      }
-      if (pLine->loop == LineLoop::Yes)
-      {
-         return false;
-      }
-
-      return pLine->stationIds.front() == stationId || pLine->stationIds.back() == stationId;
-   }
-
    Result LineEditor::OnStationClicked(World& world, StationId stationId)
    {
       if (world.GetNetwork().FindStation(stationId) == nullptr)
@@ -44,19 +29,6 @@ namespace MiniDb
             return Confirm(world);
          }
 
-         if (_extendLineId != InvalidLineId)
-         {
-            const Line* pLine = world.GetNetwork().FindLine(_extendLineId);
-            if (pLine != nullptr &&
-               pLine->loop == LineLoop::No &&
-               stationId == pLine->stationIds.front() &&
-               pLine->stationIds.size() >= MinimumLoopStations)
-            {
-               AppendDraftStation(stationId);
-               return Confirm(world);
-            }
-         }
-
          for (StationId existingId : _draftStationIds)
          {
             if (existingId == stationId)
@@ -69,18 +41,6 @@ namespace MiniDb
          return Result::Ok;
       }
 
-      if (_selectedLineId != InvalidLineId && IsTerminalOfLine(world, _selectedLineId, stationId))
-      {
-         const Line* pLine = world.GetNetwork().FindLine(_selectedLineId);
-         if (pLine != nullptr && pLine->stationIds.back() == stationId)
-         {
-            _extendLineId = _selectedLineId;
-            AppendDraftStation(stationId);
-            return Result::Ok;
-         }
-      }
-
-      _extendLineId = InvalidLineId;
       _draftStationIds.clear();
       AppendDraftStation(stationId);
       return Result::Ok;
@@ -92,24 +52,6 @@ namespace MiniDb
       {
          Cancel();
          return Result::LineTooShort;
-      }
-
-      if (_extendLineId != InvalidLineId)
-      {
-         for (uint32_t index = 1; index < _draftStationIds.size(); ++index)
-         {
-            const Result result = world.ExtendLine(_extendLineId, _draftStationIds[index]);
-            if (IsErr(result))
-            {
-               return result;
-            }
-         }
-
-         _selectedLineId = _extendLineId;
-         _extendLineId = InvalidLineId;
-         _draftStationIds.clear();
-         ClearRedo();
-         return Result::Ok;
       }
 
       LineId lineId = InvalidLineId;
@@ -128,7 +70,6 @@ namespace MiniDb
    Result LineEditor::Cancel(void)
    {
       _draftStationIds.clear();
-      _extendLineId = InvalidLineId;
       ClearRedo();
       return Result::Ok;
    }
@@ -136,7 +77,6 @@ namespace MiniDb
    void LineEditor::Reset(void)
    {
       _draftStationIds.clear();
-      _extendLineId = InvalidLineId;
       _selectedLineId = InvalidLineId;
       ClearRedo();
    }
@@ -167,14 +107,12 @@ namespace MiniDb
       Cancel();
       const Result result = world.RemoveLine(lineId);
       _selectedLineId = InvalidLineId;
-      _extendLineId = InvalidLineId;
       return result;
    }
 
    void LineEditor::ClearRedo(void)
    {
       _redoStationIds.clear();
-      _redoExtendLineId = InvalidLineId;
    }
 
    void LineEditor::AppendDraftStation(StationId stationId)
@@ -190,12 +128,6 @@ namespace MiniDb
          return Result::InvalidArgument;
       }
 
-      if (_draftStationIds.size() == 1)
-      {
-         _redoExtendLineId = _extendLineId;
-         _extendLineId = InvalidLineId;
-      }
-
       _redoStationIds.push_back(_draftStationIds.back());
       _draftStationIds.pop_back();
       return Result::Ok;
@@ -206,12 +138,6 @@ namespace MiniDb
       if (_redoStationIds.empty())
       {
          return Result::InvalidArgument;
-      }
-
-      if (_draftStationIds.empty())
-      {
-         _extendLineId = _redoExtendLineId;
-         _redoExtendLineId = InvalidLineId;
       }
 
       _draftStationIds.push_back(_redoStationIds.back());

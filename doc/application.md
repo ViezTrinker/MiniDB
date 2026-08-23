@@ -13,7 +13,7 @@ Screens (`AppScreen`):
 - `Menu` — start / resume / quit and station cap.
 - `Playing` — map, drafting, simulation.
 
-Escape during play: cancel line drag, then cancel a draft, otherwise return to the menu. The current `World` stays so Resume works.
+Escape during play: cancel line or anchor drag, then cancel a draft, otherwise return to the menu. The current `World` stays so Resume works.
 
 ## Main menu
 
@@ -21,7 +21,7 @@ Escape during play: cancel line drag, then cancel a draft, otherwise return to t
 
 - **Start** resets the simulation, applies the cap, spawns the first cities.
 - **Resume** is shown only when `HasActiveGame` is `Yes`.
-- Station cap: click the number to type digits, or `<` / `>` (and arrow keys) in steps of 50. Default is `DefaultMaxStationCount` (100). The value is clamped between `MinimumStationCap` (2) and the catalog size. If the cap is below `InitialStationCount`, the first wave is only that many cities.
+- Station cap: click the number to type digits, or `<` / `>` (and arrow keys) in steps of 50. Default is `DefaultMaxStationCount` (100). The value is clamped between `MinimumStationCap` (2) and the catalog size. If the cap is below `InitialStationCount`, the first wave is only that many cities. During an active game, changing the cap and pressing **Resume** applies it without resetting the world. In play, `[` / `]` also adjust the cap (cannot go below the number of stations already spawned).
 
 ## Line editor
 
@@ -33,10 +33,11 @@ Drafting:
 - Further clicks append stations (no duplicates except closing a loop).
 - Clicking the first station again with at least three unique stations confirms a loop.
 - Enter or right-click confirms an open line (at least two stations).
-- Clicking the terminal of the **selected** finished line starts an extension draft.
 - Ctrl+Z removes the last drafted station; Ctrl+Y puts it back. A new click clears the redo stack. Confirm and cancel also clear it.
 
-`World::AddLine` / `ExtendLine` do the mutation. The last confirmed line stays selected.
+Terminus extension is handled in `Game` via draggable anchors on the selected line, not through `LineEditor`.
+
+`World::AddLine` / `ExtendLineAt` / `InsertStationOnLine` do the mutation. The last confirmed or selected line stays selected.
 
 ## Input wiring in Game
 
@@ -45,6 +46,7 @@ Drafting:
 | Left-click station | Inspect it; `LineEditor::OnStationClicked` |
 | Left-click train | Inspect it; select its line |
 | Left-click line (no drag) | Select the line; inspect trains, occupancy, and destinations |
+| Drag terminus anchor onto a station | `ExtendLineAt` at the front or back of the selected line |
 | Drag line onto a station | `InsertStationOnLine` on that segment |
 | Drag train token onto a line | `AddTrainToLineAt` at the cursor |
 | Bottom bar `<` / `>` | Slow down or speed up (1x / 2x / 4x / 8x) |
@@ -54,8 +56,11 @@ Drafting:
 | Delete | Delete selected line, or the inspected train’s line; cancels an in-progress line drag |
 | T | Extra train on the selected line |
 | Space | Pause |
+| `[` / `]` | Lower or raise the station cap by 50 |
 | 1 / 2 / 4 / 8 | Time scale |
 | Wheel | Zoom at cursor, or scroll the unconnected list |
+| `+` / `-` | Zoom in or out at the map center |
+| Arrow keys | Pan the map |
 | Middle-drag | Pan |
 | Click empty map | Return to the overview panel and close help |
 
