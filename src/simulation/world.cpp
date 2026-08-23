@@ -26,6 +26,50 @@ namespace MiniDb
          return left.passengerCount > right.passengerCount;
       }
 
+      bool CompareTrainOccupancyById(const TrainOccupancy& left, const TrainOccupancy& right)
+      {
+         return left.trainId < right.trainId;
+      }
+
+      void AddDestinationCount(DestinationDemandList& demand, StationId destinationId)
+      {
+         for (DestinationDemand& entry : demand)
+         {
+            if (entry.destinationId != destinationId)
+            {
+               continue;
+            }
+
+            ++entry.waitingCount;
+            return;
+         }
+
+         DestinationDemand entry;
+         entry.destinationId = destinationId;
+         entry.waitingCount = 1;
+         demand.push_back(entry);
+      }
+
+      bool PassengerIsOnboardLine(const Passenger& passenger, LineId lineId, const TrainList& trains)
+      {
+         if (passenger.state != PassengerState::Onboard)
+         {
+            return false;
+         }
+
+         for (const Train& train : trains)
+         {
+            if (train.id != passenger.trainId)
+            {
+               continue;
+            }
+
+            return train.lineId == lineId;
+         }
+
+         return false;
+      }
+
       bool IsEarlierPlatformArrival(const Passenger& left, const Passenger& right)
       {
          if (left.platformArrivalTimeSeconds != right.platformArrivalTimeSeconds)
@@ -36,9 +80,8 @@ namespace MiniDb
          return left.id < right.id;
       }
 
-      bool PassengerWantsTrain(
+      bool PassengerWantsNextStation(
          const Passenger& passenger,
-         LineId lineId,
          StationId stationId,
          StationId nextStationId)
       {
@@ -56,7 +99,7 @@ namespace MiniDb
          }
 
          const RouteHop& hop = passenger.route[passenger.routeHopIndex];
-         if (hop.lineId != lineId || hop.fromStationId != stationId)
+         if (hop.fromStationId != stationId)
          {
             return false;
          }
@@ -575,6 +618,55 @@ namespace MiniDb
       return Result::Ok;
    }
 
+   Result World::CollectTrainsOnLine(LineId lineId, TrainOccupancyList& occupancy) const
+   {
+      occupancy.clear();
+      const Line* pLine = _network.FindLine(lineId);
+      if (pLine == nullptr)
+      {
+         return Result::InvalidArgument;
+      }
+
+      for (const Train& train : _trains)
+      {
+         if (train.lineId != lineId)
+         {
+            continue;
+         }
+
+         TrainOccupancy entry;
+         entry.trainId = train.id;
+         entry.passengerCount = static_cast<uint32_t>(train.passengerIds.size());
+         entry.nextStationId = NextStationOnLine(train, *pLine);
+         occupancy.push_back(entry);
+      }
+
+      std::sort(occupancy.begin(), occupancy.end(), CompareTrainOccupancyById);
+      return Result::Ok;
+   }
+
+   Result World::CollectLineDemand(LineId lineId, DestinationDemandList& demand) const
+   {
+      demand.clear();
+      if (_network.FindLine(lineId) == nullptr)
+      {
+         return Result::InvalidArgument;
+      }
+
+      for (const Passenger& passenger : _passengers)
+      {
+         if (!PassengerIsOnboardLine(passenger, lineId, _trains))
+         {
+            continue;
+         }
+
+         AddDestinationCount(demand, passenger.destinationId);
+      }
+
+      std::sort(demand.begin(), demand.end(), CompareDemandDescending);
+      return Result::Ok;
+   }
+
    LineSegmentHit World::FindNearestSegmentOnLineInternal(const Line& line, MapPoint point) const
    {
       LineSegmentHit bestHit = MakeInvalidLineSegmentHit();
@@ -1000,7 +1092,7 @@ namespace MiniDb
          Passenger* pBest = nullptr;
          for (Passenger& passenger : _passengers)
          {
-            if (!PassengerWantsTrain(passenger, train.lineId, stationId, nextStationId))
+            if (!PassengerWantsNextStation(passenger, stationId, nextStationId))
             {
                continue;
             }
@@ -1016,6 +1108,7 @@ namespace MiniDb
 
          pBest->state = PassengerState::Onboard;
          pBest->trainId = train.id;
+         pBest->route[pBest->routeHopIndex].lineId = train.lineId;
          train.passengerIds.push_back(pBest->id);
       }
    }
@@ -1045,7 +1138,7 @@ namespace MiniDb
       }
 
       const RouteHop& hop = passenger.route[passenger.routeHopIndex];
-      if (hop.lineId != train.lineId || hop.toStationId != nextStationId)
+      if (hop.toStationId != nextStationId)
       {
          passenger.state = PassengerState::Waiting;
          passenger.trainId = InvalidTrainId;

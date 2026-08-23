@@ -23,12 +23,12 @@ The catalog is the full JSON list, sorted by population. Playable stations are a
 
 ## Network
 
-`Network` stores stations, finished lines, and an undirected adjacency graph used by the pathfinder.
+`Network` stores stations, finished lines, and the travel graph used by the pathfinder.
 
 A line is an ordered station list plus a color index and `LineLoop` (`Yes` / `No`).
 
-- Open line: at least two stations. Trains reverse at the terminals.
-- Loop: at least three unique stations, stored without a duplicated closing id. `LineSegmentCount` includes the closer back to the first station. Trains keep direction and wrap.
+- Open line: at least two stations. Trains reverse at the terminals. Graph edges are **undirected**.
+- Loop: at least three unique stations, stored without a duplicated closing id. `LineSegmentCount` includes the closer back to the first station. Trains keep direction and wrap. Graph edges are **directed** in draw order, so passengers only route the way trains actually run.
 
 `AddLine` / `ExtendLine` / `InsertStationOnLine` / `RemoveLine` rebuild the graph and bump `Network::GetRevision()`. `World` also keeps `_pathRevision` so adding or removing trains invalidates passenger routes.
 
@@ -84,8 +84,17 @@ On dwell or arrival, `AlightAndBoard`:
 
 1. Onboard passengers whose next hop is no longer this train (destination reached, transfer, or wrong direction) get off. Transfer and dump-off set `platformArrivalTimeSeconds` to now.
 2. Waiting passengers at this station repath if needed.
-3. They board only if the next hop matches this train’s line **and** its next station (correct direction).
+3. They board any train whose next station is their next hop. Shared segments (a shuttle and a loop that both go Berlin→Hamburg) are interchangeable; they do not wait for a specific line id.
 4. If several people want that hop, the earliest `platformArrivalTimeSeconds` boards first; `id` breaks ties. This is a per-platform queue, not global spawn order.
 5. Boarding stops at capacity. The rest wait for the next matching train.
 
-Passengers do not pick a train id. They take the first matching train with space.
+Passengers do not pick a train id. They take the first train going to the next hop that still has space.
+
+## Inspection queries
+
+The right-hand inspector reads these `World` helpers:
+
+- `CollectWaitingDemand` — waiting passengers at a station, grouped by destination.
+- `CollectOnboardDemand` — riders on one train, grouped by destination and first transfer.
+- `CollectTrainsOnLine` — trains on a line with occupancy and next stop, ordered by train id.
+- `CollectLineDemand` — passengers currently riding trains on that line, grouped by destination.

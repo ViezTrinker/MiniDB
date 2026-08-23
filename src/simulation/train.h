@@ -39,6 +39,15 @@ namespace MiniDb
 
    using TrainList = std::vector<Train>;
 
+   struct TrainOccupancy
+   {
+      TrainId trainId;
+      uint32_t passengerCount;
+      StationId nextStationId;
+   };
+
+   using TrainOccupancyList = std::vector<TrainOccupancy>;
+
    /*!
     *\brief Returns the next station id in the train's current direction.
     *

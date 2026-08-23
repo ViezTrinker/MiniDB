@@ -110,6 +110,34 @@ TEST(PathfinderTest, LoopConnectsLastStationToFirst)
    EXPECT_EQ(route[0].lineId, lineId);
 }
 
+TEST(PathfinderTest, LoopRouteFollowsTrainDirection)
+{
+   MiniDb::Network network;
+   ASSERT_TRUE(MiniDb::IsOk(network.AddStation(MiniDb::Test::MakeStation(0, "A", 51.00f, 10.00f, 100000))));
+   ASSERT_TRUE(MiniDb::IsOk(network.AddStation(MiniDb::Test::MakeStation(1, "B", 51.10f, 10.00f, 100000))));
+   ASSERT_TRUE(MiniDb::IsOk(network.AddStation(MiniDb::Test::MakeStation(2, "C", 51.20f, 10.00f, 100000))));
+
+   MiniDb::StationIdList stationIds;
+   stationIds.push_back(0);
+   stationIds.push_back(1);
+   stationIds.push_back(2);
+   stationIds.push_back(0);
+   MiniDb::LineId lineId = MiniDb::InvalidLineId;
+   ASSERT_TRUE(MiniDb::IsOk(network.AddLine(stationIds, 0, lineId)));
+
+   MiniDb::Route route;
+   MiniDb::LineWaitList lineWaits;
+   const MiniDb::Result result = MiniDb::FindRoute(network, 1, 0, lineWaits, route);
+   EXPECT_TRUE(MiniDb::IsOk(result));
+   ASSERT_EQ(route.size(), 2u);
+   EXPECT_EQ(route[0].fromStationId, 1u);
+   EXPECT_EQ(route[0].toStationId, 2u);
+   EXPECT_EQ(route[0].lineId, lineId);
+   EXPECT_EQ(route[1].fromStationId, 2u);
+   EXPECT_EQ(route[1].toStationId, 0u);
+   EXPECT_EQ(route[1].lineId, lineId);
+}
+
 TEST(PathfinderTest, SameStationReturnsEmptyRoute)
 {
    MiniDb::Network network;
@@ -155,6 +183,53 @@ TEST(PathfinderTest, PrefersLineWithShorterWait)
    EXPECT_TRUE(MiniDb::IsOk(result));
    ASSERT_EQ(route.size(), 1u);
    EXPECT_EQ(route[0].lineId, fastLineId);
+}
+
+TEST(PathfinderTest, PrefersDirectShuttleOverLongLoop)
+{
+   MiniDb::Network network;
+   ASSERT_TRUE(MiniDb::IsOk(network.AddStation(MiniDb::Test::MakeStation(0, "Berlin", 52.52f, 13.40f, 3600000))));
+   ASSERT_TRUE(MiniDb::IsOk(network.AddStation(MiniDb::Test::MakeStation(1, "Hamburg", 53.55f, 10.00f, 1800000))));
+   ASSERT_TRUE(MiniDb::IsOk(network.AddStation(MiniDb::Test::MakeStation(2, "Munich", 48.14f, 11.58f, 1500000))));
+
+   MiniDb::StationIdList loopStations;
+   loopStations.push_back(1);
+   loopStations.push_back(2);
+   loopStations.push_back(0);
+   loopStations.push_back(1);
+   MiniDb::LineId loopLineId = MiniDb::InvalidLineId;
+   ASSERT_TRUE(MiniDb::IsOk(network.AddLine(loopStations, 0, loopLineId)));
+
+   MiniDb::StationIdList shuttleStations;
+   shuttleStations.push_back(1);
+   shuttleStations.push_back(0);
+   MiniDb::LineId shuttleLineId = MiniDb::InvalidLineId;
+   ASSERT_TRUE(MiniDb::IsOk(network.AddLine(shuttleStations, 1, shuttleLineId)));
+
+   const MiniDb::Line* pLoop = network.FindLine(loopLineId);
+   const MiniDb::Line* pShuttle = network.FindLine(shuttleLineId);
+   ASSERT_NE(pLoop, nullptr);
+   ASSERT_NE(pShuttle, nullptr);
+
+   MiniDb::LineWaitList lineWaits;
+   MiniDb::LineWait loopWait;
+   loopWait.lineId = loopLineId;
+   loopWait.waitSeconds = MiniDb::ExpectedLineWaitSeconds(
+      MiniDb::LineCycleTimeSeconds(network, *pLoop),
+      1);
+   lineWaits.push_back(loopWait);
+   MiniDb::LineWait shuttleWait;
+   shuttleWait.lineId = shuttleLineId;
+   shuttleWait.waitSeconds = MiniDb::ExpectedLineWaitSeconds(
+      MiniDb::LineCycleTimeSeconds(network, *pShuttle),
+      1);
+   lineWaits.push_back(shuttleWait);
+
+   MiniDb::Route route;
+   const MiniDb::Result result = MiniDb::FindRoute(network, 0, 1, lineWaits, route);
+   EXPECT_TRUE(MiniDb::IsOk(result));
+   ASSERT_EQ(route.size(), 1u);
+   EXPECT_EQ(route[0].lineId, shuttleLineId);
 }
 
 TEST(PathfinderTest, ExpectedWaitIsHalfHeadway)

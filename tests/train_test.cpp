@@ -138,6 +138,32 @@ TEST(TrainTest, PassengerUsesLoopCloser)
    EXPECT_TRUE(arrived);
 }
 
+TEST(TrainTest, PassengerOnLoopTakesForwardWayAround)
+{
+   MiniDb::World world = MakeTinyWorld();
+   MiniDb::StationIdList stationIds;
+   stationIds.push_back(0);
+   stationIds.push_back(1);
+   stationIds.push_back(2);
+   stationIds.push_back(0);
+   MiniDb::LineId lineId = MiniDb::InvalidLineId;
+   ASSERT_TRUE(MiniDb::IsOk(world.AddLine(stationIds, lineId)));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnPassenger(1, 0)));
+
+   bool arrived = false;
+   for (uint32_t step = 0; step < 800; ++step)
+   {
+      world.Tick(0.05f);
+      if (world.GetArrivedPassengerCount() >= 1)
+      {
+         arrived = true;
+         break;
+      }
+   }
+
+   EXPECT_TRUE(arrived);
+}
+
 TEST(TrainTest, TrainReversesAtTerminal)
 {
    MiniDb::World world = MakeTinyWorld();

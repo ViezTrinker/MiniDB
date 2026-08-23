@@ -218,6 +218,24 @@ namespace MiniDb
       Result CollectOnboardDemand(TrainId trainId, OnboardDemandList& demand) const;
 
       /*!
+       *\brief Lists trains on a line with occupancy and next stop, by train id.
+       *
+       *\param[in] lineId Line to inspect.
+       *\param[out] occupancy One entry per train on that line.
+       */
+      Result CollectTrainsOnLine(LineId lineId, TrainOccupancyList& occupancy) const;
+
+      /*!
+       *\brief Groups onboard passengers on a line by destination, largest first.
+       *
+       * Only counts people currently riding trains on this line.
+       *
+       *\param[in] lineId Line to inspect.
+       *\param[out] demand Destination counts for those passengers.
+       */
+      Result CollectLineDemand(LineId lineId, DestinationDemandList& demand) const;
+
+      /*!
        *\brief Finds a train by id.
        *
        *\param[in] trainId Train identifier.

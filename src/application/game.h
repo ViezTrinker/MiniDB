@@ -109,6 +109,7 @@ namespace MiniDb
       sf::Vector2i _lastMousePixel;
       StationId _inspectedStationId = InvalidStationId;
       TrainId _inspectedTrainId = InvalidTrainId;
+      LineId _inspectedLineId = InvalidLineId;
       FullscreenMode _fullscreenMode = FullscreenMode::No;
       sf::Vector2u _windowedSize = {DefaultWindowWidth, DefaultWindowHeight};
    };

@@ -285,6 +285,7 @@ namespace MiniDb
       _unconnectedScrollPixels = 0.0f;
       _inspectedStationId = InvalidStationId;
       _inspectedTrainId = InvalidTrainId;
+      _inspectedLineId = InvalidLineId;
    }
 
    void Game::StartNewGame(void)
@@ -431,9 +432,16 @@ namespace MiniDb
          }
 
          const Result deleteResult = _lineEditor.DeleteSelectedLine(_world);
-         if (IsOk(deleteResult) && _world.FindTrain(_inspectedTrainId) == nullptr)
+         if (IsOk(deleteResult))
          {
-            _inspectedTrainId = InvalidTrainId;
+            if (_world.FindTrain(_inspectedTrainId) == nullptr)
+            {
+               _inspectedTrainId = InvalidTrainId;
+            }
+            if (_world.GetNetwork().FindLine(_inspectedLineId) == nullptr)
+            {
+               _inspectedLineId = InvalidLineId;
+            }
          }
          return;
       }
@@ -526,12 +534,14 @@ namespace MiniDb
                _world,
                _inspectedStationId,
                _inspectedTrainId,
+               _inspectedLineId,
                mousePressed.position,
                _unconnectedScrollPixels);
             if (listedId != InvalidStationId)
             {
                _inspectedStationId = listedId;
                _inspectedTrainId = InvalidTrainId;
+               _inspectedLineId = InvalidLineId;
                const StationRecord* pStation = _world.GetNetwork().FindStation(listedId);
                if (pStation != nullptr)
                {
@@ -552,6 +562,7 @@ namespace MiniDb
          {
             _inspectedStationId = stationId;
             _inspectedTrainId = InvalidTrainId;
+            _inspectedLineId = InvalidLineId;
             _lineEditor.OnStationClicked(_world, stationId);
             return;
          }
@@ -561,6 +572,7 @@ namespace MiniDb
          {
             _inspectedTrainId = trainId;
             _inspectedStationId = InvalidStationId;
+            _inspectedLineId = InvalidLineId;
             const Train* pTrain = _world.FindTrain(trainId);
             if (pTrain != nullptr)
             {
@@ -572,6 +584,7 @@ namespace MiniDb
          _inspectedStationId = InvalidStationId;
          _inspectedTrainId = InvalidTrainId;
          _helpVisible = HelpVisible::No;
+         _inspectedLineId = InvalidLineId;
          if (!_lineEditor.IsDrafting())
          {
             const LineSegmentHit hit = _world.FindNearestLineSegment(
@@ -579,6 +592,7 @@ namespace MiniDb
                _renderer.PixelsToKm(LineDropHitPixels));
             if (hit.lineId != InvalidLineId)
             {
+               _inspectedLineId = hit.lineId;
                _lineGrabPending = LineGrabPending::Yes;
                _lineDragLineId = hit.lineId;
                _lineDragSegmentIndex = hit.segmentIndex;
@@ -635,6 +649,7 @@ namespace MiniDb
                _lineEditor.SelectLine(_lineDragLineId);
                _inspectedStationId = _lineDragHoverStationId;
                _inspectedTrainId = InvalidTrainId;
+               _inspectedLineId = InvalidLineId;
             }
          }
          else if (_lineGrabPending == LineGrabPending::Yes && _lineDrag == LineDrag::No)
@@ -712,6 +727,7 @@ namespace MiniDb
             _world,
             _inspectedStationId,
             _inspectedTrainId,
+            _inspectedLineId,
             _unconnectedScrollPixels);
          return;
       }
@@ -811,6 +827,7 @@ namespace MiniDb
          _world,
          _inspectedStationId,
          _inspectedTrainId,
+         _inspectedLineId,
          _unconnectedScrollPixels);
       _renderer.Draw(
          _world,
@@ -818,6 +835,7 @@ namespace MiniDb
          hoveredStationId,
          _inspectedStationId,
          _inspectedTrainId,
+         _inspectedLineId,
          highlightLineId,
          statusText,
          _helpVisible,

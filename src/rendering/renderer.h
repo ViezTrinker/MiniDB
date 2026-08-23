@@ -151,6 +151,7 @@ namespace MiniDb
        *\param[in] hoveredStationId Station under the cursor, or InvalidStationId.
        *\param[in] inspectedStationId Station shown in the right inspector.
        *\param[in] inspectedTrainId Train shown in the right inspector.
+       *\param[in] inspectedLineId Line shown in the right inspector.
        *\param[in] highlightLineId Line to emphasize (selected or drop target).
        *\param[in] statusText Compact status overlay.
        *\param[in] helpVisible Whether the help popup is open.
@@ -166,6 +167,7 @@ namespace MiniDb
          StationId hoveredStationId,
          StationId inspectedStationId,
          TrainId inspectedTrainId,
+         LineId inspectedLineId,
          LineId highlightLineId,
          std::string_view statusText,
          HelpVisible helpVisible,
@@ -207,6 +209,9 @@ namespace MiniDb
        *\brief Station listed under the cursor in the sidebar, or InvalidStationId.
        *
        *\param[in] world Simulation snapshot.
+       *\param[in] inspectedStationId Station shown in the inspector.
+       *\param[in] inspectedTrainId Train shown in the inspector.
+       *\param[in] inspectedLineId Line shown in the inspector.
        *\param[in] pixel Screen location.
        *\param[in] unconnectedScrollPixels Vertical list scroll in pixels.
        */
@@ -214,6 +219,7 @@ namespace MiniDb
          const World& world,
          StationId inspectedStationId,
          TrainId inspectedTrainId,
+         LineId inspectedLineId,
          sf::Vector2i pixel,
          float unconnectedScrollPixels) const;
 
@@ -223,12 +229,14 @@ namespace MiniDb
        *\param[in] world Simulation snapshot.
        *\param[in] inspectedStationId Station shown in the inspector.
        *\param[in] inspectedTrainId Train shown in the inspector.
+       *\param[in] inspectedLineId Line shown in the inspector.
        *\param[in] unconnectedScrollPixels Requested scroll.
        */
       float ClampUnconnectedScroll(
          const World& world,
          StationId inspectedStationId,
          TrainId inspectedTrainId,
+         LineId inspectedLineId,
          float unconnectedScrollPixels) const;
 
    private:
@@ -254,22 +262,26 @@ namespace MiniDb
          const World& world,
          StationId inspectedStationId,
          TrainId inspectedTrainId,
+         LineId inspectedLineId,
          float unconnectedScrollPixels,
          sf::Vector2i cursorPixel);
       void DrawSidebarInspector(
          const World& world,
          StationId inspectedStationId,
          TrainId inspectedTrainId,
+         LineId inspectedLineId,
          const sf::FloatRect& panelBounds,
          float inspectorHeight);
       float InspectorHeightPixels(
          const World& world,
          StationId inspectedStationId,
-         TrainId inspectedTrainId) const;
+         TrainId inspectedTrainId,
+         LineId inspectedLineId) const;
       float UnconnectedListTopPixels(
          const World& world,
          StationId inspectedStationId,
-         TrainId inspectedTrainId) const;
+         TrainId inspectedTrainId,
+         LineId inspectedLineId) const;
       void DrawSegment(MapPoint from, MapPoint to, sf::Color color, float thicknessKm);
       void DrawScaledText(std::string_view text, MapPoint position, unsigned int characterSize, sf::Color color);
       const StationRecord* FindDraftStation(const World& world, StationId stationId) const;

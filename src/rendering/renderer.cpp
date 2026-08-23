@@ -46,6 +46,33 @@ namespace MiniDb
          return pStation->cityName;
       }
 
+      std::string LineInspectorTitle(const World& world, const Line& line)
+      {
+         if (line.stationIds.size() < MinimumLineStations)
+         {
+            return std::string("Line");
+         }
+
+         std::string title = StationCityName(world, line.stationIds.front());
+         title += " - ";
+         title += StationCityName(world, line.stationIds.back());
+         return title;
+      }
+
+      uint32_t ClampedInspectorRowCount(uint32_t rowCount)
+      {
+         if (rowCount == 0)
+         {
+            return 1;
+         }
+         if (rowCount > InspectorMaxRows)
+         {
+            return InspectorMaxRows;
+         }
+
+         return rowCount;
+      }
+
       sf::Color ColorForLine(uint32_t colorIndex)
       {
          return LineColors[colorIndex % LineColorCount];
@@ -65,6 +92,92 @@ namespace MiniDb
             radiusPixels = StationRadiusMaxPixels;
          }
          return radiusPixels;
+      }
+
+      void CanonicalStationPair(StationId leftId, StationId rightId, StationId& lowId, StationId& highId)
+      {
+         if (leftId < rightId)
+         {
+            lowId = leftId;
+            highId = rightId;
+            return;
+         }
+
+         lowId = rightId;
+         highId = leftId;
+      }
+
+      bool LineHasUndirectedSegment(const Line& line, StationId lowId, StationId highId)
+      {
+         const uint32_t segmentCount = LineSegmentCount(line);
+         for (uint32_t segmentIndex = 0; segmentIndex < segmentCount; ++segmentIndex)
+         {
+            StationId fromId = InvalidStationId;
+            StationId toId = InvalidStationId;
+            const Result endpointResult = LineSegmentEndpoints(line, segmentIndex, fromId, toId);
+            if (IsErr(endpointResult))
+            {
+               continue;
+            }
+
+            StationId pairLow = InvalidStationId;
+            StationId pairHigh = InvalidStationId;
+            CanonicalStationPair(fromId, toId, pairLow, pairHigh);
+            if (pairLow == lowId && pairHigh == highId)
+            {
+               return true;
+            }
+         }
+
+         return false;
+      }
+
+      uint32_t SharedLineCountOnPair(const LineList& lines, StationId lowId, StationId highId)
+      {
+         uint32_t count = 0;
+         for (const Line& line : lines)
+         {
+            if (LineHasUndirectedSegment(line, lowId, highId))
+            {
+               ++count;
+            }
+         }
+
+         return count;
+      }
+
+      uint32_t SharedLineSlotOnPair(const LineList& lines, LineId lineId, StationId lowId, StationId highId)
+      {
+         uint32_t slotIndex = 0;
+         for (const Line& line : lines)
+         {
+            if (line.id >= lineId)
+            {
+               continue;
+            }
+            if (LineHasUndirectedSegment(line, lowId, highId))
+            {
+               ++slotIndex;
+            }
+         }
+
+         return slotIndex;
+      }
+
+      MapPoint OffsetAlongPerpendicular(MapPoint point, MapPoint from, MapPoint to, float offsetKm)
+      {
+         const float deltaX = to.xKm - from.xKm;
+         const float deltaY = to.yKm - from.yKm;
+         const float lengthKm = DistanceKm(from, to);
+         if (lengthKm <= 0.05f)
+         {
+            return point;
+         }
+
+         MapPoint offsetPoint;
+         offsetPoint.xKm = point.xKm + ((-deltaY) / lengthKm) * offsetKm;
+         offsetPoint.yKm = point.yKm + (deltaX / lengthKm) * offsetKm;
+         return offsetPoint;
       }
 
       void ClampViewSize(sf::View& mapView)
@@ -349,6 +462,7 @@ namespace MiniDb
          StationId hoveredStationId,
          StationId inspectedStationId,
          TrainId inspectedTrainId,
+         LineId inspectedLineId,
          LineId highlightLineId,
          std::string_view statusText,
          HelpVisible helpVisible,
@@ -386,7 +500,13 @@ namespace MiniDb
       {
          DrawHelpPopup();
       }
-      DrawSidebar(world, inspectedStationId, inspectedTrainId, unconnectedScrollPixels, cursorPixel);
+      DrawSidebar(
+         world,
+         inspectedStationId,
+         inspectedTrainId,
+         inspectedLineId,
+         unconnectedScrollPixels,
+         cursorPixel);
    }
 
    void Renderer::DrawOutline(void)
@@ -476,7 +596,31 @@ namespace MiniDb
                continue;
             }
 
-            DrawSegment(pFrom->position, pTo->position, color, thicknessKm);
+            StationId pairLow = InvalidStationId;
+            StationId pairHigh = InvalidStationId;
+            CanonicalStationPair(fromId, toId, pairLow, pairHigh);
+            const LineList& lines = world.GetNetwork().GetLines();
+            const uint32_t sharedCount = SharedLineCountOnPair(lines, pairLow, pairHigh);
+            const uint32_t slotIndex = SharedLineSlotOnPair(lines, line.id, pairLow, pairHigh);
+            float offsetKm = 0.0f;
+            if (sharedCount > 1)
+            {
+               const auto centeredSlot =
+                  static_cast<float>(slotIndex) - (static_cast<float>(sharedCount - 1) * 0.5f);
+               offsetKm = centeredSlot * PixelsToKm(ParallelLineOffsetPixels);
+            }
+
+            const MapPoint fromPoint = OffsetAlongPerpendicular(
+               pFrom->position,
+               pFrom->position,
+               pTo->position,
+               offsetKm);
+            const MapPoint toPoint = OffsetAlongPerpendicular(
+               pTo->position,
+               pFrom->position,
+               pTo->position,
+               offsetKm);
+            DrawSegment(fromPoint, toPoint, color, thicknessKm);
          }
       }
    }
@@ -806,7 +950,7 @@ namespace MiniDb
          "Drag a line onto a station to insert it.\n"
          "Enter or right-click to finish a line.\n"
          "Drag the train onto a line to place it there.\n"
-         "Click a train or station for details on the right.\n"
+         "Click a train, station, or line for details on the right.\n"
          "Del deletes the selected line.\n"
          "Ctrl+Z / Ctrl+Y undo or redo a draft click.\n"
          "Wheel zoom, middle-drag pan. F11 fullscreen.\n"
@@ -840,7 +984,8 @@ namespace MiniDb
    float Renderer::InspectorHeightPixels(
       const World& world,
       StationId inspectedStationId,
-      TrainId inspectedTrainId) const
+      TrainId inspectedTrainId,
+      LineId inspectedLineId) const
    {
       if (_pWindow == nullptr)
       {
@@ -853,31 +998,26 @@ namespace MiniDb
       {
          DestinationDemandList demand;
          world.CollectWaitingDemand(inspectedStationId, demand);
-         uint32_t rowCount = 1;
-         if (!demand.empty())
-         {
-            rowCount = static_cast<uint32_t>(demand.size());
-            if (rowCount > InspectorMaxRows)
-            {
-               rowCount = InspectorMaxRows;
-            }
-         }
+         const uint32_t rowCount = ClampedInspectorRowCount(static_cast<uint32_t>(demand.size()));
          height = 86.0f + (static_cast<float>(rowCount) * 20.0f);
       }
       else if (inspectedTrainId != InvalidTrainId)
       {
          OnboardDemandList demand;
          world.CollectOnboardDemand(inspectedTrainId, demand);
-         uint32_t rowCount = 1;
-         if (!demand.empty())
-         {
-            rowCount = static_cast<uint32_t>(demand.size());
-            if (rowCount > InspectorMaxRows)
-            {
-               rowCount = InspectorMaxRows;
-            }
-         }
+         const uint32_t rowCount = ClampedInspectorRowCount(static_cast<uint32_t>(demand.size()));
          height = 108.0f + (static_cast<float>(rowCount) * 36.0f);
+      }
+      else if (inspectedLineId != InvalidLineId)
+      {
+         TrainOccupancyList occupancy;
+         world.CollectTrainsOnLine(inspectedLineId, occupancy);
+         DestinationDemandList demand;
+         world.CollectLineDemand(inspectedLineId, demand);
+         const uint32_t trainRows = ClampedInspectorRowCount(static_cast<uint32_t>(occupancy.size()));
+         const uint32_t destRows = ClampedInspectorRowCount(static_cast<uint32_t>(demand.size()));
+         height = 86.0f + (static_cast<float>(trainRows) * 20.0f) + 24.0f +
+            (static_cast<float>(destRows) * 20.0f);
       }
 
       const float maximumHeight = windowHeight * 0.45f;
@@ -896,9 +1036,10 @@ namespace MiniDb
    float Renderer::UnconnectedListTopPixels(
       const World& world,
       StationId inspectedStationId,
-      TrainId inspectedTrainId) const
+      TrainId inspectedTrainId,
+      LineId inspectedLineId) const
    {
-      return InspectorHeightPixels(world, inspectedStationId, inspectedTrainId) + 8.0f;
+      return InspectorHeightPixels(world, inspectedStationId, inspectedTrainId, inspectedLineId) + 8.0f;
    }
 
    sf::FloatRect Renderer::UnconnectedPanelBounds(void) const
@@ -938,6 +1079,7 @@ namespace MiniDb
       const World& world,
       StationId inspectedStationId,
       TrainId inspectedTrainId,
+      LineId inspectedLineId,
       float unconnectedScrollPixels) const
    {
       if (_pWindow == nullptr)
@@ -948,7 +1090,11 @@ namespace MiniDb
       StationIdList unconnectedIds;
       world.CollectUnconnectedStations(unconnectedIds);
       const sf::FloatRect bounds = UnconnectedPanelBounds();
-      const float listTop = UnconnectedListTopPixels(world, inspectedStationId, inspectedTrainId);
+      const float listTop = UnconnectedListTopPixels(
+         world,
+         inspectedStationId,
+         inspectedTrainId,
+         inspectedLineId);
       const float rowsTop = listTop + 24.0f;
       const float listHeight = bounds.size.y - rowsTop - 12.0f;
       const float contentHeight = static_cast<float>(unconnectedIds.size()) * UnconnectedRowHeightPixels;
@@ -975,6 +1121,7 @@ namespace MiniDb
       const World& world,
       StationId inspectedStationId,
       TrainId inspectedTrainId,
+      LineId inspectedLineId,
       sf::Vector2i pixel,
       float unconnectedScrollPixels) const
    {
@@ -986,7 +1133,11 @@ namespace MiniDb
       StationIdList unconnectedIds;
       world.CollectUnconnectedStations(unconnectedIds);
       const sf::FloatRect bounds = UnconnectedPanelBounds();
-      const float listTop = UnconnectedListTopPixels(world, inspectedStationId, inspectedTrainId);
+      const float listTop = UnconnectedListTopPixels(
+         world,
+         inspectedStationId,
+         inspectedTrainId,
+         inspectedLineId);
       const float rowsTop = listTop + 24.0f;
       const float localY =
          static_cast<float>(pixel.y) - bounds.position.y - rowsTop + unconnectedScrollPixels;
@@ -1008,6 +1159,7 @@ namespace MiniDb
       const World& world,
       StationId inspectedStationId,
       TrainId inspectedTrainId,
+      LineId inspectedLineId,
       const sf::FloatRect& panelBounds,
       float inspectorHeight)
    {
@@ -1162,11 +1314,115 @@ namespace MiniDb
          return;
       }
 
+      if (inspectedLineId != InvalidLineId)
+      {
+         const Line* pLine = world.GetNetwork().FindLine(inspectedLineId);
+         std::string title = "Line";
+         if (pLine != nullptr)
+         {
+            title = LineInspectorTitle(world, *pLine);
+         }
+         sf::Text titleText(*_pFont, Utf8SfString(title), 18);
+         titleText.setFillColor(sf::Color(25, 25, 25));
+         titleText.setPosition({left, 10.0f});
+         _pWindow->draw(titleText);
+
+         TrainOccupancyList occupancy;
+         world.CollectTrainsOnLine(inspectedLineId, occupancy);
+         std::string trainsLine = "Trains " + std::to_string(occupancy.size());
+         sf::Text trainsText(*_pFont, Utf8SfString(trainsLine), 14);
+         trainsText.setFillColor(sf::Color(35, 35, 35));
+         trainsText.setPosition({left, 36.0f});
+         _pWindow->draw(trainsText);
+
+         const uint32_t trainRowSlots = ClampedInspectorRowCount(static_cast<uint32_t>(occupancy.size()));
+         if (occupancy.empty())
+         {
+            sf::Text emptyTrainsText(*_pFont, Utf8SfString("No trains"), 13);
+            emptyTrainsText.setFillColor(sf::Color(90, 85, 80));
+            emptyTrainsText.setPosition({left, 56.0f});
+            _pWindow->draw(emptyTrainsText);
+         }
+         else
+         {
+            uint32_t shownTrainRows = 0;
+            for (const TrainOccupancy& entry : occupancy)
+            {
+               if (shownTrainRows >= InspectorMaxRows)
+               {
+                  break;
+               }
+
+               const float rowY = 56.0f + (static_cast<float>(shownTrainRows) * 20.0f);
+               if (rowY + 18.0f > inspectorHeight)
+               {
+                  break;
+               }
+
+               std::string rowLine = std::to_string(entry.passengerCount);
+               rowLine += " / ";
+               rowLine += std::to_string(world.GetTrainCapacity());
+               if (entry.nextStationId != InvalidStationId)
+               {
+                  rowLine += "  ";
+                  rowLine += StationCityName(world, entry.nextStationId);
+               }
+               sf::Text rowText(*_pFont, Utf8SfString(rowLine), 13);
+               rowText.setFillColor(sf::Color(40, 40, 40));
+               rowText.setPosition({left, rowY});
+               _pWindow->draw(rowText);
+               ++shownTrainRows;
+            }
+         }
+
+         const float destHeaderY = 56.0f + (static_cast<float>(trainRowSlots) * 20.0f) + 4.0f;
+         sf::Text destHeaderText(*_pFont, Utf8SfString("Destinations"), 14);
+         destHeaderText.setFillColor(sf::Color(35, 35, 35));
+         destHeaderText.setPosition({left, destHeaderY});
+         _pWindow->draw(destHeaderText);
+
+         DestinationDemandList demand;
+         world.CollectLineDemand(inspectedLineId, demand);
+         if (demand.empty())
+         {
+            sf::Text emptyDestText(*_pFont, Utf8SfString("No destinations yet"), 13);
+            emptyDestText.setFillColor(sf::Color(90, 85, 80));
+            emptyDestText.setPosition({left, destHeaderY + 20.0f});
+            _pWindow->draw(emptyDestText);
+            return;
+         }
+
+         uint32_t shownDestRows = 0;
+         for (const DestinationDemand& entry : demand)
+         {
+            if (shownDestRows >= InspectorMaxRows)
+            {
+               break;
+            }
+
+            const float rowY = destHeaderY + 20.0f + (static_cast<float>(shownDestRows) * 20.0f);
+            if (rowY + 18.0f > inspectorHeight)
+            {
+               break;
+            }
+
+            std::string rowLine = StationCityName(world, entry.destinationId);
+            rowLine += "  x";
+            rowLine += std::to_string(entry.waitingCount);
+            sf::Text rowText(*_pFont, Utf8SfString(rowLine), 13);
+            rowText.setFillColor(sf::Color(40, 40, 40));
+            rowText.setPosition({left, rowY});
+            _pWindow->draw(rowText);
+            ++shownDestRows;
+         }
+         return;
+      }
+
       sf::Text titleText(*_pFont, Utf8SfString("Details"), 18);
       titleText.setFillColor(sf::Color(25, 25, 25));
       titleText.setPosition({left, 10.0f});
       _pWindow->draw(titleText);
-      sf::Text hintText(*_pFont, Utf8SfString("Click a station or train."), 13);
+      sf::Text hintText(*_pFont, Utf8SfString("Click a station, train, or line."), 13);
       hintText.setFillColor(sf::Color(90, 85, 80));
       hintText.setPosition({left, 38.0f});
       _pWindow->draw(hintText);
@@ -1176,6 +1432,7 @@ namespace MiniDb
       const World& world,
       StationId inspectedStationId,
       TrainId inspectedTrainId,
+      LineId inspectedLineId,
       float unconnectedScrollPixels,
       sf::Vector2i cursorPixel)
    {
@@ -1193,10 +1450,24 @@ namespace MiniDb
       panel.setOutlineThickness(1.0f);
       _pWindow->draw(panel);
 
-      const float inspectorHeight = InspectorHeightPixels(world, inspectedStationId, inspectedTrainId);
-      DrawSidebarInspector(world, inspectedStationId, inspectedTrainId, bounds, inspectorHeight);
+      const float inspectorHeight = InspectorHeightPixels(
+         world,
+         inspectedStationId,
+         inspectedTrainId,
+         inspectedLineId);
+      DrawSidebarInspector(
+         world,
+         inspectedStationId,
+         inspectedTrainId,
+         inspectedLineId,
+         bounds,
+         inspectorHeight);
 
-      const float listTop = UnconnectedListTopPixels(world, inspectedStationId, inspectedTrainId);
+      const float listTop = UnconnectedListTopPixels(
+         world,
+         inspectedStationId,
+         inspectedTrainId,
+         inspectedLineId);
       sf::RectangleShape divider({bounds.size.x - 16.0f, 1.0f});
       divider.setPosition({bounds.position.x + 8.0f, listTop - 6.0f});
       divider.setFillColor(sf::Color(190, 180, 168));
@@ -1225,6 +1496,7 @@ namespace MiniDb
          world,
          inspectedStationId,
          inspectedTrainId,
+         inspectedLineId,
          cursorPixel,
          unconnectedScrollPixels);
       for (uint32_t index = 0; index < unconnectedIds.size(); ++index)

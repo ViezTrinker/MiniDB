@@ -34,6 +34,22 @@ namespace MiniDb
          return stationIds.front() == stationIds.back();
       }
 
+      void AddDirectedEdge(
+         AdjacencyList& adjacency,
+         uint32_t fromIndex,
+         StationId toId,
+         LineId lineId,
+         float distanceKm,
+         float travelTimeSeconds)
+      {
+         NetworkEdge edge;
+         edge.toStationId = toId;
+         edge.lineId = lineId;
+         edge.distanceKm = distanceKm;
+         edge.travelTimeSeconds = travelTimeSeconds;
+         adjacency[fromIndex].push_back(edge);
+      }
+
       void AddUndirectedEdge(
          AdjacencyList& adjacency,
          uint32_t fromIndex,
@@ -44,17 +60,8 @@ namespace MiniDb
          float distanceKm,
          float travelTimeSeconds)
       {
-         NetworkEdge forward;
-         forward.toStationId = toId;
-         forward.lineId = lineId;
-         forward.distanceKm = distanceKm;
-         forward.travelTimeSeconds = travelTimeSeconds;
-
-         NetworkEdge backward = forward;
-         backward.toStationId = fromId;
-
-         adjacency[fromIndex].push_back(forward);
-         adjacency[toIndex].push_back(backward);
+         AddDirectedEdge(adjacency, fromIndex, toId, lineId, distanceKm, travelTimeSeconds);
+         AddDirectedEdge(adjacency, toIndex, fromId, lineId, distanceKm, travelTimeSeconds);
       }
    } // namespace
 
@@ -162,15 +169,28 @@ namespace MiniDb
 
             const float distanceKm = DistanceKm(pFrom->position, pTo->position);
             const float travelTimeSeconds = (distanceKm / TrainSpeedKmPerHour) * SecondsPerHour;
-            AddUndirectedEdge(
-               _adjacency,
-               fromIndex,
-               toIndex,
-               pFrom->id,
-               pTo->id,
-               line.id,
-               distanceKm,
-               travelTimeSeconds);
+            if (line.loop == LineLoop::Yes)
+            {
+               AddDirectedEdge(
+                  _adjacency,
+                  fromIndex,
+                  pTo->id,
+                  line.id,
+                  distanceKm,
+                  travelTimeSeconds);
+            }
+            else
+            {
+               AddUndirectedEdge(
+                  _adjacency,
+                  fromIndex,
+                  toIndex,
+                  pFrom->id,
+                  pTo->id,
+                  line.id,
+                  distanceKm,
+                  travelTimeSeconds);
+            }
          }
       }
 

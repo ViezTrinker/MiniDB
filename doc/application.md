@@ -21,7 +21,7 @@ Escape during play: cancel line drag, then cancel a draft, otherwise return to t
 
 - **Start** resets the simulation, applies the cap, spawns the first cities.
 - **Resume** is shown only when `HasActiveGame` is `Yes`.
-- Station cap: click the number to type digits, or `<` / `>` (and arrow keys) in steps of 50. Default is `DefaultMaxStationCount` (100). The value is clamped to the catalog size.
+- Station cap: click the number to type digits, or `<` / `>` (and arrow keys) in steps of 50. Default is `DefaultMaxStationCount` (100). The value is clamped between `MinimumStationCap` (2) and the catalog size. If the cap is below `InitialStationCount`, the first wave is only that many cities.
 
 ## Line editor
 
@@ -44,7 +44,7 @@ Drafting:
 | --- | --- |
 | Left-click station | Inspect it; `LineEditor::OnStationClicked` |
 | Left-click train | Inspect it; select its line |
-| Left-click line (no drag) | Select the line |
+| Left-click line (no drag) | Select the line; inspect trains, occupancy, and destinations |
 | Drag line onto a station | `InsertStationOnLine` on that segment |
 | Drag train token onto a line | `AddTrainToLineAt` at the cursor |
 | Ctrl+Z / Ctrl+Y | Undo or redo the last draft station |
@@ -60,4 +60,4 @@ Unconnected stations are listed in the right sidebar. Clicking a name inspects t
 
 ## Station cap and performance
 
-The catalog can contain hundreds of cities. The menu cap limits how many become playable stations. That is the main performance lever; pathfinding and boarding scan passengers and trains each tick.
+The catalog can contain hundreds of cities. The menu cap limits how many become playable stations (minimum `MinimumStationCap`). That is the main performance lever; pathfinding and boarding scan passengers and trains each tick.

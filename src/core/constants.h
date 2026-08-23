@@ -19,6 +19,7 @@ namespace MiniDb
    inline constexpr float Pi = 3.14159265358979323846f;
 
    inline constexpr uint32_t MinimumCityPopulation = 10000;
+   inline constexpr uint32_t MinimumStationCap = 2;
    inline constexpr uint32_t InitialStationCount = 6;
    inline constexpr uint32_t DefaultMaxStationCount = 100;
    inline constexpr uint32_t UnlimitedStationCount = 0xFFFFFFFFu;
@@ -44,6 +45,7 @@ namespace MiniDb
    inline constexpr float StationRadiusMaxPixels = 10.0f;
    inline constexpr float StationHitRadiusPixels = 12.0f;
    inline constexpr float LineThicknessPixels = 3.0f;
+   inline constexpr float ParallelLineOffsetPixels = 3.0f;
    inline constexpr float SelectedLineThicknessPixels = 4.5f;
    inline constexpr float DraftLineThicknessPixels = 2.5f;
    inline constexpr float TrainLengthPixels = 14.0f;

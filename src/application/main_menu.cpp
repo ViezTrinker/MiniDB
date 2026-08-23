@@ -42,9 +42,9 @@ namespace MiniDb
       uint32_t ClampStationCount(uint32_t stationCount, uint32_t catalogStationCount)
       {
          uint32_t clamped = stationCount;
-         if (clamped < InitialStationCount)
+         if (clamped < MinimumStationCap)
          {
-            clamped = InitialStationCount;
+            clamped = MinimumStationCap;
          }
          if (catalogStationCount > 0 && clamped > catalogStationCount)
          {
@@ -227,13 +227,13 @@ namespace MiniDb
       uint32_t nextCount = _committedStationCount;
       if (step == StationLimitStep::Decrease)
       {
-         if (nextCount > (InitialStationCount + MenuStationCountStep))
+         if (nextCount > (MinimumStationCap + MenuStationCountStep))
          {
             nextCount -= MenuStationCountStep;
          }
          else
          {
-            nextCount = InitialStationCount;
+            nextCount = MinimumStationCap;
          }
       }
       else

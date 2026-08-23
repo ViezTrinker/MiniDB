@@ -23,12 +23,13 @@ ctest --test-dir build -C Release --output-on-failure
 
 The game executable is `build/bin/Release/MiniDB.exe` on Windows (or `build/bin/MiniDB` on single-config generators). `data/` is copied next to the executable.
 
-The game opens on a start menu. The default station cap is 100 (enough for performance). Click the number field to type a count, or use `<` / `>` (and the arrow keys) to change it in steps of 50. Escape during play returns to the menu; Resume continues the current game.
+The game opens on a start menu. The default station cap is 100 (enough for performance). Click the number field to type a count (minimum 2), or use `<` / `>` (and the arrow keys) to change it in steps of 50. If the cap is below 6, the game starts with that many stations instead of the usual first six. Escape during play returns to the menu; Resume continues the current game.
 
 ## Controls
 
 - Left-click a station to draft a line; waiting passengers appear in the right-hand panel
 - Click a train to inspect onboard passengers, destinations and transfers in that panel
+- Click a line to inspect its trains, occupancy, and destinations by passenger count
 - Click the first station of a draft again to close a loop (`A, B, C, A`)
 - Click empty map to clear the inspector
 - Enter or right-click to finish a line (one train is added automatically)
@@ -52,7 +53,7 @@ There is no public nationwide DB origin-destination matrix. Destinations are sam
 
 Passengers pick the fastest route in simulation time: riding time plus, whenever they board a line, the expected platform wait. That wait is half the line's headway (cycle time divided by the number of trains). A transfer also adds the station dwell. Routes are recomputed when lines or trains change.
 
-At a station they board the first train that serves the next hop of that route and still has space. If the train is full, earlier arrivals on that platform board first (the time they spawned or got off to transfer), not spawn order across the whole map.
+At a station they board the first train whose next stop is their next hop and still has space, even if that train is on a different line that shares the same segment. If the train is full, earlier arrivals on that platform board first (the time they spawned or got off to transfer), not spawn order across the whole map.
 
 ## Regenerating station data
 

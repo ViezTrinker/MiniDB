@@ -16,14 +16,14 @@ Station markers and labels are drawn in map space but scaled by kilometres-per-p
 ## What is drawn
 
 - Germany outline from `germany.geojson`.
-- Finished lines (thicker when selected), draft polyline, insert-drag preview.
+- Finished lines (thicker when selected). Segments shared by several lines are drawn as parallel colored strokes; hit-tests still use the true station-to-station geometry. Draft polyline and insert-drag preview stay on the true segment.
 - Stations (radius from population). Names when there are few stations, the city is large, or it is inspected.
 - Waiting counts next to stations.
 - Trains as short rectangles along their segment.
 - HUD: time, speed, pause, station count / cap.
 - Help button (`?`) and popup.
 - Train token (bottom left) for dropping a new train.
-- Sidebar (play only): inspector (station demand or train onboard / next / transfers) and the unconnected list.
+- Sidebar (play only): inspector (station demand, train onboard / next / transfers, or line trains / occupancy / destinations) and the unconnected list.
 
 `SetMapSidebar` shrinks the map viewport when the sidebar is visible so Germany stays framed.
 
