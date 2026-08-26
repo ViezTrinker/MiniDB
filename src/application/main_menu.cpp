@@ -21,20 +21,23 @@ namespace MiniDb
       constexpr float MenuTitleTop = 24.0f;
       constexpr float MenuSubtitleTop = 78.0f;
       constexpr float MenuRootFirstButtonTop = 130.0f;
-      constexpr float MenuSettingsTitleTop = 24.0f;
-      constexpr float MenuStationsLabelTop = 72.0f;
-      constexpr float MenuStepperTop = 102.0f;
-      constexpr float MenuHintTop = 152.0f;
-      constexpr float MenuToggleFirstTop = 184.0f;
-      constexpr float MenuToggleGap = 12.0f;
-      constexpr float MenuBackTopExtra = 16.0f;
+      constexpr float MenuSettingsTitleTop = 20.0f;
+      constexpr float MenuStationsLabelTop = 58.0f;
+      constexpr float MenuStepperTop = 86.0f;
+      constexpr float MenuStationHintTop = 130.0f;
+      constexpr float MenuCapacityLabelTop = 154.0f;
+      constexpr float MenuCapacityFieldTop = 182.0f;
+      constexpr float MenuCapacityHintTop = 226.0f;
+      constexpr float MenuSpeedTop = 252.0f;
+      constexpr float MenuToggleFirstTop = 310.0f;
+      constexpr float MenuToggleGap = 10.0f;
+      constexpr float MenuBackTopExtra = 12.0f;
       constexpr float MenuButtonWidth = 280.0f;
       constexpr float MenuButtonHeight = 44.0f;
       constexpr float MenuButtonGap = 12.0f;
       constexpr float MenuStepSize = 40.0f;
       constexpr float MenuValueWidth = 148.0f;
-      constexpr float MenuStepperGap = 8.0f;
-      constexpr uint32_t MenuStationCountMaxDigits = 5;
+      constexpr uint32_t MenuNumberFieldMaxDigits = 5;
       constexpr uint32_t MenuSettingsToggleCount = 3;
 
       enum class ButtonHover : bool
@@ -56,6 +59,16 @@ namespace MiniDb
          }
 
          return clamped;
+      }
+
+      uint32_t ClampTrainCapacity(uint32_t trainCapacity)
+      {
+         if (trainCapacity < MinimumTrainCapacity)
+         {
+            return MinimumTrainCapacity;
+         }
+
+         return trainCapacity;
       }
 
       uint32_t ParseDigitText(std::string_view text, uint32_t fallback)
@@ -140,6 +153,32 @@ namespace MiniDb
          window.draw(text);
       }
 
+      void DrawNumberField(
+         sf::RenderWindow& window,
+         sf::Font& font,
+         const sf::FloatRect& bounds,
+         std::string_view text,
+         SettingsNumberFocus focus,
+         SettingsNumberFocus activeFocus,
+         float centerX)
+      {
+         sf::RectangleShape valueField(bounds.size);
+         valueField.setPosition(bounds.position);
+         valueField.setFillColor(sf::Color(255, 255, 255));
+         if (activeFocus == focus)
+         {
+            valueField.setOutlineColor(sf::Color(40, 90, 160));
+            valueField.setOutlineThickness(2.0f);
+         }
+         else
+         {
+            valueField.setOutlineColor(sf::Color(120, 110, 100));
+            valueField.setOutlineThickness(1.0f);
+         }
+         window.draw(valueField);
+         DrawCenteredText(window, font, text, centerX, bounds.position.y + 6.0f, 22, sf::Color(35, 35, 35));
+      }
+
       std::string ToggleLabel(std::string_view name, bool enabled)
       {
          std::string label(name);
@@ -159,7 +198,10 @@ namespace MiniDb
 
    MainMenu::MainMenu(void) :
       _committedStationCount(DefaultMaxStationCount),
-      _stationCountText(std::to_string(DefaultMaxStationCount))
+      _stationCountText(std::to_string(DefaultMaxStationCount)),
+      _committedTrainCapacity(DefaultTrainCapacity),
+      _trainCapacityText(std::to_string(DefaultTrainCapacity)),
+      _gameSpeed(DefaultTimeScale)
    {
    }
 
@@ -229,16 +271,16 @@ namespace MiniDb
       bounds.panel = sf::FloatRect({panelLeft, panelTop}, {MenuPanelWidth, panelHeight});
 
       const float buttonLeft = panelLeft + ((MenuPanelWidth - MenuButtonWidth) * 0.5f);
-      const float stepRowWidth = MenuStepSize + MenuStepperGap + MenuValueWidth + MenuStepperGap + MenuStepSize;
-      const float stepRowLeft = panelLeft + ((MenuPanelWidth - stepRowWidth) * 0.5f);
-      const float stepTop = panelTop + MenuStepperTop;
-      bounds.decrease = sf::FloatRect({stepRowLeft, stepTop}, {MenuStepSize, MenuStepSize});
+      const float numberFieldLeft = panelLeft + ((MenuPanelWidth - MenuValueWidth) * 0.5f);
       bounds.value = sf::FloatRect(
-         {stepRowLeft + MenuStepSize + MenuStepperGap, stepTop},
+         {numberFieldLeft, panelTop + MenuStepperTop},
          {MenuValueWidth, MenuStepSize});
-      bounds.increase = sf::FloatRect(
-         {stepRowLeft + MenuStepSize + MenuStepperGap + MenuValueWidth + MenuStepperGap, stepTop},
-         {MenuStepSize, MenuStepSize});
+      bounds.trainCapacityValue = sf::FloatRect(
+         {numberFieldLeft, panelTop + MenuCapacityFieldTop},
+         {MenuValueWidth, MenuStepSize});
+      bounds.gameSpeed = sf::FloatRect(
+         {buttonLeft, panelTop + MenuSpeedTop},
+         {MenuButtonWidth, MenuButtonHeight});
 
       float toggleTop = panelTop + MenuToggleFirstTop;
       bounds.randomPool = sf::FloatRect({buttonLeft, toggleTop}, {MenuButtonWidth, MenuButtonHeight});
@@ -256,57 +298,164 @@ namespace MiniDb
       return ParseDigitText(_stationCountText, _committedStationCount);
    }
 
+   uint32_t MainMenu::ParsedTrainCapacity(void) const
+   {
+      return ParseDigitText(_trainCapacityText, _committedTrainCapacity);
+   }
+
    void MainMenu::CommitStationCount(uint32_t catalogStationCount)
    {
       _committedStationCount = ClampStationCount(ParsedStationCount(), catalogStationCount);
       _stationCountText = std::to_string(_committedStationCount);
-      _stationCountFocus = StationCountFocus::No;
+      if (_numberFocus == SettingsNumberFocus::StationCount)
+      {
+         _numberFocus = SettingsNumberFocus::None;
+      }
+   }
+
+   void MainMenu::CommitTrainCapacity(void)
+   {
+      _committedTrainCapacity = ClampTrainCapacity(ParsedTrainCapacity());
+      _trainCapacityText = std::to_string(_committedTrainCapacity);
+      if (_numberFocus == SettingsNumberFocus::TrainCapacity)
+      {
+         _numberFocus = SettingsNumberFocus::None;
+      }
+   }
+
+   void MainMenu::CommitFocusedNumber(uint32_t catalogStationCount)
+   {
+      if (_numberFocus == SettingsNumberFocus::StationCount)
+      {
+         CommitStationCount(catalogStationCount);
+         return;
+      }
+      if (_numberFocus == SettingsNumberFocus::TrainCapacity)
+      {
+         CommitTrainCapacity();
+      }
    }
 
    void MainMenu::CancelStationCountEdit(void)
    {
       _stationCountText = std::to_string(_committedStationCount);
-      _stationCountFocus = StationCountFocus::No;
+      if (_numberFocus == SettingsNumberFocus::StationCount)
+      {
+         _numberFocus = SettingsNumberFocus::None;
+      }
+   }
+
+   void MainMenu::CancelTrainCapacityEdit(void)
+   {
+      _trainCapacityText = std::to_string(_committedTrainCapacity);
+      if (_numberFocus == SettingsNumberFocus::TrainCapacity)
+      {
+         _numberFocus = SettingsNumberFocus::None;
+      }
+   }
+
+   void MainMenu::CancelFocusedNumberEdit(void)
+   {
+      if (_numberFocus == SettingsNumberFocus::StationCount)
+      {
+         CancelStationCountEdit();
+         return;
+      }
+      if (_numberFocus == SettingsNumberFocus::TrainCapacity)
+      {
+         CancelTrainCapacityEdit();
+      }
    }
 
    void MainMenu::BeginStationCountEdit(void)
    {
-      _stationCountFocus = StationCountFocus::Yes;
+      CommitTrainCapacity();
+      _numberFocus = SettingsNumberFocus::StationCount;
       _stationCountText = std::to_string(_committedStationCount);
    }
 
-   void MainMenu::AdjustStationCount(StationLimitStep step, uint32_t catalogStationCount)
+   void MainMenu::BeginTrainCapacityEdit(uint32_t catalogStationCount)
    {
       CommitStationCount(catalogStationCount);
-      uint32_t nextCount = _committedStationCount;
-      if (step == StationLimitStep::Decrease)
+      _numberFocus = SettingsNumberFocus::TrainCapacity;
+      _trainCapacityText = std::to_string(_committedTrainCapacity);
+   }
+
+   float MainMenu::SnapGameSpeed(float gameSpeed) const
+   {
+      if (gameSpeed >= TimeScaleUltraFast)
       {
-         if (nextCount > (MinimumStationCap + StationCapStep))
-         {
-            nextCount -= StationCapStep;
-         }
-         else
-         {
-            nextCount = MinimumStationCap;
-         }
+         return TimeScaleUltraFast;
       }
-      else
+      if (gameSpeed >= TimeScaleVeryFast)
       {
-         nextCount += StationCapStep;
+         return TimeScaleVeryFast;
+      }
+      if (gameSpeed >= TimeScaleFast)
+      {
+         return TimeScaleFast;
+      }
+      if (gameSpeed >= TimeScaleMedium)
+      {
+         return TimeScaleMedium;
       }
 
-      _committedStationCount = ClampStationCount(nextCount, catalogStationCount);
-      _stationCountText = std::to_string(_committedStationCount);
+      return TimeScaleSlow;
+   }
+
+   void MainMenu::CycleGameSpeed(void)
+   {
+      const float snapped = SnapGameSpeed(_gameSpeed);
+      if (snapped <= TimeScaleSlow)
+      {
+         _gameSpeed = TimeScaleMedium;
+         return;
+      }
+      if (snapped <= TimeScaleMedium)
+      {
+         _gameSpeed = TimeScaleFast;
+         return;
+      }
+      if (snapped <= TimeScaleFast)
+      {
+         _gameSpeed = TimeScaleVeryFast;
+         return;
+      }
+      if (snapped <= TimeScaleVeryFast)
+      {
+         _gameSpeed = TimeScaleUltraFast;
+         return;
+      }
+
+      _gameSpeed = TimeScaleSlow;
    }
 
    std::string MainMenu::FormatStationCountField(void) const
    {
-      if (_stationCountFocus == StationCountFocus::Yes)
+      if (_numberFocus == SettingsNumberFocus::StationCount)
       {
          return _stationCountText + "|";
       }
 
       return _stationCountText;
+   }
+
+   std::string MainMenu::FormatTrainCapacityField(void) const
+   {
+      if (_numberFocus == SettingsNumberFocus::TrainCapacity)
+      {
+         return _trainCapacityText + "|";
+      }
+
+      return _trainCapacityText;
+   }
+
+   std::string MainMenu::FormatGameSpeedLabel(void) const
+   {
+      std::string label = "Game speed: ";
+      label += std::to_string(static_cast<int32_t>(SnapGameSpeed(_gameSpeed)));
+      label += "x";
+      return label;
    }
 
    bool MainMenu::ContainsPixel(const sf::FloatRect& bounds, sf::Vector2i pixel) const
@@ -324,7 +473,35 @@ namespace MiniDb
    {
       _committedStationCount = ClampStationCount(maxStationCount, catalogStationCount);
       _stationCountText = std::to_string(_committedStationCount);
-      _stationCountFocus = StationCountFocus::No;
+      if (_numberFocus == SettingsNumberFocus::StationCount)
+      {
+         _numberFocus = SettingsNumberFocus::None;
+      }
+   }
+
+   uint32_t MainMenu::GetTrainCapacity(void) const
+   {
+      return ParsedTrainCapacity();
+   }
+
+   void MainMenu::SetTrainCapacity(uint32_t trainCapacity)
+   {
+      _committedTrainCapacity = ClampTrainCapacity(trainCapacity);
+      _trainCapacityText = std::to_string(_committedTrainCapacity);
+      if (_numberFocus == SettingsNumberFocus::TrainCapacity)
+      {
+         _numberFocus = SettingsNumberFocus::None;
+      }
+   }
+
+   float MainMenu::GetGameSpeed(void) const
+   {
+      return SnapGameSpeed(_gameSpeed);
+   }
+
+   void MainMenu::SetGameSpeed(float gameSpeed)
+   {
+      _gameSpeed = SnapGameSpeed(gameSpeed);
    }
 
    RandomPool MainMenu::GetRandomPool(void) const
@@ -344,13 +521,13 @@ namespace MiniDb
 
    void MainMenu::ShowRootPage(void)
    {
-      CancelStationCountEdit();
+      CancelFocusedNumberEdit();
       _page = MenuPage::Root;
    }
 
    void MainMenu::HandleTextEntered(char32_t unicode)
    {
-      if (_page != MenuPage::Settings || _stationCountFocus == StationCountFocus::No)
+      if (_page != MenuPage::Settings)
       {
          return;
       }
@@ -358,12 +535,26 @@ namespace MiniDb
       {
          return;
       }
-      if (_stationCountText.size() >= MenuStationCountMaxDigits)
+
+      if (_numberFocus == SettingsNumberFocus::StationCount)
       {
+         if (_stationCountText.size() >= MenuNumberFieldMaxDigits)
+         {
+            return;
+         }
+
+         _stationCountText.push_back(static_cast<char>(unicode));
          return;
       }
+      if (_numberFocus == SettingsNumberFocus::TrainCapacity)
+      {
+         if (_trainCapacityText.size() >= MenuNumberFieldMaxDigits)
+         {
+            return;
+         }
 
-      _stationCountText.push_back(static_cast<char>(unicode));
+         _trainCapacityText.push_back(static_cast<char>(unicode));
+      }
    }
 
    void MainMenu::DrawRoot(HasActiveGame hasActiveGame, sf::Vector2i cursorPixel)
@@ -438,7 +629,7 @@ namespace MiniDb
          "Settings",
          centerX,
          panelTop + MenuSettingsTitleTop,
-         32,
+         28,
          sf::Color(35, 35, 35));
       DrawCenteredText(
          *_pWindow,
@@ -446,56 +637,60 @@ namespace MiniDb
          "Stations",
          centerX,
          panelTop + MenuStationsLabelTop,
-         18,
+         16,
          sf::Color(35, 35, 35));
 
-      ButtonHover decreaseHover = ButtonHover::No;
-      if (ContainsPixel(bounds.decrease, cursorPixel))
-      {
-         decreaseHover = ButtonHover::Yes;
-      }
-      DrawPanelButton(*_pWindow, *_pFont, bounds.decrease, "<", decreaseHover);
-
-      ButtonHover increaseHover = ButtonHover::No;
-      if (ContainsPixel(bounds.increase, cursorPixel))
-      {
-         increaseHover = ButtonHover::Yes;
-      }
-      DrawPanelButton(*_pWindow, *_pFont, bounds.increase, ">", increaseHover);
-
-      sf::RectangleShape valueField(bounds.value.size);
-      valueField.setPosition(bounds.value.position);
-      valueField.setFillColor(sf::Color(255, 255, 255));
-      if (_stationCountFocus == StationCountFocus::Yes)
-      {
-         valueField.setOutlineColor(sf::Color(40, 90, 160));
-         valueField.setOutlineThickness(2.0f);
-      }
-      else
-      {
-         valueField.setOutlineColor(sf::Color(120, 110, 100));
-         valueField.setOutlineThickness(1.0f);
-      }
-      _pWindow->draw(valueField);
-      DrawCenteredText(
+      DrawNumberField(
          *_pWindow,
          *_pFont,
+         bounds.value,
          FormatStationCountField(),
-         centerX,
-         bounds.value.position.y + 6.0f,
-         22,
-         sf::Color(35, 35, 35));
+         SettingsNumberFocus::StationCount,
+         _numberFocus,
+         centerX);
 
-      std::ostringstream hintStream;
-      hintStream << "Type a number, or use < >. Catalog " << catalogStationCount << ".";
+      std::ostringstream stationHintStream;
+      stationHintStream << "Type a number. Catalog " << catalogStationCount << ".";
       DrawCenteredText(
          *_pWindow,
          *_pFont,
-         hintStream.str(),
+         stationHintStream.str(),
          centerX,
-         panelTop + MenuHintTop,
-         13,
+         panelTop + MenuStationHintTop,
+         12,
          sf::Color(90, 85, 80));
+
+      DrawCenteredText(
+         *_pWindow,
+         *_pFont,
+         "Train capacity",
+         centerX,
+         panelTop + MenuCapacityLabelTop,
+         16,
+         sf::Color(35, 35, 35));
+      DrawNumberField(
+         *_pWindow,
+         *_pFont,
+         bounds.trainCapacityValue,
+         FormatTrainCapacityField(),
+         SettingsNumberFocus::TrainCapacity,
+         _numberFocus,
+         centerX);
+      DrawCenteredText(
+         *_pWindow,
+         *_pFont,
+         "Passenger spawn scales with capacity.",
+         centerX,
+         panelTop + MenuCapacityHintTop,
+         12,
+         sf::Color(90, 85, 80));
+
+      ButtonHover speedHover = ButtonHover::No;
+      if (ContainsPixel(bounds.gameSpeed, cursorPixel))
+      {
+         speedHover = ButtonHover::Yes;
+      }
+      DrawPanelButton(*_pWindow, *_pFont, bounds.gameSpeed, FormatGameSpeedLabel(), speedHover);
 
       ButtonHover poolHover = ButtonHover::No;
       if (ContainsPixel(bounds.randomPool, cursorPixel))
@@ -589,16 +784,16 @@ namespace MiniDb
          BeginStationCountEdit();
          return MenuAction::None;
       }
-
-      CommitStationCount(catalogStationCount);
-      if (ContainsPixel(bounds.decrease, pixel))
+      if (ContainsPixel(bounds.trainCapacityValue, pixel))
       {
-         AdjustStationCount(StationLimitStep::Decrease, catalogStationCount);
+         BeginTrainCapacityEdit(catalogStationCount);
          return MenuAction::None;
       }
-      if (ContainsPixel(bounds.increase, pixel))
+
+      CommitFocusedNumber(catalogStationCount);
+      if (ContainsPixel(bounds.gameSpeed, pixel))
       {
-         AdjustStationCount(StationLimitStep::Increase, catalogStationCount);
+         CycleGameSpeed();
          return MenuAction::None;
       }
       if (ContainsPixel(bounds.randomPool, pixel))
@@ -688,40 +883,34 @@ namespace MiniDb
       const sf::Event::KeyPressed& keyPressed,
       uint32_t catalogStationCount)
    {
-      if (_stationCountFocus == StationCountFocus::Yes)
+      if (_numberFocus != SettingsNumberFocus::None)
       {
          if (keyPressed.code == sf::Keyboard::Key::Backspace)
          {
-            if (!_stationCountText.empty())
+            if (_numberFocus == SettingsNumberFocus::StationCount && !_stationCountText.empty())
             {
                _stationCountText.pop_back();
+            }
+            if (_numberFocus == SettingsNumberFocus::TrainCapacity && !_trainCapacityText.empty())
+            {
+               _trainCapacityText.pop_back();
             }
             return MenuAction::None;
          }
          if (keyPressed.code == sf::Keyboard::Key::Enter)
          {
-            CommitStationCount(catalogStationCount);
+            CommitFocusedNumber(catalogStationCount);
             return MenuAction::None;
          }
          if (keyPressed.code == sf::Keyboard::Key::Escape)
          {
-            CancelStationCountEdit();
+            CancelFocusedNumberEdit();
             return MenuAction::None;
          }
 
          return MenuAction::None;
       }
 
-      if (keyPressed.code == sf::Keyboard::Key::Left)
-      {
-         AdjustStationCount(StationLimitStep::Decrease, catalogStationCount);
-         return MenuAction::None;
-      }
-      if (keyPressed.code == sf::Keyboard::Key::Right)
-      {
-         AdjustStationCount(StationLimitStep::Increase, catalogStationCount);
-         return MenuAction::None;
-      }
       if (keyPressed.code == sf::Keyboard::Key::Escape)
       {
          ShowRootPage();

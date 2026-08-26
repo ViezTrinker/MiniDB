@@ -23,7 +23,7 @@ ctest --test-dir build -C Release --output-on-failure
 
 The game executable is `build/bin/Release/MiniDB.exe` on Windows (or `build/bin/MiniDB` on single-config generators). `data/` is copied next to the executable.
 
-The game opens on a start menu. Open **Settings** to choose the station cap (default 100), optional random city pool, random spawn order, and destination events. Click the number field to type a count (minimum 2), or use `<` / `>` (and the arrow keys) in steps of 50. Settings apply when you press **Start**. Escape during play returns to the menu; Resume continues the current game.
+The game opens on a start menu. Open **Settings** to choose the station cap (default 100), train capacity (default 160; passenger spawn scales with it), starting game speed, optional random city pool, random spawn order, and destination events. Click number fields to type values. Settings apply when you press **Start**. Escape during play returns to the menu; Resume continues the current game.
 
 ## Controls
 
@@ -43,7 +43,7 @@ The game opens on a start menu. Open **Settings** to choose the station cap (def
 - `?` opens a short help popup
 - Mouse wheel zooms (station markers stay a constant pixel size), middle-mouse drag pans
 - Arrow keys pan the map; `+` / `-` (and numpad) zoom in and out
-- Space pauses, `1` / `2` / `4` / `8` set simulation speed (default is 1x)
+- Space pauses, `1` / `2` / `4` / `8` set simulation speed (default is 1x); bottom-bar `>` also reaches 16x
 - F11 toggles fullscreen
 - Esc cancels a draft, or returns to the start menu
 

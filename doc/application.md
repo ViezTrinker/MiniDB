@@ -19,10 +19,12 @@ Escape during play: cancel line or anchor drag, then cancel a draft, otherwise r
 
 `MainMenu` draws a panel over a map backdrop.
 
-- **Start** resets the simulation, applies Settings (cap, random pool, random order, events), builds the spawn queue, and spawns the first cities.
+- **Start** resets the simulation, applies Settings (station cap, train capacity, game speed, random pool, random order, events), builds the spawn queue, and spawns the first cities.
 - **Resume** is shown only when `HasActiveGame` is `Yes`. It continues the current world without re-applying Settings.
 - **Settings** opens a second page:
-  - Station cap: click the number to type digits, or `<` / `>` (and arrow keys) in steps of 50. Default is `DefaultMaxStationCount` (100). Clamped between `MinimumStationCap` (2) and catalog size. If the cap is below `InitialStationCount`, the first wave is only that many cities.
+  - Station cap: click the number to type digits. Default is `DefaultMaxStationCount` (100). Clamped between `MinimumStationCap` (2) and catalog size. If the cap is below `InitialStationCount`, the first wave is only that many cities.
+  - **Train capacity**: click the number to type freely (minimum 1). Default is `DefaultTrainCapacity` (160). Passenger spawn rate is not set separately; it scales with capacity (`160` → `7.5` / s, `320` → `15` / s).
+  - **Game speed**: click to cycle `1x` / `2x` / `4x` / `8x` / `16x` for the next Start (can still be changed in-game).
   - **Random pool**: sample `cap` cities uniformly from the catalog instead of the largest ones.
   - **Random order**: shuffle spawn order of the chosen pool.
   - **Events**: timed destination boosts during play.
@@ -54,14 +56,14 @@ Terminus extension is handled in `Game` via draggable anchors on the selected li
 | Drag terminus anchor onto a station | `ExtendLineAt` at the front or back of the selected line |
 | Drag line onto a station | `InsertStationOnLine` on that segment |
 | Drag train token onto a line | `AddTrainToLineAt` at the cursor |
-| Bottom bar `<` / `>` | Slow down or speed up (1x / 2x / 4x / 8x) |
+| Bottom bar `<` / `>` | Slow down or speed up (1x / 2x / 4x / 8x / 16x) |
 | Bottom bar Pause / Resume | Pause or resume the simulation |
 | Bottom bar Menu | Return to the start menu |
 | Ctrl+Z / Ctrl+Y | Undo or redo the last draft station |
 | Delete | Delete selected line, or the inspected train’s line; cancels an in-progress line drag |
 | T | Extra train on the selected line |
 | Space | Pause |
-| 1 / 2 / 4 / 8 | Time scale |
+| 1 / 2 / 4 / 8 | Time scale (1x–8x; use `>` for 16x) |
 | Wheel | Zoom at cursor, or scroll the unconnected list |
 | `+` / `-` | Zoom in or out at the map center |
 | Arrow keys | Pan the map |

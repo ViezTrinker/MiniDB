@@ -121,6 +121,9 @@ namespace MiniDb
       /*!
        *\brief Sets train capacity used when boarding.
        *
+       * Passenger spawn rate scales linearly with capacity
+       * (`PassengerSpawnPerSecondForCapacity`).
+       *
        *\param[in] capacity Maximum passengers per train.
        */
       void SetTrainCapacity(uint32_t capacity);

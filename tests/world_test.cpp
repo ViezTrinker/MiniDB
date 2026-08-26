@@ -457,6 +457,35 @@ TEST(WorldTest, CollectTrainsOnLineRejectsUnknownLine)
    EXPECT_TRUE(MiniDb::IsErr(world.CollectTrainsOnLine(99, occupancy)));
 }
 
+TEST(WorldTest, PassengerSpawnRateScalesWithTrainCapacity)
+{
+   EXPECT_FLOAT_EQ(MiniDb::PassengerSpawnPerSecondForCapacity(160), 7.5f);
+   EXPECT_FLOAT_EQ(MiniDb::PassengerSpawnPerSecondForCapacity(320), 15.0f);
+   EXPECT_FLOAT_EQ(MiniDb::PassengerSpawnPerSecondForCapacity(80), 3.75f);
+
+   MiniDb::World world(1);
+   EXPECT_EQ(world.GetTrainCapacity(), MiniDb::DefaultTrainCapacity);
+
+   world.SetTrainCapacity(320);
+   EXPECT_EQ(world.GetTrainCapacity(), 320u);
+
+   world.SetPassengerAutoSpawn(MiniDb::PassengerAutoSpawn::Yes);
+   ASSERT_TRUE(MiniDb::IsOk(world.LoadCatalogFromString(CatalogJson)));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+
+   const uint32_t beforeCount =
+      world.GetWaitingPassengerCount() +
+      world.GetOnboardPassengerCount() +
+      world.GetArrivedPassengerCount();
+   world.Tick(1.0f);
+   const uint32_t afterCount =
+      world.GetWaitingPassengerCount() +
+      world.GetOnboardPassengerCount() +
+      world.GetArrivedPassengerCount();
+   EXPECT_EQ(afterCount - beforeCount, 15u);
+}
+
 TEST(WorldTest, CollectLineDemandCountsOnboardOnly)
 {
    MiniDb::World world(7);

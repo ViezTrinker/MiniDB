@@ -22,14 +22,14 @@ namespace MiniDb
    inline constexpr uint32_t MinimumStationCap = 2;
    inline constexpr uint32_t InitialStationCount = 6;
    inline constexpr uint32_t DefaultMaxStationCount = 100;
-   inline constexpr uint32_t StationCapStep = 50;
    inline constexpr uint32_t UnlimitedStationCount = 0xFFFFFFFFu;
    inline constexpr float StationSpawnIntervalSeconds = 5.0f;
-   inline constexpr float GlobalPassengerSpawnPerSecond = 1.5f;
+   inline constexpr uint32_t DefaultTrainCapacity = 160;
+   inline constexpr uint32_t MinimumTrainCapacity = 1;
+   inline constexpr float PassengerSpawnPerSecondAtDefaultCapacity = 7.5f;
    inline constexpr float TrainSpeedKmPerHour = 12000.0f;
    inline constexpr float SecondsPerHour = 3600.0f;
    inline constexpr float TrainDwellSeconds = 0.5f;
-   inline constexpr uint32_t TrainCapacity = 32;
    inline constexpr float ExpectedWaitHeadwayFraction = 0.5f;
    inline constexpr float GravityAlpha = 1.0f;
    inline constexpr float GravityGamma = 1.6f;
@@ -61,6 +61,7 @@ namespace MiniDb
    inline constexpr float WaitingLabelCharacterPixels = 12.0f;
    inline constexpr uint32_t DemandPanelMaxRows = 6;
    inline constexpr uint32_t InspectorMaxRows = 8;
+   inline constexpr uint32_t StationDemandMaxRows = 25;
    inline constexpr uint32_t CrowdedStationMaxRows = 10;
    inline constexpr float DemandPanelWidthPixels = 220.0f;
    inline constexpr float TrainHitRadiusPixels = 14.0f;
@@ -74,6 +75,7 @@ namespace MiniDb
    inline constexpr float TimeScaleMedium = 2.0f;
    inline constexpr float TimeScaleFast = 4.0f;
    inline constexpr float TimeScaleVeryFast = 8.0f;
+   inline constexpr float TimeScaleUltraFast = 16.0f;
    inline constexpr float LineDropHitPixels = 16.0f;
    inline constexpr float LineDragStartPixels = 8.0f;
    inline constexpr float KeyboardPanSpeedPixelsPerSecond = 480.0f;
@@ -84,6 +86,20 @@ namespace MiniDb
    inline constexpr float TerminusAnchorDragRadiusPixels = 10.0f;
    inline constexpr float UnconnectedPanelWidthPixels = 280.0f;
    inline constexpr float UnconnectedRowHeightPixels = 22.0f;
+
+   /*!
+    *\brief Passenger spawn rate for a given train capacity.
+    *
+    * Scales linearly from `PassengerSpawnPerSecondAtDefaultCapacity` at
+    * `DefaultTrainCapacity` (160 capacity -> 7.5 / s, 320 capacity -> 15 / s).
+    *
+    *\param[in] trainCapacity Passengers per train.
+    */
+   inline float PassengerSpawnPerSecondForCapacity(uint32_t trainCapacity)
+   {
+      return (static_cast<float>(trainCapacity) / static_cast<float>(DefaultTrainCapacity)) *
+         PassengerSpawnPerSecondAtDefaultCapacity;
+   }
 } // namespace MiniDb
 
 #endif // CONSTANTS_H

@@ -36,16 +36,11 @@ namespace MiniDb
       Quit = 3
    };
 
-   enum class StationLimitStep : int8_t
+   enum class SettingsNumberFocus : uint8_t
    {
-      Decrease = -1,
-      Increase = 1
-   };
-
-   enum class StationCountFocus : bool
-   {
-      No = false,
-      Yes = true
+      None = 0,
+      StationCount = 1,
+      TrainCapacity = 2
    };
 
    enum class MenuPage : uint8_t
@@ -101,7 +96,7 @@ namespace MiniDb
          uint32_t catalogStationCount);
 
       /*!
-       *\brief Handles typed characters for the station-count field.
+       *\brief Handles typed characters for focused number fields.
        *
        *\param[in] unicode UTF-32 code point.
        */
@@ -119,6 +114,30 @@ namespace MiniDb
        *\param[in] catalogStationCount Catalog size used for clamping.
        */
       void SetSelectedMaxStationCount(uint32_t maxStationCount, uint32_t catalogStationCount);
+
+      /*!
+       *\brief Train capacity chosen for the next new game.
+       */
+      uint32_t GetTrainCapacity(void) const;
+
+      /*!
+       *\brief Sets the train-capacity field shown in settings.
+       *
+       *\param[in] trainCapacity Passengers per train.
+       */
+      void SetTrainCapacity(uint32_t trainCapacity);
+
+      /*!
+       *\brief Simulation speed multiplier chosen for the next new game.
+       */
+      float GetGameSpeed(void) const;
+
+      /*!
+       *\brief Sets the game-speed control shown in settings.
+       *
+       *\param[in] gameSpeed Speed multiplier (1 / 2 / 4 / 8 / 16).
+       */
+      void SetGameSpeed(float gameSpeed);
 
       /*!
        *\brief Whether the next new game uses a random station pool.
@@ -153,9 +172,9 @@ namespace MiniDb
       struct SettingsBounds
       {
          sf::FloatRect panel;
-         sf::FloatRect decrease;
          sf::FloatRect value;
-         sf::FloatRect increase;
+         sf::FloatRect trainCapacityValue;
+         sf::FloatRect gameSpeed;
          sf::FloatRect randomPool;
          sf::FloatRect randomOrder;
          sf::FloatRect events;
@@ -164,12 +183,21 @@ namespace MiniDb
 
       RootBounds ComputeRootBounds(HasActiveGame hasActiveGame) const;
       SettingsBounds ComputeSettingsBounds(void) const;
+      void CommitFocusedNumber(uint32_t catalogStationCount);
+      void CancelFocusedNumberEdit(void);
       void CommitStationCount(uint32_t catalogStationCount);
+      void CommitTrainCapacity(void);
       void CancelStationCountEdit(void);
-      void AdjustStationCount(StationLimitStep step, uint32_t catalogStationCount);
+      void CancelTrainCapacityEdit(void);
       void BeginStationCountEdit(void);
+      void BeginTrainCapacityEdit(uint32_t catalogStationCount);
+      void CycleGameSpeed(void);
+      float SnapGameSpeed(float gameSpeed) const;
       uint32_t ParsedStationCount(void) const;
+      uint32_t ParsedTrainCapacity(void) const;
       std::string FormatStationCountField(void) const;
+      std::string FormatTrainCapacityField(void) const;
+      std::string FormatGameSpeedLabel(void) const;
       bool ContainsPixel(const sf::FloatRect& bounds, sf::Vector2i pixel) const;
       void DrawRoot(HasActiveGame hasActiveGame, sf::Vector2i cursorPixel);
       void DrawSettings(uint32_t catalogStationCount, sf::Vector2i cursorPixel);
@@ -187,7 +215,10 @@ namespace MiniDb
       MenuPage _page = MenuPage::Root;
       uint32_t _committedStationCount = DefaultMaxStationCount;
       std::string _stationCountText;
-      StationCountFocus _stationCountFocus = StationCountFocus::No;
+      uint32_t _committedTrainCapacity = DefaultTrainCapacity;
+      std::string _trainCapacityText;
+      SettingsNumberFocus _numberFocus = SettingsNumberFocus::None;
+      float _gameSpeed = DefaultTimeScale;
       RandomPool _randomPool = RandomPool::No;
       RandomOrder _randomOrder = RandomOrder::No;
       EventsEnabled _eventsEnabled = EventsEnabled::No;

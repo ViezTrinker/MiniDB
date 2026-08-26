@@ -21,7 +21,7 @@ These match the rules used in this repository. New code should follow them so th
 
 | Kind | Style | Example |
 | --- | --- | --- |
-| Types, enums, functions, constexpr values, namespaces | PascalCase | `FindRoute`, `LineLoop`, `TrainCapacity` |
+| Types, enums, functions, constexpr values, namespaces | PascalCase | `FindRoute`, `LineLoop`, `DefaultTrainCapacity` |
 | Variables | camelCase | `stationId` |
 | Private members | leading `_` | `_topologyRevision` |
 | Pointers | leading `p` | `pStation`, `pFont` |

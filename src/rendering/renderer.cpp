@@ -74,6 +74,20 @@ namespace MiniDb
          return rowCount;
       }
 
+      uint32_t ClampedStationDemandRowCount(uint32_t rowCount)
+      {
+         if (rowCount == 0)
+         {
+            return 1;
+         }
+         if (rowCount > StationDemandMaxRows)
+         {
+            return StationDemandMaxRows;
+         }
+
+         return rowCount;
+      }
+
       uint32_t ClampedCrowdedStationRowCount(uint32_t rowCount)
       {
          if (rowCount == 0)
@@ -1401,7 +1415,7 @@ namespace MiniDb
          "Ctrl+Z / Ctrl+Y undo or redo a draft click.\n"
          "Wheel zoom, middle-drag pan. F11 fullscreen.\n"
          "Arrows pan. + / - zoom.\n"
-         "Space pause. 1 / 2 / 4 / 8 speed.\n"
+         "Space pause. 1 / 2 / 4 / 8 speed; > reaches 16x.\n"
          "Esc returns to the menu.";
       sf::Text text(*_pFont, Utf8SfString(helpText), 14);
       text.setFillColor(sf::Color(35, 35, 35));
@@ -1441,10 +1455,12 @@ namespace MiniDb
 
       const float windowHeight = static_cast<float>(_pWindow->getSize().y);
       float height = 72.0f;
+      float maximumHeightFraction = 0.45f;
       if (inspectedStationId != InvalidStationId)
       {
-         const uint32_t rowCount = ClampedInspectorRowCount(static_cast<uint32_t>(snapshot.stationDemand.size()));
+         const uint32_t rowCount = ClampedStationDemandRowCount(static_cast<uint32_t>(snapshot.stationDemand.size()));
          height = 86.0f + (static_cast<float>(rowCount) * 20.0f);
+         maximumHeightFraction = 0.75f;
       }
       else if (inspectedTrainId != InvalidTrainId)
       {
@@ -1466,7 +1482,7 @@ namespace MiniDb
             (static_cast<float>(crowdedRows) * 20.0f);
       }
 
-      const float maximumHeight = windowHeight * 0.45f;
+      const float maximumHeight = windowHeight * maximumHeightFraction;
       if (height > maximumHeight)
       {
          height = maximumHeight;
@@ -1719,7 +1735,7 @@ namespace MiniDb
          uint32_t shownRows = 0;
          for (const DestinationDemand& entry : demand)
          {
-            if (shownRows >= InspectorMaxRows)
+            if (shownRows >= StationDemandMaxRows)
             {
                break;
             }

@@ -166,7 +166,7 @@ namespace MiniDb
 
    World::World(uint32_t randomSeed) :
       _maxStationCount(DefaultMaxStationCount),
-      _trainCapacity(TrainCapacity),
+      _trainCapacity(DefaultTrainCapacity),
       _timeUntilNextStationSeconds(StationSpawnIntervalSeconds),
       _generator(randomSeed),
       _unitDistribution(0.0f, 1.0f)
@@ -374,7 +374,7 @@ namespace MiniDb
 
    void World::SetTrainCapacity(uint32_t capacity)
    {
-      if (capacity == 0)
+      if (capacity < MinimumTrainCapacity)
       {
          return;
       }
@@ -1555,7 +1555,7 @@ namespace MiniDb
          return;
       }
 
-      _passengerSpawnAccumulator += GlobalPassengerSpawnPerSecond * deltaSeconds;
+      _passengerSpawnAccumulator += PassengerSpawnPerSecondForCapacity(_trainCapacity) * deltaSeconds;
       while (_passengerSpawnAccumulator >= 1.0f)
       {
          _passengerSpawnAccumulator -= 1.0f;

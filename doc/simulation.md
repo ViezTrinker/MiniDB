@@ -8,7 +8,7 @@ All of this lives under `src/simulation/` and is owned by `World` (`world.h` / `
 
 1. Advances `_simulationTimeSeconds`.
 2. Maybe spawns the next city from the spawn queue (`StationSpawnIntervalSeconds`, default 5 s), until the station cap or queue end.
-3. Maybe spawns passengers (`GlobalPassengerSpawnPerSecond`, default 1.5 / s) if auto-spawn is on.
+3. Maybe spawns passengers (`PassengerSpawnPerSecondForCapacity`, e.g. 7.5 / s at capacity 160) if auto-spawn is on.
 4. Maybe updates destination events when enabled.
 5. Moves every train and runs alight/board at stations.
 
@@ -58,7 +58,8 @@ A line is an ordered station list plus a color index and `LineLoop` (`Yes` / `No
 - On arrival the train dwells `TrainDwellSeconds`.
 - Open lines reverse when the next index would leave the line.
 - Loops wrap the index and never reverse.
-- Capacity is `TrainCapacity` (32) unless tests override it with `SetTrainCapacity`.
+- Capacity defaults to `DefaultTrainCapacity` (160) from Settings on Start, unless tests override it with `SetTrainCapacity`.
+- Passenger spawn rate scales with capacity via `PassengerSpawnPerSecondForCapacity` (160 → 7.5 / s, 320 → 15 / s).
 
 `AddTrainToLineAt` places a train on the segment closest to a drop point (train-token drag).
 
@@ -110,7 +111,7 @@ Passengers do not pick a train id. They take the first train going to the next h
 
 The right-hand inspector reads these `World` helpers:
 
-- `CollectWaitingDemand` — waiting passengers at a station, grouped by destination.
+- `CollectWaitingDemand` — waiting passengers at a station, grouped by destination (sidebar shows up to 25).
 - `CollectOnboardDemand` — riders on one train, grouped by destination and first transfer.
 - `CollectTrainsOnLine` — trains on a line with occupancy and next stop, ordered by train id.
 - `CollectLineDemand` — passengers currently riding trains on that line, grouped by destination.

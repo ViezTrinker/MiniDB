@@ -301,6 +301,8 @@ namespace MiniDb
          _mainMenu.SetSelectedMaxStationCount(
             _world.GetMaxStationCount(),
             _world.GetCatalogStationCount());
+         _mainMenu.SetTrainCapacity(_world.GetTrainCapacity());
+         _mainMenu.SetGameSpeed(_timeScale);
          _renderer.SetMapSidebar(MapSidebar::Visible);
          _appScreen = AppScreen::Playing;
          return;
@@ -337,6 +339,11 @@ namespace MiniDb
 
    void Game::SlowDownSimulation(void)
    {
+      if (_timeScale >= TimeScaleUltraFast)
+      {
+         _timeScale = TimeScaleVeryFast;
+         return;
+      }
       if (_timeScale >= TimeScaleVeryFast)
       {
          _timeScale = TimeScaleFast;
@@ -373,14 +380,20 @@ namespace MiniDb
          _timeScale = TimeScaleVeryFast;
          return;
       }
+      if (_timeScale <= TimeScaleVeryFast)
+      {
+         _timeScale = TimeScaleUltraFast;
+         return;
+      }
 
-      _timeScale = TimeScaleVeryFast;
+      _timeScale = TimeScaleUltraFast;
    }
 
    void Game::StartNewGame(void)
    {
       _world.ResetSimulation();
       _world.SetMaxStationCount(_mainMenu.GetSelectedMaxStationCount());
+      _world.SetTrainCapacity(_mainMenu.GetTrainCapacity());
       _world.ConfigureNewGame(
          _mainMenu.GetRandomPool(),
          _mainMenu.GetRandomOrder(),
@@ -392,6 +405,7 @@ namespace MiniDb
       }
 
       ResetPlayInput();
+      _timeScale = _mainMenu.GetGameSpeed();
       _renderer.SetMapSidebar(MapSidebar::Visible);
       _hasActiveGame = HasActiveGame::Yes;
       _appScreen = AppScreen::Playing;
@@ -412,6 +426,8 @@ namespace MiniDb
       _mainMenu.SetSelectedMaxStationCount(
          _world.GetMaxStationCount(),
          _world.GetCatalogStationCount());
+      _mainMenu.SetTrainCapacity(_world.GetTrainCapacity());
+      _mainMenu.SetGameSpeed(_timeScale);
       _mainMenu.ShowRootPage();
       _renderer.SetMapSidebar(MapSidebar::Hidden);
       _appScreen = AppScreen::Menu;
