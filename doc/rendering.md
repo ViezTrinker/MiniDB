@@ -20,11 +20,11 @@ Station markers and labels are drawn in map space but scaled by kilometres-per-p
 - Stations (radius from population). Names when there are few stations, the city is large, or it is inspected.
 - Waiting counts next to stations.
 - Trains as short rectangles along their segment.
-- HUD: time, speed, pause, station count / cap.
+- HUD: time, balance (economic mode), bankruptcy countdown when negative, speed, pause, station count / cap, and brief insufficient-funds toast.
 - Help button (`?`) and popup.
 - Train token (bottom left) for dropping a new train.
 - Playback controls next to the train token: slow down, speed label, speed up, Pause, Resume, Menu.
-- Sidebar (play only): inspector (overview with top waiting destinations and crowded stations, or station / train / line detail), unconnected list, and Events pinned to the bottom of the panel. Station inspection lists up to 25 destination cities by waiting demand.
+- Sidebar (play only): inspector (overview with top waiting destinations and crowded stations, or station / train / line detail), unconnected list, and Events pinned to the bottom of the panel. Station inspection shows waiting count vs soft capacity and lists up to 25 destination cities by waiting demand.
 
 `SetMapSidebar` shrinks the map viewport when the sidebar is visible so Germany stays framed.
 

@@ -17,6 +17,7 @@
 #include "core/types.h"
 #include "input/line_editor.h"
 #include "rendering/renderer.h"
+#include "simulation/play_session_log.h"
 #include "simulation/world.h"
 
 namespace MiniDb
@@ -76,7 +77,7 @@ namespace MiniDb
       void HandleMouseWheel(const sf::Event::MouseWheelScrolled& mouseWheel);
       void ApplyMenuAction(MenuAction action);
       void StartNewGame(void);
-      void ReturnToMenu(void);
+      void ReturnToMenu(std::string_view sessionEndReason = "menu");
       void ResetPlayInput(void);
       void SlowDownSimulation(void);
       void SpeedUpSimulation(void);
@@ -86,6 +87,10 @@ namespace MiniDb
       void UpdateKeyboardCamera(float deltaSeconds);
       void Render(void);
       std::string BuildHudText(void) const;
+      void HandleActionResult(Result result);
+      void HandleGameOver(void);
+      void BeginPlaySessionLog(void);
+      void EndPlaySessionLog(std::string_view reason);
 
       sf::RenderWindow _window;
       sf::Font _font;
@@ -94,6 +99,11 @@ namespace MiniDb
       Renderer _renderer;
       MainMenu _mainMenu;
       LineEditor _lineEditor;
+      PlaySessionLog _playSessionLog;
+      std::string _logsDirectory;
+      std::string _statusMessage;
+      std::string _menuBannerMessage;
+      float _statusMessageSeconds = 0.0f;
       AppScreen _appScreen = AppScreen::Menu;
       HasActiveGame _hasActiveGame = HasActiveGame::No;
       SimulationPause _pause = SimulationPause::No;

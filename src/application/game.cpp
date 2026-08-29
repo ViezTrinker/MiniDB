@@ -55,6 +55,46 @@ namespace MiniDb
          return stream.str();
       }
 
+      std::string FormatEuro(int64_t amount)
+      {
+         const bool negative = amount < 0;
+         uint64_t absolute = static_cast<uint64_t>(negative ? -amount : amount);
+         std::string digits = std::to_string(absolute);
+         std::string formatted;
+         formatted.reserve(digits.size() + 8);
+         if (negative)
+         {
+            formatted.push_back('-');
+         }
+         formatted.push_back('\xE2');
+         formatted.push_back('\x82');
+         formatted.push_back('\xAC');
+
+         const size_t firstGroup = digits.size() % 3;
+         size_t index = 0;
+         if (firstGroup > 0)
+         {
+            formatted.append(digits, 0, firstGroup);
+            index = firstGroup;
+            if (index < digits.size())
+            {
+               formatted.push_back(',');
+            }
+         }
+
+         while (index < digits.size())
+         {
+            formatted.append(digits, index, 3);
+            index += 3;
+            if (index < digits.size())
+            {
+               formatted.push_back(',');
+            }
+         }
+
+         return formatted;
+      }
+
       float PixelDistanceSquared(sf::Vector2i left, sf::Vector2i right)
       {
          const auto deltaX = static_cast<float>(left.x - right.x);
@@ -211,6 +251,8 @@ namespace MiniDb
       }
 
       _mainMenu.Initialize(&_window, &_font);
+      _logsDirectory = DirectoryFromPath(executablePath) + "/logs";
+      _world.SetPlaySessionLog(&_playSessionLog);
 
       const Result dataResult = LoadSimulationData(executablePath);
       if (IsErr(dataResult))
@@ -309,6 +351,7 @@ namespace MiniDb
       }
       if (action == MenuAction::Quit)
       {
+         EndPlaySessionLog("quit");
          _window.close();
       }
    }
@@ -392,8 +435,19 @@ namespace MiniDb
    void Game::StartNewGame(void)
    {
       _world.ResetSimulation();
-      _world.SetMaxStationCount(_mainMenu.GetSelectedMaxStationCount());
+      const GameMode gameMode = _mainMenu.GetGameMode();
+      uint32_t stationCap = _mainMenu.GetSelectedMaxStationCount();
+      if (gameMode == GameMode::Sandbox)
+      {
+         stationCap = UnlimitedStationCount;
+      }
+
+      _world.SetMaxStationCount(stationCap);
       _world.SetTrainCapacity(_mainMenu.GetTrainCapacity());
+      _world.ConfigureEconomy(
+         _mainMenu.GetTrainCapacity(),
+         gameMode,
+         _mainMenu.GetNeverLoseSetting());
       _world.ConfigureNewGame(
          _mainMenu.GetRandomPool(),
          _mainMenu.GetRandomOrder(),
@@ -406,13 +460,18 @@ namespace MiniDb
 
       ResetPlayInput();
       _timeScale = _mainMenu.GetGameSpeed();
+      _statusMessage.clear();
+      _statusMessageSeconds = 0.0f;
+      _menuBannerMessage.clear();
+      BeginPlaySessionLog();
       _renderer.SetMapSidebar(MapSidebar::Visible);
       _hasActiveGame = HasActiveGame::Yes;
       _appScreen = AppScreen::Playing;
    }
 
-   void Game::ReturnToMenu(void)
+   void Game::ReturnToMenu(std::string_view sessionEndReason)
    {
+      EndPlaySessionLog(sessionEndReason);
       _trainDrag = TrainDrag::No;
       _lineDrag = LineDrag::No;
       _lineGrabPending = LineGrabPending::No;
@@ -525,12 +584,12 @@ namespace MiniDb
       }
       if (keyPressed.code == sf::Keyboard::Key::Enter)
       {
-         _lineEditor.Confirm(_world);
+         HandleActionResult(_lineEditor.Confirm(_world));
          return;
       }
       if (keyPressed.code == sf::Keyboard::Key::T)
       {
-         _lineEditor.AddTrainToSelectedLine(_world);
+         HandleActionResult(_lineEditor.AddTrainToSelectedLine(_world));
          return;
       }
       if (keyPressed.code == sf::Keyboard::Key::Delete)
@@ -769,6 +828,23 @@ namespace MiniDb
                   return;
                }
             }
+
+            const LineSegmentHit hit = _world.FindNearestLineSegment(
+               mapPoint,
+               _renderer.PixelsToKm(LineDropHitPixels));
+            if (hit.lineId != InvalidLineId)
+            {
+               _inspectedLineId = hit.lineId;
+               _inspectedStationId = InvalidStationId;
+               _inspectedTrainId = InvalidTrainId;
+               _lineGrabPending = LineGrabPending::Yes;
+               _lineDragLineId = hit.lineId;
+               _lineDragSegmentIndex = hit.segmentIndex;
+               _lineDragStartPixel = mousePressed.position;
+               _lineDragHoverStationId = InvalidStationId;
+               _helpVisible = HelpVisible::No;
+               return;
+            }
          }
 
          const StationId stationId = _world.HitTestStation(mapPoint, _renderer.HitRadiusKm());
@@ -799,27 +875,12 @@ namespace MiniDb
          _inspectedTrainId = InvalidTrainId;
          _helpVisible = HelpVisible::No;
          _inspectedLineId = InvalidLineId;
-         if (!_lineEditor.IsDrafting())
-         {
-            const LineSegmentHit hit = _world.FindNearestLineSegment(
-               mapPoint,
-               _renderer.PixelsToKm(LineDropHitPixels));
-            if (hit.lineId != InvalidLineId)
-            {
-               _inspectedLineId = hit.lineId;
-               _lineGrabPending = LineGrabPending::Yes;
-               _lineDragLineId = hit.lineId;
-               _lineDragSegmentIndex = hit.segmentIndex;
-               _lineDragStartPixel = mousePressed.position;
-               _lineDragHoverStationId = InvalidStationId;
-            }
-         }
          return;
       }
 
       if (mousePressed.button == sf::Mouse::Button::Right)
       {
-         _lineEditor.Confirm(_world);
+         HandleActionResult(_lineEditor.Confirm(_world));
          return;
       }
 
@@ -842,7 +903,7 @@ namespace MiniDb
          const LineId lineId = _world.FindNearestLine(mapPoint, _renderer.PixelsToKm(LineDropHitPixels));
          if (lineId != InvalidLineId)
          {
-            _world.AddTrainToLineAt(lineId, mapPoint);
+            HandleActionResult(_world.AddTrainToLineAt(lineId, mapPoint));
          }
          _trainDrag = TrainDrag::No;
          _dropTargetLineId = InvalidLineId;
@@ -858,6 +919,7 @@ namespace MiniDb
                _anchorDragLineId,
                _anchorDragEnd,
                _anchorDragHoverStationId);
+            HandleActionResult(extendResult);
             if (IsOk(extendResult))
             {
                _lineEditor.SelectLine(_anchorDragLineId);
@@ -882,6 +944,7 @@ namespace MiniDb
                _lineDragLineId,
                _lineDragSegmentIndex,
                _lineDragHoverStationId);
+            HandleActionResult(insertResult);
             if (IsOk(insertResult))
             {
                _lineEditor.SelectLine(_lineDragLineId);
@@ -1025,6 +1088,36 @@ namespace MiniDb
          clampedDelta = 0.05f;
       }
 
+      if (_statusMessageSeconds > 0.0f)
+      {
+         _statusMessageSeconds -= clampedDelta;
+         if (_statusMessageSeconds <= 0.0f)
+         {
+            _statusMessageSeconds = 0.0f;
+            _statusMessage.clear();
+         }
+      }
+
+      if (_world.GetGameMode() == GameMode::Economic)
+      {
+         const bool pauseActive = _pause == SimulationPause::Yes;
+         const BankruptcyTickResult bankruptcyResult =
+            _world.TickBankruptcy(clampedDelta, pauseActive);
+         if (bankruptcyResult == BankruptcyTickResult::GameOver)
+         {
+            HandleGameOver();
+            return;
+         }
+
+         if (_playSessionLog.IsActive())
+         {
+            if (!pauseActive)
+            {
+               _playSessionLog.Tick(clampedDelta, _world, _world.GetEconomy());
+            }
+         }
+      }
+
       float simulationDelta = 0.0f;
       if (_pause == SimulationPause::No)
       {
@@ -1079,6 +1172,15 @@ namespace MiniDb
    {
       std::ostringstream stream;
       stream << "Time " << FormatTime(_world.GetSimulationTimeSeconds());
+      if (_world.GetGameMode() == GameMode::Economic)
+      {
+         stream << "   Balance " << FormatEuro(_world.GetBalance());
+         const Economy& economy = _world.GetEconomy();
+         if (economy.GetBalance() < 0 && economy.GetNeverLose() == NeverLose::No)
+         {
+            stream << "   Bankrupt in " << FormatTime(economy.GetSecondsUntilGameOver());
+         }
+      }
       stream << "   Stations " << _world.GetNetwork().GetStations().size();
       stream << "/" << _world.GetStationCap();
       stream << "   Waiting " << _world.GetWaitingPassengerCount();
@@ -1092,7 +1194,71 @@ namespace MiniDb
       {
          stream << "   " << static_cast<int32_t>(_timeScale) << "x";
       }
+      if (!_statusMessage.empty())
+      {
+         stream << "   " << _statusMessage;
+      }
       return stream.str();
+   }
+
+   void Game::HandleActionResult(Result result)
+   {
+      if (result != Result::InsufficientFunds)
+      {
+         return;
+      }
+
+      _statusMessage = "Insufficient funds";
+      _statusMessageSeconds = InsufficientFundsToastSeconds;
+   }
+
+   void Game::HandleGameOver(void)
+   {
+      if (_playSessionLog.IsActive())
+      {
+         const Economy& economy = _world.GetEconomy();
+         _playSessionLog.LogGameOver(
+            economy.GetNegativeBalanceRealSeconds(),
+            economy.GetBalance());
+      }
+
+      _menuBannerMessage = "Bankrupt - 5 minutes in the red";
+      ReturnToMenu("game_over");
+   }
+
+   void Game::BeginPlaySessionLog(void)
+   {
+      if (_world.GetGameMode() != GameMode::Economic)
+      {
+         return;
+      }
+
+      PlaySessionSettings settings;
+      settings.stationCap = _world.GetMaxStationCount();
+      settings.trainCapacity = _world.GetTrainCapacity();
+      settings.gameSpeed = _timeScale;
+      settings.randomPool = _mainMenu.GetRandomPool();
+      settings.randomOrder = _mainMenu.GetRandomOrder();
+      settings.eventsEnabled = _mainMenu.GetEventsEnabled();
+      settings.neverLose = _mainMenu.GetNeverLoseSetting();
+      const Result beginResult = _playSessionLog.BeginSession(
+         _logsDirectory,
+         settings,
+         _world.GetEconomy());
+      if (IsErr(beginResult))
+      {
+         return;
+      }
+   }
+
+   void Game::EndPlaySessionLog(std::string_view reason)
+   {
+      if (!_playSessionLog.IsActive())
+      {
+         return;
+      }
+
+      _playSessionLog.EndSession(reason, _world, _world.GetEconomy());
    }
 
    void Game::Render(void)
@@ -1101,6 +1267,17 @@ namespace MiniDb
       {
          _renderer.DrawMenuBackdrop();
          _mainMenu.Draw(_hasActiveGame, _world.GetCatalogStationCount(), _lastMousePixel);
+         if (!_menuBannerMessage.empty())
+         {
+            sf::Text bannerText(_font, _menuBannerMessage, 18);
+            bannerText.setFillColor(sf::Color(180, 40, 40));
+            const sf::Vector2u windowSize = _window.getSize();
+            const sf::FloatRect textBounds = bannerText.getLocalBounds();
+            bannerText.setPosition({
+               (static_cast<float>(windowSize.x) - textBounds.size.x) * 0.5f,
+               static_cast<float>(windowSize.y) - 48.0f});
+            _window.draw(bannerText);
+         }
          _window.display();
          return;
       }

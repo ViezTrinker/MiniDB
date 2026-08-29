@@ -1392,7 +1392,7 @@ namespace MiniDb
 
       const sf::FloatRect helpButton = HelpButtonBounds();
       const float panelWidth = 340.0f;
-      const float panelHeight = 284.0f;
+      const float panelHeight = 320.0f;
       const float panelLeft = HudButtonMarginPixels;
       const float panelTop = helpButton.position.y - panelHeight - 8.0f;
       sf::RectangleShape panel({panelWidth, panelHeight});
@@ -1416,6 +1416,9 @@ namespace MiniDb
          "Wheel zoom, middle-drag pan. F11 fullscreen.\n"
          "Arrows pan. + / - zoom.\n"
          "Space pause. 1 / 2 / 4 / 8 speed; > reaches 16x.\n"
+         "Economic mode: balance, track/train costs, fare revenue.\n"
+         "Stay in the red 5 min (real time) to lose unless Never Lose is on.\n"
+         "Sandbox (settings): free build, no station cap, no bankruptcy.\n"
          "Esc returns to the menu.";
       sf::Text text(*_pFont, Utf8SfString(helpText), 14);
       text.setFillColor(sf::Color(35, 35, 35));
@@ -1716,7 +1719,9 @@ namespace MiniDb
          _pWindow->draw(titleText);
 
          const uint32_t waitingTotal = world.GetWaitingCountAt(inspectedStationId);
-         std::string waitingLine = "Waiting " + std::to_string(waitingTotal);
+         const uint32_t waitingCapacity = world.GetStationWaitingCapacity(inspectedStationId);
+         std::string waitingLine =
+            "Waiting " + std::to_string(waitingTotal) + " / " + std::to_string(waitingCapacity);
          sf::Text waitingText(*_pFont, Utf8SfString(waitingLine), 14);
          waitingText.setFillColor(sf::Color(180, 40, 40));
          waitingText.setPosition({left, 36.0f});

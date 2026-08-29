@@ -12,6 +12,7 @@
 #include "data/station_catalog.h"
 #include "simulation/gravity_model.h"
 #include "simulation/pathfinder.h"
+#include "simulation/play_session_log.h"
 
 namespace MiniDb
 {
@@ -171,6 +172,7 @@ namespace MiniDb
       _generator(randomSeed),
       _unitDistribution(0.0f, 1.0f)
    {
+      _economy.Clear();
    }
 
    void World::ResetSimulation(void)
@@ -199,6 +201,8 @@ namespace MiniDb
       _simulationTimeSeconds = 0.0f;
       _timeUntilNextStationSeconds = StationSpawnIntervalSeconds;
       _passengerSpawnAccumulator = 0.0f;
+      _passengerSpawnPressureMultiplier = 1.0f;
+      _economy.Clear();
    }
 
    void World::ConfigureNewGame(RandomPool randomPool, RandomOrder randomOrder, EventsEnabled eventsEnabled)
@@ -310,7 +314,7 @@ namespace MiniDb
       }
 
       uint32_t spawned = 0;
-      uint32_t targetCount = InitialStationCount;
+      uint32_t targetCount = GetInitialStationSpawnCount();
       const uint32_t stationCap = GetStationCap();
       if (targetCount > stationCap)
       {
@@ -331,8 +335,28 @@ namespace MiniDb
          ++spawned;
       }
 
-      _timeUntilNextStationSeconds = StationSpawnIntervalSeconds;
+      _timeUntilNextStationSeconds = GetStationSpawnIntervalSeconds();
       return Result::Ok;
+   }
+
+   float World::GetStationSpawnIntervalSeconds(void) const
+   {
+      if (_economy.IsEconomicMode())
+      {
+         return EconomicStationSpawnIntervalSeconds;
+      }
+
+      return StationSpawnIntervalSeconds;
+   }
+
+   uint32_t World::GetInitialStationSpawnCount(void) const
+   {
+      if (_economy.IsEconomicMode())
+      {
+         return EconomicInitialStationCount;
+      }
+
+      return InitialStationCount;
    }
 
    Result World::SpawnNextStation(void)
@@ -364,6 +388,7 @@ namespace MiniDb
       {
          RebuildGravityWeightMatrix();
       }
+      ApplyPassengerSpawnPressureBump();
       return Result::Ok;
    }
 
@@ -382,6 +407,161 @@ namespace MiniDb
       _trainCapacity = capacity;
    }
 
+   void World::ConfigureEconomy(uint32_t trainCapacity, GameMode gameMode, NeverLose neverLose)
+   {
+      _economy.ResetForNewGame(trainCapacity, gameMode, neverLose);
+      _timeUntilNextStationSeconds = GetStationSpawnIntervalSeconds();
+   }
+
+   void World::SetPlaySessionLog(PlaySessionLog* pPlaySessionLog)
+   {
+      _pPlaySessionLog = pPlaySessionLog;
+   }
+
+   BankruptcyTickResult World::TickBankruptcy(float realDeltaSeconds, bool pause)
+   {
+      return _economy.TickBankruptcyTimer(realDeltaSeconds, pause);
+   }
+
+   const Economy& World::GetEconomy(void) const
+   {
+      return _economy;
+   }
+
+   Economy& World::GetEconomy(void)
+   {
+      return _economy;
+   }
+
+   GameMode World::GetGameMode(void) const
+   {
+      return _economy.GetGameMode();
+   }
+
+   int64_t World::GetBalance(void) const
+   {
+      return _economy.GetBalance();
+   }
+
+   uint32_t World::GetStationWaitingCapacity(StationId stationId) const
+   {
+      const StationRecord* pStation = _network.FindStation(stationId);
+      if (pStation == nullptr)
+      {
+         return 1;
+      }
+
+      uint32_t capacity = pStation->population / StationWaitingCapacityPopulationFactor;
+      if (capacity < 1)
+      {
+         capacity = 1;
+      }
+
+      return capacity;
+   }
+
+   float World::GetPassengerSpawnPressureMultiplier(void) const
+   {
+      return _passengerSpawnPressureMultiplier;
+   }
+
+   void World::ApplyPassengerSpawnPressureBump(void)
+   {
+      _passengerSpawnPressureMultiplier *= PassengerSpawnPressurePerUnlock;
+   }
+
+   Result World::TryPayForTrackSegments(
+      const TrackSegmentRecordList& candidateSegments,
+      TrackSegmentRecordList& newSegments)
+   {
+      if (!_economy.IsEconomicMode())
+      {
+         newSegments.clear();
+         return Result::Ok;
+      }
+
+      const float newTrackKm = _economy.CollectNewSegmentKilometers(candidateSegments, newSegments);
+      const int64_t buildCost = _economy.TrackBuildCost(newTrackKm);
+      if (!_economy.TryDebit(buildCost))
+      {
+         if (_pPlaySessionLog != nullptr)
+         {
+            _pPlaySessionLog->LogPurchaseBlocked("track_build", buildCost, _economy.GetBalance());
+         }
+         return Result::InsufficientFunds;
+      }
+
+      _economy.RegisterBuiltSegments(newSegments);
+      if (_pPlaySessionLog != nullptr)
+      {
+         const float totalUniqueKm = TotalUniqueTrackKilometers(_network) + newTrackKm;
+         _pPlaySessionLog->LogTrackBuild(
+            newTrackKm,
+            buildCost,
+            _economy.GetBalance(),
+            totalUniqueKm);
+      }
+
+      return Result::Ok;
+   }
+
+   Result World::TryPayForTrainPurchase(void)
+   {
+      if (!_economy.IsEconomicMode())
+      {
+         return Result::Ok;
+      }
+
+      const int64_t purchaseCost = _economy.TrainPurchaseCostScaled();
+      if (!_economy.TryDebit(purchaseCost))
+      {
+         if (_pPlaySessionLog != nullptr)
+         {
+            _pPlaySessionLog->LogPurchaseBlocked("train_purchase", purchaseCost, _economy.GetBalance());
+         }
+         return Result::InsufficientFunds;
+      }
+
+      return Result::Ok;
+   }
+
+   void World::TickEconomy(float simDeltaSeconds)
+   {
+      if (!_economy.IsEconomicMode())
+      {
+         return;
+      }
+
+      const float uniqueTrackKm = TotalUniqueTrackKilometers(_network);
+      const auto trainCount = static_cast<uint32_t>(_trains.size());
+      _economy.TickMaintenance(simDeltaSeconds, uniqueTrackKm, trainCount);
+   }
+
+   void World::ApplyCrowdingDwellPenalty(Train& train, StationId stationId)
+   {
+      if (!_economy.IsEconomicMode())
+      {
+         return;
+      }
+
+      const uint32_t waitingCount = GetWaitingCountAt(stationId);
+      const uint32_t waitingCapacity = GetStationWaitingCapacity(stationId);
+      if (waitingCount < waitingCapacity)
+      {
+         return;
+      }
+
+      train.dwellRemainingSeconds += StationCrowdingDwellSeconds;
+      if (_pPlaySessionLog != nullptr)
+      {
+         _pPlaySessionLog->LogCrowdingDwell(
+            stationId,
+            waitingCount,
+            waitingCapacity,
+            StationCrowdingDwellSeconds);
+      }
+   }
+
    void World::Tick(float deltaSeconds)
    {
       float clampedDelta = deltaSeconds;
@@ -395,19 +575,66 @@ namespace MiniDb
       MaybeSpawnPassengers(clampedDelta);
       MaybeUpdateEvents(clampedDelta);
       UpdateTrains(clampedDelta);
+      TickEconomy(clampedDelta);
    }
 
    Result World::AddLine(const StationIdList& stationIds, LineId& lineId)
    {
+      TrackSegmentRecordList candidateSegments;
+      CollectSegmentsForLineDefinition(_network, stationIds, candidateSegments);
+
+      TrackSegmentRecordList previewNewSegments;
+      int64_t buildCost = 0;
+      if (_economy.IsEconomicMode())
+      {
+         const float newTrackKm =
+            _economy.CollectNewSegmentKilometers(candidateSegments, previewNewSegments);
+         buildCost = _economy.TrackBuildCost(newTrackKm);
+         const int64_t trainCost = _economy.TrainPurchaseCostScaled();
+         const int64_t totalCost = buildCost + trainCost;
+         if (_economy.GetBalance() < totalCost)
+         {
+            if (_pPlaySessionLog != nullptr)
+            {
+               _pPlaySessionLog->LogPurchaseBlocked("line_build", totalCost, _economy.GetBalance());
+            }
+            return Result::InsufficientFunds;
+         }
+      }
+
+      TrackSegmentRecordList newSegments;
+      const Result paymentResult = TryPayForTrackSegments(candidateSegments, newSegments);
+      if (IsErr(paymentResult))
+      {
+         return paymentResult;
+      }
+
       const uint32_t colorIndex = _network.GetCreatedLineCount() % LineColorCount;
       const Result result = _network.AddLine(stationIds, colorIndex, lineId);
       if (IsErr(result))
       {
+         if (_economy.IsEconomicMode() && buildCost > 0)
+         {
+            _economy.Credit(buildCost);
+            _economy.UnregisterBuiltSegments(newSegments);
+         }
          return result;
       }
 
       NoteTopologyChanged();
-      return AddTrainToLine(lineId);
+      const Result trainResult = AddTrainToLine(lineId);
+      if (IsErr(trainResult))
+      {
+         RemoveLine(lineId);
+         if (_economy.IsEconomicMode() && buildCost > 0)
+         {
+            _economy.Credit(buildCost);
+            _economy.UnregisterBuiltSegments(newSegments);
+         }
+         return trainResult;
+      }
+
+      return Result::Ok;
    }
 
    Result World::ExtendLine(LineId lineId, StationId stationId)
@@ -417,6 +644,64 @@ namespace MiniDb
 
    Result World::ExtendLineAt(LineId lineId, LineEnd end, StationId stationId)
    {
+      const Line* pLine = _network.FindLine(lineId);
+      if (pLine == nullptr)
+      {
+         return Result::InvalidArgument;
+      }
+
+      TrackSegmentRecordList candidateSegments;
+      if (pLine->loop == LineLoop::No)
+      {
+         TrackSegmentRecord record;
+         const StationRecord* pNewStation = _network.FindStation(stationId);
+         if (pNewStation == nullptr)
+         {
+            return Result::StationNotFound;
+         }
+
+         if (end == LineEnd::Back)
+         {
+            if (pLine->stationIds.empty())
+            {
+               return Result::LineTooShort;
+            }
+            const StationId fromId = pLine->stationIds.back();
+            const StationRecord* pFrom = _network.FindStation(fromId);
+            if (pFrom == nullptr)
+            {
+               return Result::StationNotFound;
+            }
+            record.stationA = fromId;
+            record.stationB = stationId;
+            record.distanceKm = DistanceKm(pFrom->position, pNewStation->position);
+         }
+         else
+         {
+            if (pLine->stationIds.empty())
+            {
+               return Result::LineTooShort;
+            }
+            const StationId toId = pLine->stationIds.front();
+            const StationRecord* pTo = _network.FindStation(toId);
+            if (pTo == nullptr)
+            {
+               return Result::StationNotFound;
+            }
+            record.stationA = stationId;
+            record.stationB = toId;
+            record.distanceKm = DistanceKm(pNewStation->position, pTo->position);
+         }
+         candidateSegments.push_back(record);
+      }
+
+      TrackSegmentRecordList newSegments;
+      const Result paymentResult = TryPayForTrackSegments(candidateSegments, newSegments);
+      if (IsErr(paymentResult))
+      {
+         return paymentResult;
+      }
+
       const Result result = _network.ExtendLineAt(lineId, end, stationId);
       if (IsErr(result))
       {
@@ -947,6 +1232,48 @@ namespace MiniDb
 
    Result World::InsertStationOnLine(LineId lineId, uint32_t segmentIndex, StationId stationId)
    {
+      const Line* pLine = _network.FindLine(lineId);
+      if (pLine == nullptr)
+      {
+         return Result::InvalidArgument;
+      }
+
+      StationId fromId = InvalidStationId;
+      StationId toId = InvalidStationId;
+      const Result endpointResult = LineSegmentEndpoints(*pLine, segmentIndex, fromId, toId);
+      if (IsErr(endpointResult))
+      {
+         return endpointResult;
+      }
+
+      const StationRecord* pInserted = _network.FindStation(stationId);
+      const StationRecord* pFrom = _network.FindStation(fromId);
+      const StationRecord* pTo = _network.FindStation(toId);
+      if (pInserted == nullptr || pFrom == nullptr || pTo == nullptr)
+      {
+         return Result::StationNotFound;
+      }
+
+      TrackSegmentRecordList candidateSegments;
+      TrackSegmentRecord firstSegment;
+      firstSegment.stationA = fromId;
+      firstSegment.stationB = stationId;
+      firstSegment.distanceKm = DistanceKm(pFrom->position, pInserted->position);
+      candidateSegments.push_back(firstSegment);
+
+      TrackSegmentRecord secondSegment;
+      secondSegment.stationA = stationId;
+      secondSegment.stationB = toId;
+      secondSegment.distanceKm = DistanceKm(pInserted->position, pTo->position);
+      candidateSegments.push_back(secondSegment);
+
+      TrackSegmentRecordList newSegments;
+      const Result paymentResult = TryPayForTrackSegments(candidateSegments, newSegments);
+      if (IsErr(paymentResult))
+      {
+         return paymentResult;
+      }
+
       const Result result = _network.InsertStationOnLine(lineId, segmentIndex, stationId);
       if (IsErr(result))
       {
@@ -970,6 +1297,12 @@ namespace MiniDb
          return Result::LineTooShort;
       }
 
+      const Result paymentResult = TryPayForTrainPurchase();
+      if (IsErr(paymentResult))
+      {
+         return paymentResult;
+      }
+
       Train train;
       train.id = _nextTrainId;
       ++_nextTrainId;
@@ -983,6 +1316,14 @@ namespace MiniDb
       IncrementTrainCount(lineId);
       NoteWaitChanged();
       AlightAndBoard(_trains.back());
+      if (_pPlaySessionLog != nullptr && _economy.IsEconomicMode())
+      {
+         _pPlaySessionLog->LogTrainPurchase(
+            lineId,
+            _economy.TrainPurchaseCostScaled(),
+            _economy.GetBalance(),
+            static_cast<uint32_t>(_trains.size()));
+      }
       return Result::Ok;
    }
 
@@ -1002,6 +1343,12 @@ namespace MiniDb
       if (hit.lineId == InvalidLineId)
       {
          return Result::Error;
+      }
+
+      const Result paymentResult = TryPayForTrainPurchase();
+      if (IsErr(paymentResult))
+      {
+         return paymentResult;
       }
 
       Train train;
@@ -1025,6 +1372,14 @@ namespace MiniDb
       if (_trains.back().motion == TrainMotion::Dwelling)
       {
          AlightAndBoard(_trains.back());
+      }
+      if (_pPlaySessionLog != nullptr && _economy.IsEconomicMode())
+      {
+         _pPlaySessionLog->LogTrainPurchase(
+            lineId,
+            _economy.TrainPurchaseCostScaled(),
+            _economy.GetBalance(),
+            static_cast<uint32_t>(_trains.size()));
       }
       return Result::Ok;
    }
@@ -1524,6 +1879,12 @@ namespace MiniDb
       const auto activeStationCount = static_cast<uint32_t>(_network.GetStations().size());
       if (activeStationCount >= GetStationCap())
       {
+         _timeUntilNextStationSeconds -= deltaSeconds;
+         while (_timeUntilNextStationSeconds <= 0.0f)
+         {
+            ApplyPassengerSpawnPressureBump();
+            _timeUntilNextStationSeconds += GetStationSpawnIntervalSeconds();
+         }
          return;
       }
 
@@ -1540,7 +1901,7 @@ namespace MiniDb
          {
             break;
          }
-         _timeUntilNextStationSeconds += StationSpawnIntervalSeconds;
+         _timeUntilNextStationSeconds += GetStationSpawnIntervalSeconds();
       }
    }
 
@@ -1555,7 +1916,9 @@ namespace MiniDb
          return;
       }
 
-      _passengerSpawnAccumulator += PassengerSpawnPerSecondForCapacity(_trainCapacity) * deltaSeconds;
+      const float spawnPerSecond =
+         PassengerSpawnPerSecondForCapacity(_trainCapacity) * _passengerSpawnPressureMultiplier;
+      _passengerSpawnAccumulator += spawnPerSecond * deltaSeconds;
       while (_passengerSpawnAccumulator >= 1.0f)
       {
          _passengerSpawnAccumulator -= 1.0f;
@@ -1650,6 +2013,8 @@ namespace MiniDb
       {
          return;
       }
+
+      ApplyCrowdingDwellPenalty(train, stationId);
 
       const PassengerIdList onboardCopy = train.passengerIds;
       for (PassengerId passengerId : onboardCopy)
@@ -1774,6 +2139,27 @@ namespace MiniDb
 
    void World::CompletePassenger(Passenger& passenger, Train& train)
    {
+      if (_economy.IsEconomicMode())
+      {
+         const StationRecord* pOrigin = _network.FindStation(passenger.originId);
+         const StationRecord* pDestination = _network.FindStation(passenger.destinationId);
+         if (pOrigin != nullptr && pDestination != nullptr)
+         {
+            const float beelineKm = DistanceKm(pOrigin->position, pDestination->position);
+            const int64_t fareAmount = _economy.FareForTrip(beelineKm);
+            _economy.CreditFare(fareAmount);
+            if (_pPlaySessionLog != nullptr)
+            {
+               _pPlaySessionLog->LogFare(
+                  passenger.originId,
+                  passenger.destinationId,
+                  beelineKm,
+                  fareAmount,
+                  _economy.GetBalance());
+            }
+         }
+      }
+
       const PassengerId passengerId = passenger.id;
       RemovePassengerIdFromList(train.passengerIds, passengerId);
       RemovePassengerById(passengerId);

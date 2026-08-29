@@ -12,6 +12,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "core/constants.h"
+#include "simulation/economy.h"
 #include "simulation/world.h"
 
 namespace MiniDb
@@ -155,6 +156,16 @@ namespace MiniDb
       EventsEnabled GetEventsEnabled(void) const;
 
       /*!
+       *\brief Economic or sandbox mode for the next new game.
+       */
+      GameMode GetGameMode(void) const;
+
+      /*!
+       *\brief Whether bankruptcy game over is disabled in economic mode.
+       */
+      NeverLose GetNeverLoseSetting(void) const;
+
+      /*!
        *\brief Returns to the root menu page.
        */
       void ShowRootPage(void);
@@ -175,6 +186,8 @@ namespace MiniDb
          sf::FloatRect value;
          sf::FloatRect trainCapacityValue;
          sf::FloatRect gameSpeed;
+         sf::FloatRect sandbox;
+         sf::FloatRect neverLose;
          sf::FloatRect randomPool;
          sf::FloatRect randomOrder;
          sf::FloatRect events;
@@ -222,6 +235,8 @@ namespace MiniDb
       RandomPool _randomPool = RandomPool::No;
       RandomOrder _randomOrder = RandomOrder::No;
       EventsEnabled _eventsEnabled = EventsEnabled::No;
+      bool _sandboxEnabled = false;
+      NeverLose _neverLose = NeverLose::No;
    };
 } // namespace MiniDb
 

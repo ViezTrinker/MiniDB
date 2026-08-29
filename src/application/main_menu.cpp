@@ -38,7 +38,7 @@ namespace MiniDb
       constexpr float MenuStepSize = 40.0f;
       constexpr float MenuValueWidth = 148.0f;
       constexpr uint32_t MenuNumberFieldMaxDigits = 5;
-      constexpr uint32_t MenuSettingsToggleCount = 3;
+      constexpr uint32_t MenuSettingsToggleCount = 5;
 
       enum class ButtonHover : bool
       {
@@ -283,6 +283,10 @@ namespace MiniDb
          {MenuButtonWidth, MenuButtonHeight});
 
       float toggleTop = panelTop + MenuToggleFirstTop;
+      bounds.sandbox = sf::FloatRect({buttonLeft, toggleTop}, {MenuButtonWidth, MenuButtonHeight});
+      toggleTop += MenuButtonHeight + MenuToggleGap;
+      bounds.neverLose = sf::FloatRect({buttonLeft, toggleTop}, {MenuButtonWidth, MenuButtonHeight});
+      toggleTop += MenuButtonHeight + MenuToggleGap;
       bounds.randomPool = sf::FloatRect({buttonLeft, toggleTop}, {MenuButtonWidth, MenuButtonHeight});
       toggleTop += MenuButtonHeight + MenuToggleGap;
       bounds.randomOrder = sf::FloatRect({buttonLeft, toggleTop}, {MenuButtonWidth, MenuButtonHeight});
@@ -519,6 +523,21 @@ namespace MiniDb
       return _eventsEnabled;
    }
 
+   GameMode MainMenu::GetGameMode(void) const
+   {
+      if (_sandboxEnabled)
+      {
+         return GameMode::Sandbox;
+      }
+
+      return GameMode::Economic;
+   }
+
+   NeverLose MainMenu::GetNeverLoseSetting(void) const
+   {
+      return _neverLose;
+   }
+
    void MainMenu::ShowRootPage(void)
    {
       CancelFocusedNumberEdit();
@@ -692,6 +711,30 @@ namespace MiniDb
       }
       DrawPanelButton(*_pWindow, *_pFont, bounds.gameSpeed, FormatGameSpeedLabel(), speedHover);
 
+      ButtonHover sandboxHover = ButtonHover::No;
+      if (ContainsPixel(bounds.sandbox, cursorPixel))
+      {
+         sandboxHover = ButtonHover::Yes;
+      }
+      DrawPanelButton(
+         *_pWindow,
+         *_pFont,
+         bounds.sandbox,
+         ToggleLabel("Sandbox", _sandboxEnabled),
+         sandboxHover);
+
+      ButtonHover neverLoseHover = ButtonHover::No;
+      if (!_sandboxEnabled && ContainsPixel(bounds.neverLose, cursorPixel))
+      {
+         neverLoseHover = ButtonHover::Yes;
+      }
+      DrawPanelButton(
+         *_pWindow,
+         *_pFont,
+         bounds.neverLose,
+         ToggleLabel("Never lose", _neverLose == NeverLose::Yes),
+         neverLoseHover);
+
       ButtonHover poolHover = ButtonHover::No;
       if (ContainsPixel(bounds.randomPool, cursorPixel))
       {
@@ -794,6 +837,27 @@ namespace MiniDb
       if (ContainsPixel(bounds.gameSpeed, pixel))
       {
          CycleGameSpeed();
+         return MenuAction::None;
+      }
+      if (ContainsPixel(bounds.sandbox, pixel))
+      {
+         _sandboxEnabled = !_sandboxEnabled;
+         if (_sandboxEnabled)
+         {
+            _neverLose = NeverLose::No;
+         }
+         return MenuAction::None;
+      }
+      if (!_sandboxEnabled && ContainsPixel(bounds.neverLose, pixel))
+      {
+         if (_neverLose == NeverLose::Yes)
+         {
+            _neverLose = NeverLose::No;
+         }
+         else
+         {
+            _neverLose = NeverLose::Yes;
+         }
          return MenuAction::None;
       }
       if (ContainsPixel(bounds.randomPool, pixel))

@@ -21,12 +21,15 @@ namespace MiniDb
    inline constexpr uint32_t MinimumCityPopulation = 10000;
    inline constexpr uint32_t MinimumStationCap = 2;
    inline constexpr uint32_t InitialStationCount = 6;
+   inline constexpr uint32_t EconomicInitialStationCount = 3;
    inline constexpr uint32_t DefaultMaxStationCount = 100;
    inline constexpr uint32_t UnlimitedStationCount = 0xFFFFFFFFu;
    inline constexpr float StationSpawnIntervalSeconds = 5.0f;
+   inline constexpr float EconomicStationSpawnIntervalSeconds = 45.0f;
    inline constexpr uint32_t DefaultTrainCapacity = 160;
    inline constexpr uint32_t MinimumTrainCapacity = 1;
    inline constexpr float PassengerSpawnPerSecondAtDefaultCapacity = 7.5f;
+   inline constexpr float PassengerSpawnPressurePerUnlock = 1.01f;
    inline constexpr float TrainSpeedKmPerHour = 12000.0f;
    inline constexpr float SecondsPerHour = 3600.0f;
    inline constexpr float TrainDwellSeconds = 0.5f;
@@ -50,10 +53,10 @@ namespace MiniDb
    inline constexpr float StationRadiusBasePixels = 3.0f;
    inline constexpr float StationRadiusMaxPixels = 5.0f;
    inline constexpr float StationHitRadiusPixels = 12.0f;
-   inline constexpr float LineThicknessPixels = 3.0f;
-   inline constexpr float ParallelLineOffsetPixels = 3.0f;
-   inline constexpr float SelectedLineThicknessPixels = 4.5f;
-   inline constexpr float DraftLineThicknessPixels = 2.5f;
+   inline constexpr float LineThicknessPixels = 5.0f;
+   inline constexpr float ParallelLineOffsetPixels = 6.0f;
+   inline constexpr float SelectedLineThicknessPixels = 7.0f;
+   inline constexpr float DraftLineThicknessPixels = 4.0f;
    inline constexpr float TrainLengthPixels = 14.0f;
    inline constexpr float TrainWidthPixels = 6.0f;
    inline constexpr float TrainOutlinePixels = 1.0f;
@@ -76,7 +79,7 @@ namespace MiniDb
    inline constexpr float TimeScaleFast = 4.0f;
    inline constexpr float TimeScaleVeryFast = 8.0f;
    inline constexpr float TimeScaleUltraFast = 16.0f;
-   inline constexpr float LineDropHitPixels = 16.0f;
+   inline constexpr float LineDropHitPixels = 20.0f;
    inline constexpr float LineDragStartPixels = 8.0f;
    inline constexpr float KeyboardPanSpeedPixelsPerSecond = 480.0f;
    inline constexpr float KeyboardZoomInFactor = 0.9f;
@@ -86,6 +89,32 @@ namespace MiniDb
    inline constexpr float TerminusAnchorDragRadiusPixels = 10.0f;
    inline constexpr float UnconnectedPanelWidthPixels = 280.0f;
    inline constexpr float UnconnectedRowHeightPixels = 22.0f;
+
+   inline constexpr int64_t DefaultStartingBalance = 500000;
+   inline constexpr float TrackBuildCostPerKm = 400.0f;
+   inline constexpr float TrackMaintenanceCostPerKmPerSecond = 0.12f;
+   inline constexpr int64_t TrainPurchaseCost = 35000;
+   inline constexpr float TrainMaintenanceCostPerSecond = 6.0f;
+   inline constexpr float FarePerPassengerKm = 1.20f;
+   inline constexpr uint32_t StationWaitingCapacityPopulationFactor = 800;
+   inline constexpr float StationCrowdingDwellSeconds = 4.0f;
+   inline constexpr float NegativeBalanceGameOverRealSeconds = 300.0f;
+   inline constexpr float BankruptcyHudWarningSeconds = 60.0f;
+   inline constexpr float PlaySessionSnapshotRealSeconds = 10.0f;
+   inline constexpr uint32_t PlaySessionLogFlushLineCount = 50;
+   inline constexpr uint32_t PlaySessionFareSampleInterval = 10;
+   inline constexpr float PlaySessionFullFareLogRealSeconds = 300.0f;
+   inline constexpr float InsufficientFundsToastSeconds = 3.0f;
+
+   /*!
+    *\brief Economy scale for a given train capacity setting.
+    *
+    *\param[in] trainCapacity Passengers per train.
+    */
+   inline float EconomyScaleForCapacity(uint32_t trainCapacity)
+   {
+      return static_cast<float>(trainCapacity) / static_cast<float>(DefaultTrainCapacity);
+   }
 
    /*!
     *\brief Passenger spawn rate for a given train capacity.

@@ -2,7 +2,7 @@
 
 Real-time schematic railway game for Germany. Cities with at least 10,000 inhabitants appear on a Germany silhouette at their real coordinates. You draw lines between stations; trains shuttle in real time and passengers choose destinations with a gravity model (large cities attract more trips than small towns).
 
-This repository is the **core simulation MVP**: map, stations, line drawing, trains, and passengers. Economy, maintenance, and regional vs long-distance services are not included yet.
+This repository is the **core simulation MVP**: map, stations, line drawing, trains, passengers, and an economic layer (track and train costs, fare revenue, bankruptcy). Regional vs long-distance fare classes are not included yet.
 
 Code structure and system behaviour are documented in [doc/](doc/README.md).
 
@@ -23,13 +23,30 @@ ctest --test-dir build -C Release --output-on-failure
 
 The game executable is `build/bin/Release/MiniDB.exe` on Windows (or `build/bin/MiniDB` on single-config generators). `data/` is copied next to the executable.
 
-The game opens on a start menu. Open **Settings** to choose the station cap (default 100), train capacity (default 160; passenger spawn scales with it), starting game speed, optional random city pool, random spawn order, and destination events. Click number fields to type values. Settings apply when you press **Start**. Escape during play returns to the menu; Resume continues the current game.
+The game opens on a start menu. Open **Settings** to choose the station cap (default 100), train capacity (default 160; passenger spawn scales with it), starting game speed, **Sandbox** (free play; off by default), **Never lose** (economic mode only; disables bankruptcy game over), optional random city pool, random spawn order, and destination events. Click number fields to type values. Settings apply when you press **Start**. Escape during play returns to the menu; Resume continues the current game.
+
+## Economy (default mode)
+
+Money matters unless **Sandbox** is on in Settings:
+
+- Starting balance scales with train capacity (€500,000 at capacity 160).
+- New track is charged per unique station pair (shared segments are free after the first build).
+- New cities unlock every **45 simulation seconds** in economic mode (every 5 s in sandbox).
+- Passenger spawn rate rises by **1%** on each city unlock, and keeps rising on that same interval after the station cap.
+- New lines require enough cash for **new track plus the first train**.
+- Trains cost money to buy and maintain each simulation second.
+- Passengers pay fare by origin–destination beeline distance (transfers ignored).
+- Crowded platforms add extra dwell in economic mode (`population / 800`, minimum 1 waiting slot).
+- Purchases are blocked when you cannot afford them; maintenance and fares still run while negative.
+- Stay in the red for **5 minutes of real time** (pause freezes the timer) to lose, unless **Never lose** is enabled.
+
+Play sessions in economic mode write JSONL logs to `logs/play_YYYYMMDD_HHMMSS.jsonl` next to the executable for balance tuning.
 
 ## Controls
 
-- Left-click a station to draft a line; the right panel shows that station while it is selected
+- Left-click a station to draft a line; the right panel shows waiting count vs capacity for that station
 - Click a train to inspect onboard passengers, destinations and transfers in that panel
-- Click a line to inspect its trains, occupancy, and destinations by passenger count
+- Click a line (preferred over nearby stations when not drafting) to inspect its trains, occupancy, and destinations by passenger count
 - Click the first station of a draft again to close a loop (`A, B, C, A`)
 - Click empty map to return to the overview panel (top waiting destinations, busiest stations, and active events)
 - Enter or right-click to finish a line (one train is added automatically)

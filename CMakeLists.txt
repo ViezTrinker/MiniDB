@@ -57,6 +57,9 @@ set(MINIDB_CORE_HEADERS
    src/simulation/passenger.h
    src/simulation/pathfinder.h
    src/simulation/train.h
+   src/simulation/economy.h
+   src/simulation/play_session_log.h
+   src/simulation/track_inventory.h
    src/simulation/world.h
 )
 
@@ -64,10 +67,13 @@ set(MINIDB_CORE_SOURCES
    src/data/station_catalog.cpp
    src/geo/geojson_outline.cpp
    src/geo/projection.cpp
+   src/simulation/economy.cpp
    src/simulation/gravity_model.cpp
    src/simulation/network.cpp
    src/simulation/passenger.cpp
    src/simulation/pathfinder.cpp
+   src/simulation/play_session_log.cpp
+   src/simulation/track_inventory.cpp
    src/simulation/train.cpp
    src/simulation/world.cpp
 )
@@ -107,11 +113,13 @@ if(WIN32)
 endif()
 
 set(MINIDB_TEST_SOURCES
+   tests/economy_test.cpp
    tests/geojson_outline_test.cpp
    tests/gravity_model_test.cpp
    tests/line_editor_test.cpp
    tests/network_test.cpp
    tests/pathfinder_test.cpp
+   tests/play_session_log_test.cpp
    tests/projection_test.cpp
    tests/station_catalog_test.cpp
    tests/train_test.cpp

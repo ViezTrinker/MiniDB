@@ -13,13 +13,16 @@
 #include "core/constants.h"
 #include "core/result.h"
 #include "core/types.h"
+#include "simulation/economy.h"
 #include "simulation/network.h"
 #include "simulation/passenger.h"
 #include "simulation/pathfinder.h"
+#include "simulation/track_inventory.h"
 #include "simulation/train.h"
 
 namespace MiniDb
 {
+   class PlaySessionLog;
    enum class PassengerAutoSpawn : bool
    {
       No = false,
@@ -127,6 +130,47 @@ namespace MiniDb
        *\param[in] capacity Maximum passengers per train.
        */
       void SetTrainCapacity(uint32_t capacity);
+
+      /*!
+       *\brief Configures economic mode for the next run.
+       *
+       *\param[in] trainCapacity Train capacity used for economy scaling.
+       *\param[in] gameMode Whether money applies.
+       *\param[in] neverLose Whether bankruptcy game over is disabled.
+       */
+      void ConfigureEconomy(uint32_t trainCapacity, GameMode gameMode, NeverLose neverLose);
+
+      /*!
+       *\brief Attaches a play session logger for economic mode.
+       *
+       *\param[in] pPlaySessionLog Logger owned by the application layer.
+       */
+      void SetPlaySessionLog(PlaySessionLog* pPlaySessionLog);
+
+      /*!
+       *\brief Advances bankruptcy timer using wall-clock seconds.
+       *
+       *\param[in] realDeltaSeconds Unscaled elapsed seconds.
+       *\param[in] pause Whether simulation pause is active.
+       */
+      BankruptcyTickResult TickBankruptcy(float realDeltaSeconds, bool pause);
+
+      const Economy& GetEconomy(void) const;
+      Economy& GetEconomy(void);
+      GameMode GetGameMode(void) const;
+      int64_t GetBalance(void) const;
+
+      /*!
+       *\brief Returns waiting-passenger soft capacity for a station.
+       *
+       *\param[in] stationId Station to query.
+       */
+      uint32_t GetStationWaitingCapacity(StationId stationId) const;
+
+      /*!
+       *\brief Returns the cumulative passenger-spawn pressure multiplier.
+       */
+      float GetPassengerSpawnPressureMultiplier(void) const;
 
       /*!
        *\brief Advances the simulation.
@@ -394,6 +438,7 @@ namespace MiniDb
       LineSegmentHit FindNearestSegmentOnLineInternal(const Line& line, MapPoint point) const;
       void MaybeSpawnStations(float deltaSeconds);
       void MaybeSpawnPassengers(float deltaSeconds);
+      void ApplyPassengerSpawnPressureBump(void);
       void MaybeUpdateEvents(float deltaSeconds);
       void ExpireFinishedEvents(void);
       void RefreshEventTargets(void);
@@ -428,6 +473,14 @@ namespace MiniDb
       void DecrementTrainCount(LineId lineId);
       void EnsureTrainCountCapacity(LineId lineId);
       void TryBoardDwellingTrainsAt(StationId stationId);
+      Result TryPayForTrackSegments(
+         const TrackSegmentRecordList& candidateSegments,
+         TrackSegmentRecordList& newSegments);
+      Result TryPayForTrainPurchase(void);
+      void TickEconomy(float simDeltaSeconds);
+      void ApplyCrowdingDwellPenalty(Train& train, StationId stationId);
+      float GetStationSpawnIntervalSeconds(void) const;
+      uint32_t GetInitialStationSpawnCount(void) const;
 
       StationRecordList _catalog;
       StationRecordList _spawnQueue;
@@ -456,7 +509,10 @@ namespace MiniDb
       float _simulationTimeSeconds = 0.0f;
       float _timeUntilNextStationSeconds = 0.0f;
       float _passengerSpawnAccumulator = 0.0f;
+      float _passengerSpawnPressureMultiplier = 1.0f;
       PassengerAutoSpawn _passengerAutoSpawn = PassengerAutoSpawn::Yes;
+      Economy _economy;
+      PlaySessionLog* _pPlaySessionLog = nullptr;
       std::mt19937 _generator;
       std::uniform_real_distribution<float> _unitDistribution;
    };

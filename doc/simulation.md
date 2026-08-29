@@ -7,12 +7,34 @@ All of this lives under `src/simulation/` and is owned by `World` (`world.h` / `
 `World::Tick(deltaSeconds)`:
 
 1. Advances `_simulationTimeSeconds`.
-2. Maybe spawns the next city from the spawn queue (`StationSpawnIntervalSeconds`, default 5 s), until the station cap or queue end.
-3. Maybe spawns passengers (`PassengerSpawnPerSecondForCapacity`, e.g. 7.5 / s at capacity 160) if auto-spawn is on.
+2. Maybe spawns the next city from the spawn queue. Sandbox unlocks every `StationSpawnIntervalSeconds` (5 s). **Economic mode** unlocks every `EconomicStationSpawnIntervalSeconds` (45 s) so the map does not outrun early construction. Each unlock multiplies passenger spawn rate by `PassengerSpawnPressurePerUnlock` (1.01). After the station cap is reached, the same interval still applies that multiplier so late game keeps getting harder.
+3. Maybe spawns passengers (`PassengerSpawnPerSecondForCapacity` times the pressure multiplier, e.g. 7.5 / s at capacity 160 with multiplier 1.0) if auto-spawn is on.
 4. Maybe updates destination events when enabled.
 5. Moves every train and runs alight/board at stations.
+6. In economic mode, debits track and train maintenance (`TickEconomy`).
 
-`ResetSimulation` clears lines, trains, passengers, spawn queue, and events but keeps the loaded catalog.
+`ResetSimulation` clears lines, trains, passengers, spawn queue, events, and economy state but keeps the loaded catalog.
+
+## Economy
+
+`Economy` (`economy.h`) tracks balance, built track pairs, and bankruptcy. `GameMode` is `Economic` (default) or `Sandbox`. Costs and fares scale with train capacity via `EconomyScaleForCapacity`.
+
+| Constant (capacity 160) | Value |
+| --- | --- |
+| Starting balance | €500,000 |
+| Track build | €400 / km (unique pairs only) |
+| Track maintenance | €0.12 / km / sim-s |
+| Train purchase | €35,000 |
+| Train maintenance | €6 / train / sim-s |
+| Fare | €1.20 / passenger-km (O–D beeline) |
+| Crowding dwell | +4 s when waiting ≥ `population / 800` |
+| Bankruptcy | 300 s real time continuously negative |
+
+`TryPayForTrackSegments` charges only pairs not yet in `_builtPairKeys`. Creating a **new line** also requires funds for the automatic first train; if either cost cannot be paid, nothing is built. `InsufficientFunds` blocks the network mutation. Maintenance still runs while negative; purchases stay blocked until affordable.
+
+Bankruptcy uses wall-clock seconds from `Game::Update` (not simulation time scale). Pause freezes the timer. **Never lose** disables game over while keeping costs.
+
+`PlaySessionLog` writes JSONL session headers, build/purchase/fare events, and snapshots every 10 real seconds during economic play.
 
 ## Stations and catalog
 
@@ -24,7 +46,7 @@ The catalog is the full JSON list, sorted by population. At **Start**, `Configur
 
 Then:
 
-- First `InitialStationCount` (6) cities appear on Start (or fewer if the cap is lower).
+- First wave on Start: `InitialStationCount` (6) in sandbox, `EconomicInitialStationCount` (3) in economic mode (or fewer if the cap is lower).
 - Further cities appear over time until `GetStationCap()` (`min(maxStationCount, catalog size)`).
 - `UnlimitedStationCount` means “all catalog cities”.
 
@@ -48,7 +70,7 @@ A line is an ordered station list plus a color index and `LineLoop` (`Yes` / `No
 
 `AddLine` / `ExtendLine` / `InsertStationOnLine` / `RemoveLine` rebuild the graph and bump `Network::GetRevision()`. `World` keeps `_topologyRevision` for network edits and `_waitRevision` for train-count changes so passengers repath lazily when waits change.
 
-`World::AddLine` assigns the next palette color and places one train at the start of the line.
+`World::AddLine` assigns the next palette color and places one train at the start of the line. In economic mode it pre-checks track plus train cost so a failed train purchase cannot leave a trainless line.
 
 ## Trains
 
@@ -104,6 +126,8 @@ On dwell or arrival, `AlightAndBoard`:
 3. They board any train whose next station is their next hop. Shared segments (a shuttle and a loop that both go Berlin→Hamburg) are interchangeable; they do not wait for a specific line id.
 4. If several people want that hop, the earliest `platformArrivalTimeSeconds` boards first; `id` breaks ties. This is a per-platform queue, not global spawn order.
 5. Boarding stops at capacity. The rest wait for the next matching train.
+
+In economic mode, when waiting passengers at a station are at or above `population / 800` (minimum 1), arriving trains add `StationCrowdingDwellSeconds` (4 s) to dwell.
 
 Passengers do not pick a train id. They take the first train going to the next hop that still has space.
 

@@ -12,6 +12,7 @@ namespace MiniDb
 {
    enum class Result : int8_t
    {
+      InsufficientFunds = -9,
       StationNotFound = -8,
       LineTooShort = -7,
       DuplicateStation = -6,

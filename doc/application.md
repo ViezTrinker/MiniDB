@@ -19,7 +19,7 @@ Escape during play: cancel line or anchor drag, then cancel a draft, otherwise r
 
 `MainMenu` draws a panel over a map backdrop.
 
-- **Start** resets the simulation, applies Settings (station cap, train capacity, game speed, random pool, random order, events), builds the spawn queue, and spawns the first cities.
+- **Start** resets the simulation, applies Settings (station cap, train capacity, game speed, sandbox, never lose, random pool, random order, events), configures economy, builds the spawn queue, and spawns the first cities. Sandbox sets unlimited station cap.
 - **Resume** is shown only when `HasActiveGame` is `Yes`. It continues the current world without re-applying Settings.
 - **Settings** opens a second page:
   - Station cap: click the number to type digits. Default is `DefaultMaxStationCount` (100). Clamped between `MinimumStationCap` (2) and catalog size. If the cap is below `InitialStationCount`, the first wave is only that many cities.
@@ -28,7 +28,11 @@ Escape during play: cancel line or anchor drag, then cancel a draft, otherwise r
   - **Random pool**: sample `cap` cities uniformly from the catalog instead of the largest ones.
   - **Random order**: shuffle spawn order of the chosen pool.
   - **Events**: timed destination boosts during play.
+  - **Sandbox**: no money, no station cap, no platform crowding penalty, no play log.
+  - **Never lose**: economic costs and revenue still apply, but sustained negative balance does not trigger game over (hidden when Sandbox is on).
 - All Settings values apply only on **Start**.
+
+Economic play sessions append JSONL lines under `logs/` next to the executable (`play_YYYYMMDD_HHMMSS.jsonl`). Sandbox skips detailed logging.
 
 ## Line editor
 
@@ -44,15 +48,15 @@ Drafting:
 
 Terminus extension is handled in `Game` via draggable anchors on the selected line, not through `LineEditor`.
 
-`World::AddLine` / `ExtendLineAt` / `InsertStationOnLine` do the mutation. The last confirmed or selected line stays selected.
+`World::AddLine` / `ExtendLineAt` / `InsertStationOnLine` do the mutation. In economic mode, `AddLine` requires funds for new track **and** the automatic first train before anything is created. The last confirmed or selected line stays selected.
 
 ## Input wiring in Game
 
 | Action | Handling |
 | --- | --- |
-| Left-click station | Inspect it; `LineEditor::OnStationClicked` |
+| Left-click line (when not drafting; preferred over nearby stations) | Select the line; inspect trains, occupancy, and destinations |
+| Left-click station (no nearby line, or while drafting) | Inspect it; `LineEditor::OnStationClicked` |
 | Left-click train | Inspect it; select its line |
-| Left-click line (no drag) | Select the line; inspect trains, occupancy, and destinations |
 | Drag terminus anchor onto a station | `ExtendLineAt` at the front or back of the selected line |
 | Drag line onto a station | `InsertStationOnLine` on that segment |
 | Drag train token onto a line | `AddTrainToLineAt` at the cursor |

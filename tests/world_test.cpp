@@ -6,6 +6,8 @@
 #include <gtest/gtest.h>
 
 #include "core/constants.h"
+#include "core/types.h"
+#include "simulation/economy.h"
 #include "simulation/train.h"
 #include "simulation/world.h"
 
@@ -1170,4 +1172,257 @@ TEST(WorldTest, EventsBoostDestinationAndExpire)
    {
       EXPECT_NE(event.stationId, eventStationId);
    }
+}
+
+TEST(WorldTest, EconomicModeSpawnsFewerInitialStationsAndUnlocksSlower)
+{
+   MiniDb::World world(7);
+   world.SetPassengerAutoSpawn(MiniDb::PassengerAutoSpawn::No);
+   ASSERT_TRUE(MiniDb::IsOk(world.LoadCatalogFromString(CatalogJson)));
+   world.ConfigureEconomy(MiniDb::DefaultTrainCapacity, MiniDb::GameMode::Economic, MiniDb::NeverLose::No);
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnInitialStations()));
+   EXPECT_EQ(world.GetNetwork().GetStations().size(), MiniDb::EconomicInitialStationCount);
+
+   world.Tick(MiniDb::StationSpawnIntervalSeconds + 0.1f);
+   EXPECT_EQ(world.GetNetwork().GetStations().size(), MiniDb::EconomicInitialStationCount);
+
+   world.Tick(MiniDb::EconomicStationSpawnIntervalSeconds);
+   EXPECT_EQ(
+      world.GetNetwork().GetStations().size(),
+      MiniDb::EconomicInitialStationCount + 1u);
+}
+
+TEST(WorldTest, TrackBuildCostDedupesSharedPairs)
+{
+   MiniDb::World world(7);
+   world.SetPassengerAutoSpawn(MiniDb::PassengerAutoSpawn::No);
+   ASSERT_TRUE(MiniDb::IsOk(world.LoadCatalogFromString(CatalogJson)));
+   world.ConfigureEconomy(MiniDb::DefaultTrainCapacity, MiniDb::GameMode::Economic, MiniDb::NeverLose::No);
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnInitialStations()));
+   for (uint32_t spawnStep = 0; spawnStep < 3; ++spawnStep)
+   {
+      ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+   }
+
+   const int64_t startBalance = world.GetBalance();
+   MiniDb::StationIdList firstLine;
+   firstLine.push_back(3);
+   firstLine.push_back(4);
+   MiniDb::LineId firstLineId = MiniDb::InvalidLineId;
+   ASSERT_TRUE(MiniDb::IsOk(world.AddLine(firstLine, firstLineId)));
+   const int64_t balanceAfterFirstLine = world.GetBalance();
+
+   MiniDb::StationIdList secondLine;
+   secondLine.push_back(3);
+   secondLine.push_back(4);
+   secondLine.push_back(5);
+   MiniDb::LineId secondLineId = MiniDb::InvalidLineId;
+   ASSERT_TRUE(MiniDb::IsOk(world.AddLine(secondLine, secondLineId)));
+   const int64_t balanceAfterSecondLine = world.GetBalance();
+
+   const int64_t firstLineCost = startBalance - balanceAfterFirstLine;
+   const int64_t secondLineCost = balanceAfterFirstLine - balanceAfterSecondLine;
+   const int64_t trainPurchaseCost = world.GetEconomy().TrainPurchaseCostScaled();
+
+   const MiniDb::StationRecord* pStationThree = world.GetNetwork().FindStation(3);
+   const MiniDb::StationRecord* pStationFour = world.GetNetwork().FindStation(4);
+   const MiniDb::StationRecord* pStationFive = world.GetNetwork().FindStation(5);
+   ASSERT_NE(pStationThree, nullptr);
+   ASSERT_NE(pStationFour, nullptr);
+   ASSERT_NE(pStationFive, nullptr);
+   const float firstSegmentKm = MiniDb::DistanceKm(pStationThree->position, pStationFour->position);
+   const float secondSegmentKm = MiniDb::DistanceKm(pStationFour->position, pStationFive->position);
+   const int64_t expectedFirstCost =
+      world.GetEconomy().TrackBuildCost(firstSegmentKm) + trainPurchaseCost;
+   const int64_t expectedSecondCost =
+      world.GetEconomy().TrackBuildCost(secondSegmentKm) + trainPurchaseCost;
+   EXPECT_EQ(firstLineCost, expectedFirstCost);
+   EXPECT_EQ(secondLineCost, expectedSecondCost);
+   EXPECT_LT(secondLineCost, firstLineCost + secondLineCost);
+}
+
+TEST(WorldTest, PassengerFareUsesBeelineOriginDestination)
+{
+   const char FareCatalogJson[] =
+      "{"
+      "\"stations\":["
+      "{\"id\":0,\"cityName\":\"A\",\"stationName\":\"A\","
+      "\"latitude\":51.0,\"longitude\":10.0,\"population\":100000},"
+      "{\"id\":1,\"cityName\":\"B\",\"stationName\":\"B\","
+      "\"latitude\":51.01,\"longitude\":10.0,\"population\":100000},"
+      "{\"id\":2,\"cityName\":\"C\",\"stationName\":\"C\","
+      "\"latitude\":51.01,\"longitude\":10.05,\"population\":100000}"
+      "]"
+      "}";
+
+   MiniDb::World world(3);
+   world.SetPassengerAutoSpawn(MiniDb::PassengerAutoSpawn::No);
+   ASSERT_TRUE(MiniDb::IsOk(world.LoadCatalogFromString(FareCatalogJson)));
+   world.SetMaxStationCount(3);
+   world.ConfigureEconomy(MiniDb::DefaultTrainCapacity, MiniDb::GameMode::Economic, MiniDb::NeverLose::No);
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnInitialStations()));
+
+   MiniDb::StationIdList routeLine;
+   routeLine.push_back(0);
+   routeLine.push_back(1);
+   routeLine.push_back(2);
+   MiniDb::LineId routeLineId = MiniDb::InvalidLineId;
+   ASSERT_TRUE(MiniDb::IsOk(world.AddLine(routeLine, routeLineId)));
+
+   const MiniDb::StationRecord* pOrigin = world.GetNetwork().FindStation(0);
+   const MiniDb::StationRecord* pMid = world.GetNetwork().FindStation(1);
+   const MiniDb::StationRecord* pDestination = world.GetNetwork().FindStation(2);
+   ASSERT_NE(pOrigin, nullptr);
+   ASSERT_NE(pMid, nullptr);
+   ASSERT_NE(pDestination, nullptr);
+   const float beelineKm = MiniDb::DistanceKm(pOrigin->position, pDestination->position);
+   const float routeKm =
+      MiniDb::DistanceKm(pOrigin->position, pMid->position) +
+      MiniDb::DistanceKm(pMid->position, pDestination->position);
+   ASSERT_GT(routeKm, beelineKm);
+
+   const int64_t expectedFare = world.GetEconomy().FareForTrip(beelineKm);
+   const int64_t routeFare = world.GetEconomy().FareForTrip(routeKm);
+   ASSERT_GT(routeFare, expectedFare);
+
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnPassenger(0, 2)));
+
+   bool arrived = false;
+   for (uint32_t step = 0; step < 2000; ++step)
+   {
+      world.Tick(0.05f);
+      if (world.GetArrivedPassengerCount() >= 1)
+      {
+         arrived = true;
+         break;
+      }
+   }
+
+   ASSERT_TRUE(arrived);
+   EXPECT_EQ(world.GetEconomy().GetLifetimeFareTotal(), expectedFare);
+   EXPECT_NE(world.GetEconomy().GetLifetimeFareTotal(), routeFare);
+}
+
+TEST(WorldTest, InsufficientFundsBlocksAddLine)
+{
+   MiniDb::World world(7);
+   world.SetPassengerAutoSpawn(MiniDb::PassengerAutoSpawn::No);
+   ASSERT_TRUE(MiniDb::IsOk(world.LoadCatalogFromString(CatalogJson)));
+   world.ConfigureEconomy(MiniDb::DefaultTrainCapacity, MiniDb::GameMode::Economic, MiniDb::NeverLose::No);
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnInitialStations()));
+   for (uint32_t spawnStep = 0; spawnStep < 3; ++spawnStep)
+   {
+      ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+   }
+
+   world.GetEconomy().TryDebit(world.GetBalance());
+   const uint32_t lineCountBefore = static_cast<uint32_t>(world.GetNetwork().GetLines().size());
+   MiniDb::StationIdList line;
+   line.push_back(3);
+   line.push_back(4);
+   MiniDb::LineId lineId = MiniDb::InvalidLineId;
+   EXPECT_EQ(world.AddLine(line, lineId), MiniDb::Result::InsufficientFunds);
+   EXPECT_EQ(world.GetNetwork().GetLines().size(), lineCountBefore);
+}
+
+TEST(WorldTest, AddLineRequiresFundsForTrackAndFirstTrain)
+{
+   MiniDb::World world(11);
+   world.SetPassengerAutoSpawn(MiniDb::PassengerAutoSpawn::No);
+   ASSERT_TRUE(MiniDb::IsOk(world.LoadCatalogFromString(CatalogJson)));
+   world.ConfigureEconomy(MiniDb::DefaultTrainCapacity, MiniDb::GameMode::Economic, MiniDb::NeverLose::No);
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnInitialStations()));
+   for (uint32_t spawnStep = 0; spawnStep < 3; ++spawnStep)
+   {
+      ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+   }
+
+   const MiniDb::StationRecord* pStationA = world.GetNetwork().FindStation(3);
+   const MiniDb::StationRecord* pStationB = world.GetNetwork().FindStation(4);
+   ASSERT_NE(pStationA, nullptr);
+   ASSERT_NE(pStationB, nullptr);
+
+   const float trackKm = MiniDb::DistanceKm(pStationA->position, pStationB->position);
+   const int64_t trackCost = world.GetEconomy().TrackBuildCost(trackKm);
+   const int64_t trainCost = world.GetEconomy().TrainPurchaseCostScaled();
+   ASSERT_GT(trackCost, 0);
+   ASSERT_GT(trainCost, 0);
+
+   world.GetEconomy().TryDebit(world.GetBalance());
+   world.GetEconomy().Credit(trackCost);
+
+   MiniDb::StationIdList line;
+   line.push_back(3);
+   line.push_back(4);
+   MiniDb::LineId lineId = MiniDb::InvalidLineId;
+   const uint32_t lineCountBefore = static_cast<uint32_t>(world.GetNetwork().GetLines().size());
+   const int64_t balanceBefore = world.GetBalance();
+
+   EXPECT_EQ(world.AddLine(line, lineId), MiniDb::Result::InsufficientFunds);
+   EXPECT_EQ(world.GetNetwork().GetLines().size(), lineCountBefore);
+   EXPECT_EQ(world.GetTrains().size(), 0u);
+   EXPECT_EQ(world.GetBalance(), balanceBefore);
+
+   world.GetEconomy().Credit(trainCost);
+   ASSERT_TRUE(MiniDb::IsOk(world.AddLine(line, lineId)));
+   EXPECT_EQ(world.GetNetwork().GetLines().size(), lineCountBefore + 1);
+   EXPECT_EQ(world.GetTrains().size(), 1u);
+   EXPECT_EQ(world.GetBalance(), 0);
+}
+
+TEST(WorldTest, PassengerSpawnPressureRisesWithUnlocksAndAtCap)
+{
+   MiniDb::World world(13);
+   world.SetPassengerAutoSpawn(MiniDb::PassengerAutoSpawn::No);
+   ASSERT_TRUE(MiniDb::IsOk(world.LoadCatalogFromString(CatalogJson)));
+   world.SetMaxStationCount(2);
+   world.ConfigureEconomy(MiniDb::DefaultTrainCapacity, MiniDb::GameMode::Economic, MiniDb::NeverLose::No);
+   EXPECT_FLOAT_EQ(world.GetPassengerSpawnPressureMultiplier(), 1.0f);
+
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnInitialStations()));
+   const float afterInitial =
+      MiniDb::PassengerSpawnPressurePerUnlock * MiniDb::PassengerSpawnPressurePerUnlock;
+   EXPECT_FLOAT_EQ(world.GetPassengerSpawnPressureMultiplier(), afterInitial);
+   EXPECT_EQ(world.GetNetwork().GetStations().size(), 2u);
+
+   world.Tick(MiniDb::EconomicStationSpawnIntervalSeconds + 0.01f);
+   const float afterCapInterval =
+      afterInitial * MiniDb::PassengerSpawnPressurePerUnlock;
+   EXPECT_FLOAT_EQ(world.GetPassengerSpawnPressureMultiplier(), afterCapInterval);
+}
+
+TEST(WorldTest, StationCrowdingAddsDwell)
+{
+   const char CrowdingCatalogJson[] =
+      "{"
+      "\"stations\":["
+      "{\"id\":0,\"cityName\":\"TinyA\",\"stationName\":\"TinyA\","
+      "\"latitude\":51.0,\"longitude\":10.0,\"population\":10000},"
+      "{\"id\":1,\"cityName\":\"TinyB\",\"stationName\":\"TinyB\","
+      "\"latitude\":51.01,\"longitude\":10.0,\"population\":10000}"
+      "]"
+      "}";
+
+   MiniDb::World world(2);
+   world.SetPassengerAutoSpawn(MiniDb::PassengerAutoSpawn::No);
+   ASSERT_TRUE(MiniDb::IsOk(world.LoadCatalogFromString(CrowdingCatalogJson)));
+   world.SetMaxStationCount(2);
+   world.ConfigureEconomy(MiniDb::DefaultTrainCapacity, MiniDb::GameMode::Economic, MiniDb::NeverLose::No);
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnInitialStations()));
+   const uint32_t waitingCapacity = world.GetStationWaitingCapacity(0);
+   EXPECT_GE(waitingCapacity, 1u);
+   for (uint32_t passengerIndex = 0; passengerIndex < waitingCapacity; ++passengerIndex)
+   {
+      ASSERT_TRUE(MiniDb::IsOk(world.SpawnPassenger(0, 1)));
+   }
+
+   MiniDb::StationIdList line;
+   line.push_back(0);
+   line.push_back(1);
+   MiniDb::LineId lineId = MiniDb::InvalidLineId;
+   ASSERT_TRUE(MiniDb::IsOk(world.AddLine(line, lineId)));
+   ASSERT_FALSE(world.GetTrains().empty());
+   EXPECT_GE(
+      world.GetTrains()[0].dwellRemainingSeconds,
+      MiniDb::TrainDwellSeconds + MiniDb::StationCrowdingDwellSeconds);
 }
