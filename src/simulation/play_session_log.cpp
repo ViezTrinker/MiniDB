@@ -255,15 +255,25 @@ namespace MiniDb
       WriteLine(line.str());
    }
 
-   void PlaySessionLog::LogGameOver(float negativeBalanceRealSeconds, int64_t finalBalance)
+   void PlaySessionLog::LogGameOver(
+      GameOverReason reason,
+      float negativeBalanceRealSeconds,
+      int64_t finalBalance)
    {
       if (!_active)
       {
          return;
       }
 
+      const char* reasonText = "bankruptcy";
+      if (reason == GameOverReason::PlatformWait)
+      {
+         reasonText = "platform_wait";
+      }
+
       std::ostringstream line;
       line << "{\"type\":\"game_over\""
+         << ",\"reason\":\"" << reasonText << "\""
          << ",\"negativeBalanceRealSeconds\":" << negativeBalanceRealSeconds
          << ",\"balance\":" << finalBalance
          << "}";

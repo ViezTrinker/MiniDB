@@ -39,6 +39,7 @@ Money matters unless **Sandbox** is on in Settings:
 - Crowded platforms add extra dwell in economic mode (`population / 800`, minimum 1 waiting slot).
 - Purchases are blocked when you cannot afford them; maintenance and fares still run while negative.
 - Stay in the red for **5 minutes of real time** (pause freezes the timer) to lose, unless **Never lose** is enabled.
+- A passenger waiting on a platform (spawn or transfer) for **120 simulation seconds** also loses the run, but only after the first **10 simulation minutes** (earliest loss at 12 minutes). At **unconnected** stations the limit is **5 minutes**. Stations blink black/red in the last 30 seconds of that wait.
 
 Play sessions in economic mode write JSONL logs to `logs/play_YYYYMMDD_HHMMSS.jsonl` next to the executable for balance tuning.
 

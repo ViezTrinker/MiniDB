@@ -1431,3 +1431,86 @@ TEST(WorldTest, StationCrowdingAddsDwell)
    ASSERT_TRUE(MiniDb::IsOk(world.SpawnPassenger(0, 1)));
    EXPECT_FLOAT_EQ(world.GetTrains()[0].dwellRemainingSeconds, dwellAfterArrival);
 }
+
+TEST(WorldTest, PlatformPatienceGameOverAfterMaxWait)
+{
+   MiniDb::World world(17);
+   world.SetPassengerAutoSpawn(MiniDb::PassengerAutoSpawn::No);
+   ASSERT_TRUE(MiniDb::IsOk(world.LoadCatalogFromString(CatalogJson)));
+   world.ConfigureEconomy(MiniDb::DefaultTrainCapacity, MiniDb::GameMode::Economic, MiniDb::NeverLose::No);
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnInitialStations()));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnPassenger(0, 1)));
+
+   world.Tick(MiniDb::MaxUnconnectedPassengerPlatformWaitSeconds + 1.0f);
+   EXPECT_FALSE(world.IsPlatformPatienceGameOver());
+   EXPECT_FALSE(world.IsStationPlatformWaitWarning(0));
+
+   world.Tick(
+      MiniDb::PlatformPatienceGraceSeconds - MiniDb::MaxUnconnectedPassengerPlatformWaitSeconds - 1.0f);
+   EXPECT_FALSE(world.IsPlatformPatienceGameOver());
+   EXPECT_FALSE(world.IsStationPlatformWaitWarning(0));
+
+   world.Tick(MiniDb::UnconnectedPassengerPlatformWaitWarningSeconds);
+   EXPECT_TRUE(world.IsStationPlatformWaitWarning(0));
+   EXPECT_FALSE(world.IsPlatformPatienceGameOver());
+   EXPECT_NEAR(
+      world.GetWorstPlatformWaitRemainingSeconds(),
+      MiniDb::MaxUnconnectedPassengerPlatformWaitSeconds -
+         MiniDb::UnconnectedPassengerPlatformWaitWarningSeconds,
+      0.01f);
+
+   world.Tick(
+      MiniDb::MaxUnconnectedPassengerPlatformWaitSeconds -
+      MiniDb::UnconnectedPassengerPlatformWaitWarningSeconds);
+   EXPECT_TRUE(world.IsPlatformPatienceGameOver());
+   EXPECT_FLOAT_EQ(world.GetWorstPlatformWaitRemainingSeconds(), 0.0f);
+}
+
+TEST(WorldTest, PlatformPatienceConnectedStationUsesShorterLimit)
+{
+   MiniDb::World world(29);
+   world.SetPassengerAutoSpawn(MiniDb::PassengerAutoSpawn::No);
+   ASSERT_TRUE(MiniDb::IsOk(world.LoadCatalogFromString(CatalogJson)));
+   world.ConfigureEconomy(MiniDb::DefaultTrainCapacity, MiniDb::GameMode::Economic, MiniDb::NeverLose::No);
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnInitialStations()));
+   for (uint32_t spawnStep = 0; spawnStep < 3; ++spawnStep)
+   {
+      ASSERT_TRUE(MiniDb::IsOk(world.SpawnNextStation()));
+   }
+
+   MiniDb::StationIdList line;
+   line.push_back(0);
+   line.push_back(1);
+   MiniDb::LineId lineId = MiniDb::InvalidLineId;
+   ASSERT_TRUE(MiniDb::IsOk(world.AddLine(line, lineId)));
+   ASSERT_TRUE(world.GetNetwork().IsStationOnAnyLine(0));
+
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnPassenger(0, 2)));
+
+   world.Tick(MiniDb::PlatformPatienceGraceSeconds);
+   EXPECT_FALSE(world.IsPlatformPatienceGameOver());
+   EXPECT_EQ(world.GetWaitingCountAt(0), 1u);
+
+   world.Tick(MiniDb::PassengerPlatformWaitWarningSeconds);
+   EXPECT_TRUE(world.IsStationPlatformWaitWarning(0));
+   EXPECT_FALSE(world.IsPlatformPatienceGameOver());
+
+   world.Tick(
+      MiniDb::MaxPassengerPlatformWaitSeconds - MiniDb::PassengerPlatformWaitWarningSeconds);
+   EXPECT_TRUE(world.IsPlatformPatienceGameOver());
+}
+
+TEST(WorldTest, PlatformPatienceDisabledByNeverLose)
+{
+   MiniDb::World world(19);
+   world.SetPassengerAutoSpawn(MiniDb::PassengerAutoSpawn::No);
+   ASSERT_TRUE(MiniDb::IsOk(world.LoadCatalogFromString(CatalogJson)));
+   world.ConfigureEconomy(MiniDb::DefaultTrainCapacity, MiniDb::GameMode::Economic, MiniDb::NeverLose::Yes);
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnInitialStations()));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnPassenger(0, 1)));
+
+   world.Tick(
+      MiniDb::PlatformPatienceGraceSeconds + MiniDb::MaxUnconnectedPassengerPlatformWaitSeconds + 1.0f);
+   EXPECT_FALSE(world.IsPlatformPatienceGameOver());
+   EXPECT_FALSE(world.IsStationPlatformWaitWarning(0));
+}

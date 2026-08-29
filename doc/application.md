@@ -29,7 +29,7 @@ Escape during play: cancel line or anchor drag, then cancel a draft, otherwise r
   - **Random order**: shuffle spawn order of the chosen pool.
   - **Events**: timed destination boosts during play.
   - **Sandbox**: no money, no station cap, no platform crowding penalty, no play log.
-  - **Never lose**: economic costs and revenue still apply, but sustained negative balance does not trigger game over (hidden when Sandbox is on).
+  - **Never lose**: economic costs and revenue still apply, but bankruptcy and platform-patience game over are disabled (hidden when Sandbox is on).
 - All Settings values apply only on **Start**.
 
 Economic play sessions append JSONL lines under `logs/` next to the executable (`play_YYYYMMDD_HHMMSS.jsonl`). Sandbox skips detailed logging.

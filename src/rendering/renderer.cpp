@@ -6,6 +6,7 @@
 #include "rendering/renderer.h"
 
 #include <array>
+#include <chrono>
 #include <cmath>
 #include <cstdint>
 #include <string>
@@ -994,6 +995,21 @@ namespace MiniDb
          if (station.id == inspectedStationId)
          {
             circle.setFillColor(InspectedStationColor);
+         }
+         else if (world.IsStationPlatformWaitWarning(station.id))
+         {
+            const auto blinkSlice = static_cast<int64_t>(
+               std::chrono::duration_cast<std::chrono::milliseconds>(
+                  std::chrono::steady_clock::now().time_since_epoch()).count() /
+               static_cast<int64_t>(PlatformWaitBlinkPeriodSeconds * 1000.0f));
+            if ((blinkSlice % 2) == 0)
+            {
+               circle.setFillColor(sf::Color(200, 30, 30));
+            }
+            else
+            {
+               circle.setFillColor(sf::Color(0, 0, 0));
+            }
          }
          else if (station.id == hoveredStationId)
          {

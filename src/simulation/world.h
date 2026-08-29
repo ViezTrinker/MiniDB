@@ -173,6 +173,23 @@ namespace MiniDb
       float GetPassengerSpawnPressureMultiplier(void) const;
 
       /*!
+       *\brief Returns true when economic mode lost due to platform patience.
+       */
+      bool IsPlatformPatienceGameOver(void) const;
+
+      /*!
+       *\brief Returns true when any waiter at the station is in the patience warning window.
+       *
+       *\param[in] stationId Station to query.
+       */
+      bool IsStationPlatformWaitWarning(StationId stationId) const;
+
+      /*!
+       *\brief Seconds until the worst waiter reaches the patience limit (Max when none warn).
+       */
+      float GetWorstPlatformWaitRemainingSeconds(void) const;
+
+      /*!
        *\brief Advances the simulation.
        *
        *\param[in] deltaSeconds Elapsed simulation time.
@@ -479,6 +496,7 @@ namespace MiniDb
       Result TryPayForTrainPurchase(void);
       void TickEconomy(float simDeltaSeconds);
       void ApplyCrowdingDwellPenalty(Train& train, StationId stationId);
+      void EvaluatePlatformPatience(void);
       float GetStationSpawnIntervalSeconds(void) const;
       uint32_t GetInitialStationSpawnCount(void) const;
 
@@ -510,6 +528,9 @@ namespace MiniDb
       float _timeUntilNextStationSeconds = 0.0f;
       float _passengerSpawnAccumulator = 0.0f;
       float _passengerSpawnPressureMultiplier = 1.0f;
+      bool _platformPatienceGameOver = false;
+      float _worstPlatformWaitRemainingSeconds = MaxPassengerPlatformWaitSeconds;
+      std::vector<uint8_t> _stationPlatformWaitWarning;
       PassengerAutoSpawn _passengerAutoSpawn = PassengerAutoSpawn::Yes;
       Economy _economy;
       PlaySessionLog* _pPlaySessionLog = nullptr;

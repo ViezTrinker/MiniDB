@@ -29,10 +29,11 @@ All of this lives under `src/simulation/` and is owned by `World` (`world.h` / `
 | Fare | €1.20 / passenger-km (O–D beeline) |
 | Crowding dwell | +4 s once per stop when waiting ≥ `population / 800` |
 | Bankruptcy | 300 s real time continuously negative |
+| Platform patience | After 10 sim-min grace: ≥120 sim-s wait on a connected platform (or ≥300 sim-s if the station has no line) loses; blink in the last 30 s |
 
 `TryPayForTrackSegments` charges only pairs not yet in `_builtPairKeys`. Creating a **new line** also requires funds for the automatic first train; if either cost cannot be paid, nothing is built. `InsufficientFunds` blocks the network mutation. Maintenance still runs while negative; purchases stay blocked until affordable.
 
-Bankruptcy uses wall-clock seconds from `Game::Update` (not simulation time scale). Pause freezes the timer. **Never lose** disables game over while keeping costs.
+Bankruptcy uses wall-clock seconds from `Game::Update` (not simulation time scale). Pause freezes the timer. Platform patience uses **simulation time** (scales with game speed) and ignores waits during the first `PlatformPatienceGraceSeconds` (600 s); wait time for lose/warning is measured from `max(platformArrival, grace end)`. Connected stations use a 120 s limit; stations with no line use 300 s. **Never lose** disables both game-over paths while keeping costs.
 
 `PlaySessionLog` writes JSONL session headers, build/purchase/fare events, and snapshots every 10 real seconds during economic play.
 

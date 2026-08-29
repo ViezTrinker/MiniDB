@@ -17,10 +17,10 @@ Station markers and labels are drawn in map space but scaled by kilometres-per-p
 
 - Germany outline from `germany.geojson`.
 - Finished lines (thicker when selected). Segments shared by several lines are drawn as parallel colored strokes; hit-tests still use the true station-to-station geometry. Draft polyline and insert-drag preview stay on the true segment.
-- Stations (radius from population). Names when there are few stations, the city is large, or it is inspected.
+- Stations (radius from population). Names when there are few stations, the city is large, or it is inspected. In economic mode, a station with a passenger near the platform-patience limit blinks black/red.
 - Waiting counts next to stations.
 - Trains as short rectangles along their segment.
-- HUD: time, balance (economic mode), bankruptcy countdown when negative, speed, pause, station count / cap, and brief insufficient-funds toast.
+- HUD: time, balance (economic mode), bankruptcy countdown when negative, patience countdown when a waiter is in the warning window, speed, pause, station count / cap, and brief insufficient-funds toast.
 - Help button (`?`) and popup.
 - Train token (bottom left) for dropping a new train.
 - Playback controls next to the train token: slow down, speed label, speed up, Pause, Resume, Menu.

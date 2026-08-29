@@ -68,7 +68,7 @@ namespace MiniDb
          int64_t amount,
          int64_t balanceAfter);
       void LogCrowdingDwell(StationId stationId, uint32_t waiting, uint32_t cap, float extraSeconds);
-      void LogGameOver(float negativeBalanceRealSeconds, int64_t finalBalance);
+      void LogGameOver(GameOverReason reason, float negativeBalanceRealSeconds, int64_t finalBalance);
 
       /*!
        *\brief Writes periodic snapshots and flushes buffered lines.

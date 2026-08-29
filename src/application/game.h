@@ -88,7 +88,7 @@ namespace MiniDb
       void Render(void);
       std::string BuildHudText(void) const;
       void HandleActionResult(Result result);
-      void HandleGameOver(void);
+      void HandleGameOver(GameOverReason reason);
       void BeginPlaySessionLog(void);
       void EndPlaySessionLog(std::string_view reason);
 

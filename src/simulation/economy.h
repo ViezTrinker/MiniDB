@@ -31,6 +31,13 @@ namespace MiniDb
       GameOver = 1
    };
 
+   enum class GameOverReason : uint8_t
+   {
+      None = 0,
+      Bankruptcy = 1,
+      PlatformWait = 2
+   };
+
    class Economy
    {
    public:

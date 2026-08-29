@@ -202,6 +202,9 @@ namespace MiniDb
       _timeUntilNextStationSeconds = StationSpawnIntervalSeconds;
       _passengerSpawnAccumulator = 0.0f;
       _passengerSpawnPressureMultiplier = 1.0f;
+      _platformPatienceGameOver = false;
+      _worstPlatformWaitRemainingSeconds = MaxPassengerPlatformWaitSeconds;
+      _stationPlatformWaitWarning.clear();
       _economy.Clear();
    }
 
@@ -465,6 +468,27 @@ namespace MiniDb
       return _passengerSpawnPressureMultiplier;
    }
 
+   bool World::IsPlatformPatienceGameOver(void) const
+   {
+      return _platformPatienceGameOver;
+   }
+
+   bool World::IsStationPlatformWaitWarning(StationId stationId) const
+   {
+      const uint32_t stationIndex = _network.GetStationVectorIndex(stationId);
+      if (stationIndex == InvalidIndex || stationIndex >= _stationPlatformWaitWarning.size())
+      {
+         return false;
+      }
+
+      return _stationPlatformWaitWarning[stationIndex] != 0;
+   }
+
+   float World::GetWorstPlatformWaitRemainingSeconds(void) const
+   {
+      return _worstPlatformWaitRemainingSeconds;
+   }
+
    void World::ApplyPassengerSpawnPressureBump(void)
    {
       _passengerSpawnPressureMultiplier *= PassengerSpawnPressurePerUnlock;
@@ -567,6 +591,102 @@ namespace MiniDb
       }
    }
 
+   void World::EvaluatePlatformPatience(void)
+   {
+      _platformPatienceGameOver = false;
+      _worstPlatformWaitRemainingSeconds = MaxPassengerPlatformWaitSeconds;
+      if (!_economy.IsEconomicMode() || _economy.GetNeverLose() == NeverLose::Yes)
+      {
+         _stationPlatformWaitWarning.assign(_stationPlatformWaitWarning.size(), static_cast<uint8_t>(0));
+         return;
+      }
+
+      EnsureWaitingCacheSize();
+      if (_stationPlatformWaitWarning.size() < _waitingPassengersByStationIndex.size())
+      {
+         _stationPlatformWaitWarning.resize(_waitingPassengersByStationIndex.size(), static_cast<uint8_t>(0));
+      }
+      else
+      {
+         std::fill(
+            _stationPlatformWaitWarning.begin(),
+            _stationPlatformWaitWarning.end(),
+            static_cast<uint8_t>(0));
+      }
+
+      if (_simulationTimeSeconds < PlatformPatienceGraceSeconds)
+      {
+         return;
+      }
+
+      const StationRecordList& stations = _network.GetStations();
+      float lowestRemainingSeconds = MaxUnconnectedPassengerPlatformWaitSeconds;
+      for (size_t stationIndex = 0; stationIndex < _waitingPassengersByStationIndex.size(); ++stationIndex)
+      {
+         if (stationIndex >= stations.size())
+         {
+            break;
+         }
+
+         const StationId stationId = stations[stationIndex].id;
+         const bool stationConnected = _network.IsStationOnAnyLine(stationId);
+         const float maxWaitSeconds = stationConnected ?
+            MaxPassengerPlatformWaitSeconds :
+            MaxUnconnectedPassengerPlatformWaitSeconds;
+         const float warningSeconds = stationConnected ?
+            PassengerPlatformWaitWarningSeconds :
+            UnconnectedPassengerPlatformWaitWarningSeconds;
+
+         const WaitingPassengerQueue& waitingQueue = _waitingPassengersByStationIndex[stationIndex];
+         for (PassengerId passengerId : waitingQueue)
+         {
+            const Passenger* pPassenger = FindMutablePassenger(passengerId);
+            if (pPassenger == nullptr)
+            {
+               continue;
+            }
+            if (pPassenger->state != PassengerState::Waiting)
+            {
+               continue;
+            }
+
+            float patienceStartSeconds = pPassenger->platformArrivalTimeSeconds;
+            if (patienceStartSeconds < PlatformPatienceGraceSeconds)
+            {
+               patienceStartSeconds = PlatformPatienceGraceSeconds;
+            }
+
+            float waitedSeconds = _simulationTimeSeconds - patienceStartSeconds;
+            if (waitedSeconds < 0.0f)
+            {
+               waitedSeconds = 0.0f;
+            }
+
+            float remainingSeconds = maxWaitSeconds - waitedSeconds;
+            if (remainingSeconds < 0.0f)
+            {
+               remainingSeconds = 0.0f;
+            }
+            if (remainingSeconds < lowestRemainingSeconds)
+            {
+               lowestRemainingSeconds = remainingSeconds;
+            }
+
+            if (waitedSeconds >= warningSeconds)
+            {
+               _stationPlatformWaitWarning[stationIndex] = 1;
+            }
+
+            if (waitedSeconds >= maxWaitSeconds)
+            {
+               _platformPatienceGameOver = true;
+            }
+         }
+      }
+
+      _worstPlatformWaitRemainingSeconds = lowestRemainingSeconds;
+   }
+
    void World::Tick(float deltaSeconds)
    {
       float clampedDelta = deltaSeconds;
@@ -581,6 +701,7 @@ namespace MiniDb
       MaybeUpdateEvents(clampedDelta);
       UpdateTrains(clampedDelta);
       TickEconomy(clampedDelta);
+      EvaluatePlatformPatience();
    }
 
    Result World::AddLine(const StationIdList& stationIds, LineId& lineId)

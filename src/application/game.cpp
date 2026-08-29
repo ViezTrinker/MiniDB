@@ -1103,7 +1103,7 @@ namespace MiniDb
             _world.TickBankruptcy(clampedDelta, pauseActive);
          if (bankruptcyResult == BankruptcyTickResult::GameOver)
          {
-            HandleGameOver();
+            HandleGameOver(GameOverReason::Bankruptcy);
             return;
          }
 
@@ -1123,6 +1123,10 @@ namespace MiniDb
       }
 
       _world.Tick(simulationDelta);
+      if (_world.IsPlatformPatienceGameOver())
+      {
+         HandleGameOver(GameOverReason::PlatformWait);
+      }
    }
 
    void Game::UpdateKeyboardCamera(float deltaSeconds)
@@ -1178,6 +1182,12 @@ namespace MiniDb
          {
             stream << "   Bankrupt in " << FormatTime(economy.GetSecondsUntilGameOver());
          }
+         const float patienceRemaining = _world.GetWorstPlatformWaitRemainingSeconds();
+         if (economy.GetNeverLose() == NeverLose::No &&
+            patienceRemaining <= PlatformWaitWarningLeadSeconds)
+         {
+            stream << "   Patience " << FormatTime(patienceRemaining);
+         }
       }
       stream << "   Stations " << _world.GetNetwork().GetStations().size();
       stream << "/" << _world.GetStationCap();
@@ -1210,17 +1220,25 @@ namespace MiniDb
       _statusMessageSeconds = InsufficientFundsToastSeconds;
    }
 
-   void Game::HandleGameOver(void)
+   void Game::HandleGameOver(GameOverReason reason)
    {
       if (_playSessionLog.IsActive())
       {
          const Economy& economy = _world.GetEconomy();
          _playSessionLog.LogGameOver(
+            reason,
             economy.GetNegativeBalanceRealSeconds(),
             economy.GetBalance());
       }
 
-      _menuBannerMessage = "Bankrupt - 5 minutes in the red";
+      if (reason == GameOverReason::PlatformWait)
+      {
+         _menuBannerMessage = "Game over - passenger waited too long";
+      }
+      else
+      {
+         _menuBannerMessage = "Bankrupt - 5 minutes in the red";
+      }
       ReturnToMenu("game_over");
    }
 
