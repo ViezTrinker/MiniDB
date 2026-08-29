@@ -1422,7 +1422,12 @@ TEST(WorldTest, StationCrowdingAddsDwell)
    MiniDb::LineId lineId = MiniDb::InvalidLineId;
    ASSERT_TRUE(MiniDb::IsOk(world.AddLine(line, lineId)));
    ASSERT_FALSE(world.GetTrains().empty());
+   const float dwellAfterArrival = world.GetTrains()[0].dwellRemainingSeconds;
    EXPECT_GE(
-      world.GetTrains()[0].dwellRemainingSeconds,
+      dwellAfterArrival,
       MiniDb::TrainDwellSeconds + MiniDb::StationCrowdingDwellSeconds);
+
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnPassenger(0, 1)));
+   ASSERT_TRUE(MiniDb::IsOk(world.SpawnPassenger(0, 1)));
+   EXPECT_FLOAT_EQ(world.GetTrains()[0].dwellRemainingSeconds, dwellAfterArrival);
 }

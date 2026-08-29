@@ -18,6 +18,12 @@ namespace MiniDb
       Dwelling
    };
 
+   enum class CrowdingDwellApplied : uint8_t
+   {
+      No = 0,
+      Yes = 1
+   };
+
    enum class TrainStepResult : int8_t
    {
       Error = -1,
@@ -34,6 +40,7 @@ namespace MiniDb
       float distanceFromFromStationKm;
       float dwellRemainingSeconds;
       TrainMotion motion;
+      CrowdingDwellApplied crowdingDwellApplied = CrowdingDwellApplied::No;
       PassengerIdList passengerIds;
    };
 

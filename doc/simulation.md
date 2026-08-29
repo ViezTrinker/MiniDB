@@ -27,7 +27,7 @@ All of this lives under `src/simulation/` and is owned by `World` (`world.h` / `
 | Train purchase | €35,000 |
 | Train maintenance | €6 / train / sim-s |
 | Fare | €1.20 / passenger-km (O–D beeline) |
-| Crowding dwell | +4 s when waiting ≥ `population / 800` |
+| Crowding dwell | +4 s once per stop when waiting ≥ `population / 800` |
 | Bankruptcy | 300 s real time continuously negative |
 
 `TryPayForTrackSegments` charges only pairs not yet in `_builtPairKeys`. Creating a **new line** also requires funds for the automatic first train; if either cost cannot be paid, nothing is built. `InsufficientFunds` blocks the network mutation. Maintenance still runs while negative; purchases stay blocked until affordable.
@@ -127,7 +127,7 @@ On dwell or arrival, `AlightAndBoard`:
 4. If several people want that hop, the earliest `platformArrivalTimeSeconds` boards first; `id` breaks ties. This is a per-platform queue, not global spawn order.
 5. Boarding stops at capacity. The rest wait for the next matching train.
 
-In economic mode, when waiting passengers at a station are at or above `population / 800` (minimum 1), arriving trains add `StationCrowdingDwellSeconds` (4 s) to dwell.
+In economic mode, when waiting passengers at a station are at or above `population / 800` (minimum 1), an arriving train adds `StationCrowdingDwellSeconds` (4 s) to dwell **once per stop**. Further boarding attempts while still dwelling do not stack more crowding delay.
 
 Passengers do not pick a train id. They take the first train going to the next hop that still has space.
 

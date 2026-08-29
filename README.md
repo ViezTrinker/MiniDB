@@ -46,7 +46,7 @@ Play sessions in economic mode write JSONL logs to `logs/play_YYYYMMDD_HHMMSS.js
 
 - Left-click a station to draft a line; the right panel shows waiting count vs capacity for that station
 - Click a train to inspect onboard passengers, destinations and transfers in that panel
-- Click a line (preferred over nearby stations when not drafting) to inspect its trains, occupancy, and destinations by passenger count
+- Click a line segment (away from stations) to inspect its trains, occupancy, and destinations by passenger count
 - Click the first station of a draft again to close a loop (`A, B, C, A`)
 - Click empty map to return to the overview panel (top waiting destinations, busiest stations, and active events)
 - Enter or right-click to finish a line (one train is added automatically)

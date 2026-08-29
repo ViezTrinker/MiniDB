@@ -543,6 +543,10 @@ namespace MiniDb
       {
          return;
       }
+      if (train.crowdingDwellApplied == CrowdingDwellApplied::Yes)
+      {
+         return;
+      }
 
       const uint32_t waitingCount = GetWaitingCountAt(stationId);
       const uint32_t waitingCapacity = GetStationWaitingCapacity(stationId);
@@ -552,6 +556,7 @@ namespace MiniDb
       }
 
       train.dwellRemainingSeconds += StationCrowdingDwellSeconds;
+      train.crowdingDwellApplied = CrowdingDwellApplied::Yes;
       if (_pPlaySessionLog != nullptr)
       {
          _pPlaySessionLog->LogCrowdingDwell(
@@ -1987,6 +1992,7 @@ namespace MiniDb
                }
                train.motion = TrainMotion::Moving;
                train.distanceFromFromStationKm = 0.0f;
+               train.crowdingDwellApplied = CrowdingDwellApplied::No;
             }
             continue;
          }

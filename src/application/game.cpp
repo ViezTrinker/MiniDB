@@ -828,23 +828,6 @@ namespace MiniDb
                   return;
                }
             }
-
-            const LineSegmentHit hit = _world.FindNearestLineSegment(
-               mapPoint,
-               _renderer.PixelsToKm(LineDropHitPixels));
-            if (hit.lineId != InvalidLineId)
-            {
-               _inspectedLineId = hit.lineId;
-               _inspectedStationId = InvalidStationId;
-               _inspectedTrainId = InvalidTrainId;
-               _lineGrabPending = LineGrabPending::Yes;
-               _lineDragLineId = hit.lineId;
-               _lineDragSegmentIndex = hit.segmentIndex;
-               _lineDragStartPixel = mousePressed.position;
-               _lineDragHoverStationId = InvalidStationId;
-               _helpVisible = HelpVisible::No;
-               return;
-            }
          }
 
          const StationId stationId = _world.HitTestStation(mapPoint, _renderer.HitRadiusKm());
@@ -875,6 +858,21 @@ namespace MiniDb
          _inspectedTrainId = InvalidTrainId;
          _helpVisible = HelpVisible::No;
          _inspectedLineId = InvalidLineId;
+         if (!_lineEditor.IsDrafting())
+         {
+            const LineSegmentHit hit = _world.FindNearestLineSegment(
+               mapPoint,
+               _renderer.PixelsToKm(LineDropHitPixels));
+            if (hit.lineId != InvalidLineId)
+            {
+               _inspectedLineId = hit.lineId;
+               _lineGrabPending = LineGrabPending::Yes;
+               _lineDragLineId = hit.lineId;
+               _lineDragSegmentIndex = hit.segmentIndex;
+               _lineDragStartPixel = mousePressed.position;
+               _lineDragHoverStationId = InvalidStationId;
+            }
+         }
          return;
       }
 

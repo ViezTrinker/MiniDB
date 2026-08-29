@@ -54,9 +54,9 @@ Terminus extension is handled in `Game` via draggable anchors on the selected li
 
 | Action | Handling |
 | --- | --- |
-| Left-click line (when not drafting; preferred over nearby stations) | Select the line; inspect trains, occupancy, and destinations |
-| Left-click station (no nearby line, or while drafting) | Inspect it; `LineEditor::OnStationClicked` |
+| Left-click station | Inspect it; `LineEditor::OnStationClicked` (starts or continues a draft) |
 | Left-click train | Inspect it; select its line |
+| Left-click line (no drag; away from stations) | Select the line; inspect trains, occupancy, and destinations |
 | Drag terminus anchor onto a station | `ExtendLineAt` at the front or back of the selected line |
 | Drag line onto a station | `InsertStationOnLine` on that segment |
 | Drag train token onto a line | `AddTrainToLineAt` at the cursor |

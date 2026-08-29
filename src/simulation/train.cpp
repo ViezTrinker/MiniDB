@@ -150,6 +150,7 @@ namespace MiniDb
          train.distanceFromFromStationKm = 0.0f;
          train.motion = TrainMotion::Dwelling;
          train.dwellRemainingSeconds = TrainDwellSeconds;
+         train.crowdingDwellApplied = CrowdingDwellApplied::No;
 
          if (line.loop == LineLoop::No)
          {
