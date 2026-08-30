@@ -122,6 +122,6 @@ python tools/generate_station_data.py
 
 ## License & data
 
-No project license file is published in this repository yet — clarify that before redistributing binaries.
+MiniDB source code and documentation are licensed under the [MIT License](LICENSE).
 
-Station and outline data attributions are listed in [`data/DATA_SOURCES.md`](data/DATA_SOURCES.md) (GeoNames CC BY 4.0, Germany outline via isellsoap/deutschlandGeoJSON / BKG-derived data).
+Bundled station and outline data keep their own terms — see [`data/DATA_SOURCES.md`](data/DATA_SOURCES.md) (GeoNames CC BY 4.0, Germany outline via isellsoap/deutschlandGeoJSON / BKG-derived data).

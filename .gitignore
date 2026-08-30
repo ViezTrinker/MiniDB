@@ -13,3 +13,4 @@ CMakeUserPresets.json
 __pycache__/
 *.pyc
 tools/_download_cache/
+*.zip
