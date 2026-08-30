@@ -12,6 +12,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "application/main_menu.h"
+#include "ai/play_agent.h"
 #include "core/constants.h"
 #include "core/result.h"
 #include "core/types.h"
@@ -99,6 +100,7 @@ namespace MiniDb
       Renderer _renderer;
       MainMenu _mainMenu;
       LineEditor _lineEditor;
+      PlayAgent _playAgent;
       PlaySessionLog _playSessionLog;
       std::string _logsDirectory;
       std::string _statusMessage;
@@ -106,6 +108,7 @@ namespace MiniDb
       float _statusMessageSeconds = 0.0f;
       AppScreen _appScreen = AppScreen::Menu;
       HasActiveGame _hasActiveGame = HasActiveGame::No;
+      AiPlay _aiPlay = AiPlay::No;
       SimulationPause _pause = SimulationPause::No;
       float _timeScale = DefaultTimeScale;
       PanState _panState = PanState::No;

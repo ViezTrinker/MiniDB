@@ -23,7 +23,7 @@ ctest --test-dir build -C Release --output-on-failure
 
 The game executable is `build/bin/Release/MiniDB.exe` on Windows (or `build/bin/MiniDB` on single-config generators). `data/` is copied next to the executable.
 
-The game opens on a start menu. Open **Settings** to choose the station cap (default 100), train capacity (default 160; passenger spawn scales with it), starting game speed, **Sandbox** (free play; off by default), **Never lose** (economic mode only; disables bankruptcy game over), optional random city pool, random spawn order, and destination events. Click number fields to type values. Settings apply when you press **Start**. Escape during play returns to the menu; Resume continues the current game.
+The game opens on a start menu. Open **Settings** to choose the station cap (default 100), train capacity (default 160; passenger spawn scales with it), starting game speed, **Sandbox** (free play; off by default), **Never lose** (economic mode only; disables bankruptcy and platform-patience game over), **AI play** (spectator mode: the AI builds lines and buys trains while you watch), optional random city pool, random spawn order, and destination events. Click number fields to type values. Settings apply when you press **Start**. Escape during play returns to the menu; Resume continues the current game.
 
 ## Economy (default mode)
 

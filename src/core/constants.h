@@ -112,6 +112,24 @@ namespace MiniDb
    inline constexpr uint32_t PlaySessionFareSampleInterval = 10;
    inline constexpr float PlaySessionFullFareLogRealSeconds = 300.0f;
    inline constexpr float InsufficientFundsToastSeconds = 3.0f;
+   inline constexpr float AiDecisionIntervalSeconds = 0.75f;
+   inline constexpr uint32_t AiTopCityCandidateCount = 12;
+   inline constexpr uint32_t AiMaxLineStationCount = 4;
+   inline constexpr float AiPatienceEmergencyFraction = 0.55f;
+   inline constexpr float AiMaxExtendDistanceKm = 160.0f;
+   inline constexpr float AiMaxInsertDistanceKm = 30.0f;
+   inline constexpr float AiMaxAddLineDistanceKm = 320.0f;
+   inline constexpr float AiMaxBridgeDistanceKm = 560.0f;
+   inline constexpr float AiMaxBridgeExtendDistanceKm = 220.0f;
+   inline constexpr float AiComponentBridgeScoreBonus = 35000.0f;
+   inline constexpr float AiBridgeCostPenaltyScale = 0.45f;
+   inline constexpr float AiTargetHeadwaySeconds = 100.0f;
+   inline constexpr uint32_t AiMaxTrainsPerLine = 5;
+   inline constexpr int64_t AiMinCashReserve = 60000;
+   inline constexpr float AiCashReserveMaintenanceSeconds = 180.0f;
+   inline constexpr float AiCostScorePenaltyPerEuro = 0.0012f;
+   inline constexpr float AiTrackKmScorePenalty = 2.5f;
+   inline constexpr float AiAddTrainMinExpectedWaitSeconds = 45.0f;
 
    /*!
     *\brief Economy scale for a given train capacity setting.

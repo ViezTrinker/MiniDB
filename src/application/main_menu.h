@@ -11,6 +11,7 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "ai/play_agent.h"
 #include "core/constants.h"
 #include "simulation/economy.h"
 #include "simulation/world.h"
@@ -166,6 +167,11 @@ namespace MiniDb
       NeverLose GetNeverLoseSetting(void) const;
 
       /*!
+       *\brief Whether the spectator AI builds the network.
+       */
+      AiPlay GetAiPlaySetting(void) const;
+
+      /*!
        *\brief Returns to the root menu page.
        */
       void ShowRootPage(void);
@@ -188,6 +194,7 @@ namespace MiniDb
          sf::FloatRect gameSpeed;
          sf::FloatRect sandbox;
          sf::FloatRect neverLose;
+         sf::FloatRect aiPlay;
          sf::FloatRect randomPool;
          sf::FloatRect randomOrder;
          sf::FloatRect events;
@@ -237,6 +244,7 @@ namespace MiniDb
       EventsEnabled _eventsEnabled = EventsEnabled::No;
       bool _sandboxEnabled = false;
       NeverLose _neverLose = NeverLose::No;
+      AiPlay _aiPlay = AiPlay::No;
    };
 } // namespace MiniDb
 

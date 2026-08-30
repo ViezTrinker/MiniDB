@@ -38,7 +38,7 @@ namespace MiniDb
       constexpr float MenuStepSize = 40.0f;
       constexpr float MenuValueWidth = 148.0f;
       constexpr uint32_t MenuNumberFieldMaxDigits = 5;
-      constexpr uint32_t MenuSettingsToggleCount = 5;
+      constexpr uint32_t MenuSettingsToggleCount = 6;
 
       enum class ButtonHover : bool
       {
@@ -286,6 +286,8 @@ namespace MiniDb
       bounds.sandbox = sf::FloatRect({buttonLeft, toggleTop}, {MenuButtonWidth, MenuButtonHeight});
       toggleTop += MenuButtonHeight + MenuToggleGap;
       bounds.neverLose = sf::FloatRect({buttonLeft, toggleTop}, {MenuButtonWidth, MenuButtonHeight});
+      toggleTop += MenuButtonHeight + MenuToggleGap;
+      bounds.aiPlay = sf::FloatRect({buttonLeft, toggleTop}, {MenuButtonWidth, MenuButtonHeight});
       toggleTop += MenuButtonHeight + MenuToggleGap;
       bounds.randomPool = sf::FloatRect({buttonLeft, toggleTop}, {MenuButtonWidth, MenuButtonHeight});
       toggleTop += MenuButtonHeight + MenuToggleGap;
@@ -538,6 +540,11 @@ namespace MiniDb
       return _neverLose;
    }
 
+   AiPlay MainMenu::GetAiPlaySetting(void) const
+   {
+      return _aiPlay;
+   }
+
    void MainMenu::ShowRootPage(void)
    {
       CancelFocusedNumberEdit();
@@ -735,6 +742,18 @@ namespace MiniDb
          ToggleLabel("Never lose", _neverLose == NeverLose::Yes),
          neverLoseHover);
 
+      ButtonHover aiPlayHover = ButtonHover::No;
+      if (ContainsPixel(bounds.aiPlay, cursorPixel))
+      {
+         aiPlayHover = ButtonHover::Yes;
+      }
+      DrawPanelButton(
+         *_pWindow,
+         *_pFont,
+         bounds.aiPlay,
+         ToggleLabel("AI play", _aiPlay == AiPlay::Yes),
+         aiPlayHover);
+
       ButtonHover poolHover = ButtonHover::No;
       if (ContainsPixel(bounds.randomPool, cursorPixel))
       {
@@ -857,6 +876,18 @@ namespace MiniDb
          else
          {
             _neverLose = NeverLose::Yes;
+         }
+         return MenuAction::None;
+      }
+      if (ContainsPixel(bounds.aiPlay, pixel))
+      {
+         if (_aiPlay == AiPlay::Yes)
+         {
+            _aiPlay = AiPlay::No;
+         }
+         else
+         {
+            _aiPlay = AiPlay::Yes;
          }
          return MenuAction::None;
       }

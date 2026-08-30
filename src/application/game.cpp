@@ -460,6 +460,8 @@ namespace MiniDb
 
       ResetPlayInput();
       _timeScale = _mainMenu.GetGameSpeed();
+      _aiPlay = _mainMenu.GetAiPlaySetting();
+      _playAgent.Reset();
       _statusMessage.clear();
       _statusMessageSeconds = 0.0f;
       _menuBannerMessage.clear();
@@ -571,6 +573,10 @@ namespace MiniDb
       }
       if (keyPressed.control)
       {
+         if (_aiPlay == AiPlay::Yes)
+         {
+            return;
+         }
          if (keyPressed.code == sf::Keyboard::Key::Z)
          {
             _lineEditor.UndoDraft();
@@ -584,16 +590,28 @@ namespace MiniDb
       }
       if (keyPressed.code == sf::Keyboard::Key::Enter)
       {
+         if (_aiPlay == AiPlay::Yes)
+         {
+            return;
+         }
          HandleActionResult(_lineEditor.Confirm(_world));
          return;
       }
       if (keyPressed.code == sf::Keyboard::Key::T)
       {
+         if (_aiPlay == AiPlay::Yes)
+         {
+            return;
+         }
          HandleActionResult(_lineEditor.AddTrainToSelectedLine(_world));
          return;
       }
       if (keyPressed.code == sf::Keyboard::Key::Delete)
       {
+         if (_aiPlay == AiPlay::Yes)
+         {
+            return;
+         }
          if (_lineDrag == LineDrag::Yes || _lineGrabPending == LineGrabPending::Yes)
          {
             _lineEditor.SelectLine(_lineDragLineId);
@@ -731,6 +749,10 @@ namespace MiniDb
 
          if (_renderer.IsTrainTokenHit(mousePressed.position))
          {
+            if (_aiPlay == AiPlay::Yes)
+            {
+               return;
+            }
             _trainDrag = TrainDrag::Yes;
             _dropTargetLineId = InvalidLineId;
             _helpVisible = HelpVisible::No;
@@ -804,7 +826,7 @@ namespace MiniDb
          }
 
          const MapPoint mapPoint = _renderer.ScreenToMap(mousePressed.position);
-         if (!_lineEditor.IsDrafting())
+         if (_aiPlay == AiPlay::No && !_lineEditor.IsDrafting())
          {
             const LineId selectedLineId = _lineEditor.GetSelectedLineId();
             if (selectedLineId != InvalidLineId)
@@ -836,7 +858,10 @@ namespace MiniDb
             _inspectedStationId = stationId;
             _inspectedTrainId = InvalidTrainId;
             _inspectedLineId = InvalidLineId;
-            _lineEditor.OnStationClicked(_world, stationId);
+            if (_aiPlay == AiPlay::No)
+            {
+               _lineEditor.OnStationClicked(_world, stationId);
+            }
             return;
          }
 
@@ -858,7 +883,7 @@ namespace MiniDb
          _inspectedTrainId = InvalidTrainId;
          _helpVisible = HelpVisible::No;
          _inspectedLineId = InvalidLineId;
-         if (!_lineEditor.IsDrafting())
+         if (_aiPlay == AiPlay::No && !_lineEditor.IsDrafting())
          {
             const LineSegmentHit hit = _world.FindNearestLineSegment(
                mapPoint,
@@ -878,6 +903,10 @@ namespace MiniDb
 
       if (mousePressed.button == sf::Mouse::Button::Right)
       {
+         if (_aiPlay == AiPlay::Yes)
+         {
+            return;
+         }
          HandleActionResult(_lineEditor.Confirm(_world));
          return;
       }
@@ -1122,6 +1151,11 @@ namespace MiniDb
          simulationDelta = clampedDelta * _timeScale;
       }
 
+      if (_aiPlay == AiPlay::Yes && simulationDelta > 0.0f)
+      {
+         _playAgent.Step(_world, simulationDelta);
+      }
+
       _world.Tick(simulationDelta);
       if (_world.IsPlatformPatienceGameOver())
       {
@@ -1194,6 +1228,10 @@ namespace MiniDb
       stream << "   Waiting " << _world.GetWaitingPassengerCount();
       stream << "   Onboard " << _world.GetOnboardPassengerCount();
       stream << "   Arrived " << _world.GetArrivedPassengerCount();
+      if (_aiPlay == AiPlay::Yes)
+      {
+         stream << "   AI";
+      }
       if (_pause == SimulationPause::Yes)
       {
          stream << "   PAUSED";

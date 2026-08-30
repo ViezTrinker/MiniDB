@@ -46,6 +46,11 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(nlohmann_json)
 
 set(MINIDB_CORE_HEADERS
+   src/ai/ai_actions.h
+   src/ai/ai_observation.h
+   src/ai/ai_planner.h
+   src/ai/ai_scorer.h
+   src/ai/play_agent.h
    src/core/constants.h
    src/core/result.h
    src/core/types.h
@@ -64,6 +69,10 @@ set(MINIDB_CORE_HEADERS
 )
 
 set(MINIDB_CORE_SOURCES
+   src/ai/ai_observation.cpp
+   src/ai/ai_planner.cpp
+   src/ai/ai_scorer.cpp
+   src/ai/play_agent.cpp
    src/data/station_catalog.cpp
    src/geo/geojson_outline.cpp
    src/geo/projection.cpp
@@ -124,6 +133,7 @@ set(MINIDB_TEST_SOURCES
    tests/station_catalog_test.cpp
    tests/train_test.cpp
    tests/world_test.cpp
+   tests/ai_planner_test.cpp
    src/input/line_editor.cpp
    src/input/line_editor.h
 )

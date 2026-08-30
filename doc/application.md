@@ -19,7 +19,7 @@ Escape during play: cancel line or anchor drag, then cancel a draft, otherwise r
 
 `MainMenu` draws a panel over a map backdrop.
 
-- **Start** resets the simulation, applies Settings (station cap, train capacity, game speed, sandbox, never lose, random pool, random order, events), configures economy, builds the spawn queue, and spawns the first cities. Sandbox sets unlimited station cap.
+- **Start** resets the simulation, applies Settings (station cap, train capacity, game speed, sandbox, never lose, AI play, random pool, random order, events), configures economy, builds the spawn queue, and spawns the first cities. Sandbox sets unlimited station cap.
 - **Resume** is shown only when `HasActiveGame` is `Yes`. It continues the current world without re-applying Settings.
 - **Settings** opens a second page:
   - Station cap: click the number to type digits. Default is `DefaultMaxStationCount` (100). Clamped between `MinimumStationCap` (2) and catalog size. If the cap is below `InitialStationCount`, the first wave is only that many cities.
@@ -30,9 +30,12 @@ Escape during play: cancel line or anchor drag, then cancel a draft, otherwise r
   - **Events**: timed destination boosts during play.
   - **Sandbox**: no money, no station cap, no platform crowding penalty, no play log.
   - **Never lose**: economic costs and revenue still apply, but bankruptcy and platform-patience game over are disabled (hidden when Sandbox is on).
+  - **AI play**: spectator mode. `PlayAgent` (`src/ai/`) builds lines, extends/inserts stations, and buys trains via `World` APIs each decision interval. Human build input (draft, confirm, train token, delete) is disabled; camera, pause, speed, and inspect still work.
 - All Settings values apply only on **Start**.
 
-Economic play sessions append JSONL lines under `logs/` next to the executable (`play_YYYYMMDD_HHMMSS.jsonl`). Sandbox skips detailed logging.
+## Spectator AI
+
+`PlayAgent` runs in `Game::Update` before `World::Tick` when AI play is on. It plans greedily from an observation (waiting, patience risk, gravity demand, line headways, network components) and applies one affordable action. In economic mode it keeps a cash reserve (maintenance runway), caps trains per line by cycle/headway, prefers short regional links over mega-lines, and prioritizes bridging disconnected regional networks (with a longer bridge span and reserve spend for merges). Core AI code lives under `src/ai/` and is unit-tested without SFML.
 
 ## Line editor
 
