@@ -1,6 +1,6 @@
 /*!
  *\file main_menu.h
- *\brief Start screen, settings, and new-game options.
+ *\brief Start screen, settings, about info, and new-game options.
  */
 
 #ifndef MAIN_MENU_H
@@ -47,7 +47,8 @@ namespace MiniDb
    enum class MenuPage : uint8_t
    {
       Root = 0,
-      Settings = 1
+      Settings = 1,
+      Info = 2
    };
 
    class MainMenu
@@ -64,7 +65,7 @@ namespace MiniDb
       void Initialize(sf::RenderWindow* pWindow, sf::Font* pFont);
 
       /*!
-       *\brief Draws the start menu or settings over the current default view.
+       *\brief Draws the start menu, settings, or info over the current default view.
        *
        *\param[in] hasActiveGame Whether Resume should be offered.
        *\param[in] catalogStationCount Cities available in the loaded catalog.
@@ -177,6 +178,7 @@ namespace MiniDb
          sf::FloatRect start;
          sf::FloatRect resume;
          sf::FloatRect settings;
+         sf::FloatRect info;
          sf::FloatRect quit;
       };
 
@@ -194,8 +196,17 @@ namespace MiniDb
          sf::FloatRect back;
       };
 
+      struct InfoBounds
+      {
+         sf::FloatRect panel;
+         sf::FloatRect profileUrl;
+         sf::FloatRect repositoryUrl;
+         sf::FloatRect back;
+      };
+
       RootBounds ComputeRootBounds(HasActiveGame hasActiveGame) const;
       SettingsBounds ComputeSettingsBounds(void) const;
+      InfoBounds ComputeInfoBounds(void) const;
       void CommitFocusedNumber(uint32_t catalogStationCount);
       void CancelFocusedNumberEdit(void);
       void CommitStationCount(uint32_t catalogStationCount);
@@ -214,14 +225,17 @@ namespace MiniDb
       bool ContainsPixel(const sf::FloatRect& bounds, sf::Vector2i pixel) const;
       void DrawRoot(HasActiveGame hasActiveGame, sf::Vector2i cursorPixel);
       void DrawSettings(uint32_t catalogStationCount, sf::Vector2i cursorPixel);
+      void DrawInfo(sf::Vector2i cursorPixel);
       MenuAction HandleRootClick(sf::Vector2i pixel, HasActiveGame hasActiveGame);
       MenuAction HandleSettingsClick(sf::Vector2i pixel, uint32_t catalogStationCount);
+      MenuAction HandleInfoClick(sf::Vector2i pixel);
       MenuAction HandleRootKeyPressed(
          const sf::Event::KeyPressed& keyPressed,
          HasActiveGame hasActiveGame);
       MenuAction HandleSettingsKeyPressed(
          const sf::Event::KeyPressed& keyPressed,
          uint32_t catalogStationCount);
+      MenuAction HandleInfoKeyPressed(const sf::Event::KeyPressed& keyPressed);
 
       sf::RenderWindow* _pWindow = nullptr;
       sf::Font* _pFont = nullptr;

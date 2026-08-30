@@ -12,4 +12,6 @@ This folder describes how the C++ code is structured and how the main systems wo
 | [Conventions](conventions.md) | Naming, headers, results, style used in this repo |
 | [Testing](testing.md) | Test targets and what each suite covers |
 
+Release history: [CHANGELOG.md](../CHANGELOG.md).
+
 `main.cpp` only constructs `Game`, initializes it from the executable path, and runs the loop. Core logic lives in `src/` under the namespace `MiniDb`.

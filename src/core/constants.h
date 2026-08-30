@@ -7,9 +7,17 @@
 #define CONSTANTS_H
 
 #include <cstdint>
+#include <string_view>
 
 namespace MiniDb
 {
+   inline constexpr std::string_view AppVersion = "1.0.0";
+   inline constexpr std::string_view AppReleaseDate = "30.08.2026";
+   inline constexpr std::string_view AppAuthorGithub = "ViezTrinker";
+   inline constexpr std::string_view AppGithubProfileUrl = "https://github.com/ViezTrinker";
+   inline constexpr std::string_view AppGithubRepositoryName = "MiniDB";
+   inline constexpr std::string_view AppGithubRepositoryUrl = "https://github.com/ViezTrinker/MiniDB";
+
    inline constexpr float GermanyLatMin = 47.270f;
    inline constexpr float GermanyLatMax = 55.058f;
    inline constexpr float GermanyLonMin = 5.866f;

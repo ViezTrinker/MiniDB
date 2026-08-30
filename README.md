@@ -1,91 +1,125 @@
 # MiniDB
 
-Real-time schematic railway game for Germany. Cities with at least 10,000 inhabitants appear on a Germany silhouette at their real coordinates. You draw lines between stations; trains shuttle in real time and passengers choose destinations with a gravity model (large cities attract more trips than small towns).
+**Build Germany’s railway network in real time.**
 
-This repository is the **core simulation MVP**: map, stations, line drawing, trains, passengers, and an economic layer (track and train costs, fare revenue, bankruptcy). Regional vs long-distance fare classes are not included yet.
+**Version 1.0.0** · 30.08.2026 · [ViezTrinker](https://github.com/ViezTrinker) · [Repository](https://github.com/ViezTrinker/MiniDB)
 
-Code structure and system behaviour are documented in [doc/](doc/README.md).
+Cities appear on a schematic map of Germany at their real coordinates. You draw lines, buy trains, and keep passengers moving — while track costs, maintenance, and platform patience try to ruin your day.
 
-## Build
+Inspired by the spirit of *Mini Metro*, but grounded in German geography and a gravity-based demand model: Berlin pulls more trips than a 12,000-person town.
 
-Requirements: CMake 3.24+, a C++20 compiler (MSVC on Windows), Git, and a network connection on the first configure (SFML, GoogleTest, and nlohmann/json are fetched automatically).
+See [CHANGELOG.md](CHANGELOG.md) for release notes.
 
-```text
+---
+
+## Features
+
+- **Real German cities** — places with 10,000+ inhabitants, matched to nearby stations (GeoNames-derived catalog)
+- **Live trains & passengers** — shuttles run in simulation time; passengers pick routes with expected waits and transfers
+- **Gravity destinations** — large cities attract more traffic; optional destination “events” spike demand
+- **Economic mode** — pay for track and trains, earn fares, manage maintenance (Sandbox available for free play)
+- **Lose conditions** — bankruptcy after sustained negative balance, or platforms that wait too long (patience)
+- **Play session logs** — JSONL dumps next to the executable for balance tuning
+
+Deep dives live under [`doc/`](doc/README.md).
+
+## Requirements
+
+| | |
+| --- | --- |
+| CMake | 3.24+ |
+| Compiler | C++20 (MSVC recommended on Windows) |
+| Other | Git; network on first configure (SFML, GoogleTest, nlohmann/json are fetched automatically) |
+
+## Build & run
+
+```bash
 cmake -S . -B build
 cmake --build build --config Release
 ```
 
 Run tests:
 
-```text
+```bash
 ctest --test-dir build -C Release --output-on-failure
 ```
 
-The game executable is `build/bin/Release/MiniDB.exe` on Windows (or `build/bin/MiniDB` on single-config generators). `data/` is copied next to the executable.
+| Generator | Executable |
+| --- | --- |
+| Multi-config (Visual Studio) | `build/bin/Release/MiniDB.exe` |
+| Single-config (Ninja, etc.) | `build/bin/MiniDB` / `MiniDB.exe` |
 
-The game opens on a start menu. Open **Settings** to choose the station cap (default 100), train capacity (default 160; passenger spawn scales with it), starting game speed, **Sandbox** (free play; off by default), **Never lose** (economic mode only; disables bankruptcy game over), optional random city pool, random spawn order, and destination events. Click number fields to type values. Settings apply when you press **Start**. Escape during play returns to the menu; Resume continues the current game.
+`data/` is copied next to the binary. Start the game, open **Settings**, then **Start**.
 
-## Economy (default mode)
+## How to play
 
-Money matters unless **Sandbox** is on in Settings:
+1. Cities unlock over time (faster in Sandbox).
+2. Click stations to draft a line → **Enter** / right-click to confirm (first train is included).
+3. Extend lines with terminus handles, insert stations by dragging a line onto a city, drop the train token to add capacity.
+4. Keep cash non-negative and platforms from overflowing — or enable **Never lose** / **Sandbox** in Settings.
 
-- Starting balance scales with train capacity (€500,000 at capacity 160).
-- New track is charged per unique station pair (shared segments are free after the first build).
-- New cities unlock every **45 simulation seconds** in economic mode (every 5 s in sandbox).
-- Passenger spawn rate rises by **1%** on each city unlock, and keeps rising on that same interval after the station cap.
-- New lines require enough cash for **new track plus the first train**.
-- Trains cost money to buy and maintain each simulation second.
-- Passengers pay fare by origin–destination beeline distance (transfers ignored).
-- Crowded platforms add extra dwell in economic mode (`population / 800`, minimum 1 waiting slot).
-- Purchases are blocked when you cannot afford them; maintenance and fares still run while negative.
-- Stay in the red for **5 minutes of real time** (pause freezes the timer) to lose, unless **Never lose** is enabled.
-- A passenger waiting on a platform (spawn or transfer) for **120 simulation seconds** also loses the run, but only after the first **10 simulation minutes** (earliest loss at 12 minutes). At **unconnected** stations the limit is **5 minutes**. Stations blink black/red in the last 30 seconds of that wait.
+**Escape** returns to the menu without wiping the run (**Resume** continues it).
 
-Play sessions in economic mode write JSONL logs to `logs/play_YYYYMMDD_HHMMSS.jsonl` next to the executable for balance tuning.
+### Controls (short)
 
-## Controls
+| Input | Action |
+| --- | --- |
+| Left-click station | Inspect / draft |
+| Enter / right-click | Confirm line |
+| Drag terminus / line | Extend / insert station |
+| Train token → line | Add a train |
+| Del | Delete selected line |
+| Ctrl+Z / Ctrl+Y | Undo / redo draft |
+| Space | Pause |
+| `1` `2` `4` `8` / bottom bar | Speed (up to 16×) |
+| Wheel / `+` `-` | Zoom |
+| Arrows / middle-drag | Pan |
+| F11 | Fullscreen |
+| `?` | In-game help |
 
-- Left-click a station to draft a line; the right panel shows waiting count vs capacity for that station
-- Click a train to inspect onboard passengers, destinations and transfers in that panel
-- Click a line segment (away from stations) to inspect its trains, occupancy, and destinations by passenger count
-- Click the first station of a draft again to close a loop (`A, B, C, A`)
-- Click empty map to return to the overview panel (top waiting destinations, busiest stations, and active events)
-- Enter or right-click to finish a line (one train is added automatically)
-- Select a line, then drag a terminus anchor (small handle past each end) onto a station to extend at the front or back
-- Drag a line onto a station to insert it between the two segment ends
-- Del deletes the selected line (or the line of an inspected train)
-- Ctrl+Z undoes the last station in a draft, Ctrl+Y restores it
-- Drag the train token (bottom left) onto an existing line to place a train at the drop point
-- Bottom-left bar: `<` / `>` change speed, Pause, Resume, and Menu
-- Unconnected stations are listed below the inspector on the right; click a name to inspect it
-- `?` opens a short help popup
-- Mouse wheel zooms (station markers stay a constant pixel size), middle-mouse drag pans
-- Arrow keys pan the map; `+` / `-` (and numpad) zoom in and out
-- Space pauses, `1` / `2` / `4` / `8` set simulation speed (default is 1x); bottom-bar `>` also reaches 16x
-- F11 toggles fullscreen
-- Esc cancels a draft, or returns to the start menu
+## Economy (default)
 
-## Passenger destinations
+Unless **Sandbox** is on:
 
-There is no public nationwide DB origin-destination matrix. Destinations are sampled from a gravity model using city population and map distance, so Berlin is a frequent target and a 12,000-inhabitant town is not. With **Events** enabled in Settings, a small share of active cities temporarily get a 10× destination weight (shown under Events in the overview sidebar). See [data/DATA_SOURCES.md](data/DATA_SOURCES.md).
+- Starting balance scales with train capacity (**€500,000** at capacity 160).
+- Unique track pairs cost to build; shared segments are free after the first build.
+- New lines must afford **track + first train**.
+- Trains have purchase and per-second maintenance costs; passengers pay fare by beeline distance.
+- Cities unlock every **45 sim seconds** in economic mode (every **5 s** in Sandbox); spawn pressure rises with unlocks.
+- Crowded platforms add dwell time.
 
-## Routing and boarding
+### Game over
 
-Passengers pick the fastest route in simulation time: riding time plus, whenever they board a line, the expected platform wait. That wait is half the line's headway (cycle time divided by the number of trains). A transfer also adds the station dwell. Routes are recomputed when lines or trains change.
+| Condition | Rule |
+| --- | --- |
+| Bankruptcy | Balance stays negative for **5 minutes of real time** (pause freezes the timer) |
+| Platform patience | After **10 sim minutes** of grace: **120 s** wait on a connected platform, or **300 s** if the station is still unconnected |
 
-At a station they board the first train whose next stop is their next hop and still has space, even if that train is on a different line that shares the same segment. If the train is full, earlier arrivals on that platform board first (the time they spawned or got off to transfer), not spawn order across the whole map.
+**Never lose** keeps economy numbers running but disables both lose conditions.
 
-## Regenerating station data
+Economic sessions write `logs/play_YYYYMMDD_HHMMSS.jsonl` beside the executable.
 
-```text
+## Tech
+
+- **C++20** simulation core (`MiniDbCore`) + SFML 3 UI
+- Headless-friendly world APIs and GoogleTest coverage
+- Station catalog + Germany outline as static JSON/GeoJSON ([`data/DATA_SOURCES.md`](data/DATA_SOURCES.md))
+
+Regenerate station data (optional):
+
+```bash
 python tools/generate_station_data.py
 ```
 
-This downloads GeoNames and the Germany outline, matches cities to railway stations, and overwrites `data/stations.json` and `data/germany.geojson`.
+## Not in this build
 
-## What this MVP does not include
+- Regional vs long-distance train classes or fares
+- Multiple stations per city
+- Real railway geometry / timetable speeds
+- Spectator AI (experimental work lives on other branches)
 
-- Money, ticket prices, maintenance, unprofitable lines
-- Regional vs long-distance trains
-- Multiple stations in one city
-- The real railway geometry or timetable speeds
+## License & data
+
+No project license file is published in this repository yet — clarify that before redistributing binaries.
+
+Station and outline data attributions are listed in [`data/DATA_SOURCES.md`](data/DATA_SOURCES.md) (GeoNames CC BY 4.0, Germany outline via isellsoap/deutschlandGeoJSON / BKG-derived data).

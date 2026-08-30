@@ -30,7 +30,10 @@ Escape during play: cancel line or anchor drag, then cancel a draft, otherwise r
   - **Events**: timed destination boosts during play.
   - **Sandbox**: no money, no station cap, no platform crowding penalty, no play log.
   - **Never lose**: economic costs and revenue still apply, but bankruptcy and platform-patience game over are disabled (hidden when Sandbox is on).
+- **Info** shows version (`AppVersion`), release date, GitHub profile, and repository URLs from [`constants.h`](../src/core/constants.h). Clicking a URL opens it in the default browser.
 - All Settings values apply only on **Start**.
+
+The root panel also shows `v{version} · {date}` under the subtitle.
 
 Economic play sessions append JSONL lines under `logs/` next to the executable (`play_YYYYMMDD_HHMMSS.jsonl`). Sandbox skips detailed logging.
 

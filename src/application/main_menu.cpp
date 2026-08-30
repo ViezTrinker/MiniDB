@@ -1,6 +1,6 @@
 /*!
  *\file main_menu.cpp
- *\brief Start screen, settings, and new-game options.
+ *\brief Start screen, settings, about info, and new-game options.
  */
 
 #include "application/main_menu.h"
@@ -8,6 +8,14 @@
 #include <sstream>
 #include <string>
 #include <string_view>
+
+#ifdef _WIN32
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+#include <shellapi.h>
+#endif
 
 #include "core/constants.h"
 #include "rendering/utf8_text.h"
@@ -17,10 +25,12 @@ namespace MiniDb
    namespace
    {
       constexpr float MenuPanelWidth = 440.0f;
+      constexpr float MenuInfoPanelWidth = 520.0f;
       constexpr float MenuPanelPaddingBottom = 28.0f;
       constexpr float MenuTitleTop = 24.0f;
       constexpr float MenuSubtitleTop = 78.0f;
-      constexpr float MenuRootFirstButtonTop = 130.0f;
+      constexpr float MenuVersionTop = 102.0f;
+      constexpr float MenuRootFirstButtonTop = 140.0f;
       constexpr float MenuSettingsTitleTop = 20.0f;
       constexpr float MenuStationsLabelTop = 58.0f;
       constexpr float MenuStepperTop = 86.0f;
@@ -32,6 +42,10 @@ namespace MiniDb
       constexpr float MenuToggleFirstTop = 310.0f;
       constexpr float MenuToggleGap = 10.0f;
       constexpr float MenuBackTopExtra = 12.0f;
+      constexpr float MenuInfoTitleTop = 22.0f;
+      constexpr float MenuInfoFirstLineTop = 70.0f;
+      constexpr float MenuInfoLineGap = 22.0f;
+      constexpr float MenuInfoSectionGap = 14.0f;
       constexpr float MenuButtonWidth = 280.0f;
       constexpr float MenuButtonHeight = 44.0f;
       constexpr float MenuButtonGap = 12.0f;
@@ -39,6 +53,7 @@ namespace MiniDb
       constexpr float MenuValueWidth = 148.0f;
       constexpr uint32_t MenuNumberFieldMaxDigits = 5;
       constexpr uint32_t MenuSettingsToggleCount = 5;
+      constexpr uint32_t MenuInfoContentLineCount = 8;
 
       enum class ButtonHover : bool
       {
@@ -120,6 +135,36 @@ namespace MiniDb
             top
          });
          window.draw(label);
+      }
+
+      sf::FloatRect MeasureCenteredTextBounds(
+         sf::Font& font,
+         std::string_view text,
+         float centerX,
+         float top,
+         unsigned int characterSize)
+      {
+         sf::Text label(font, Utf8SfString(text), characterSize);
+         const sf::FloatRect localBounds = label.getLocalBounds();
+         const float left = centerX - (localBounds.size.x * 0.5f) - localBounds.position.x;
+         return sf::FloatRect(
+            {left + localBounds.position.x, top + localBounds.position.y},
+            {localBounds.size.x, localBounds.size.y});
+      }
+
+      void OpenUrlInBrowser(std::string_view url)
+      {
+         if (url.empty())
+         {
+            return;
+         }
+
+#ifdef _WIN32
+         const std::string urlString(url);
+         ShellExecuteA(nullptr, "open", urlString.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
+#else
+         (void)url;
+#endif
       }
 
       void DrawPanelButton(
@@ -221,10 +266,10 @@ namespace MiniDb
 
       const auto windowWidth = static_cast<float>(_pWindow->getSize().x);
       const auto windowHeight = static_cast<float>(_pWindow->getSize().y);
-      uint32_t actionButtonCount = 3;
+      uint32_t actionButtonCount = 4;
       if (hasActiveGame == HasActiveGame::Yes)
       {
-         actionButtonCount = 4;
+         actionButtonCount = 5;
       }
 
       const float actionBlockHeight =
@@ -245,6 +290,8 @@ namespace MiniDb
          actionTop += MenuButtonHeight + MenuButtonGap;
       }
       bounds.settings = sf::FloatRect({buttonLeft, actionTop}, {MenuButtonWidth, MenuButtonHeight});
+      actionTop += MenuButtonHeight + MenuButtonGap;
+      bounds.info = sf::FloatRect({buttonLeft, actionTop}, {MenuButtonWidth, MenuButtonHeight});
       actionTop += MenuButtonHeight + MenuButtonGap;
       bounds.quit = sf::FloatRect({buttonLeft, actionTop}, {MenuButtonWidth, MenuButtonHeight});
       return bounds;
@@ -294,6 +341,73 @@ namespace MiniDb
       bounds.events = sf::FloatRect({buttonLeft, toggleTop}, {MenuButtonWidth, MenuButtonHeight});
       toggleTop += MenuButtonHeight + MenuBackTopExtra;
       bounds.back = sf::FloatRect({buttonLeft, toggleTop}, {MenuButtonWidth, MenuButtonHeight});
+      return bounds;
+   }
+
+   MainMenu::InfoBounds MainMenu::ComputeInfoBounds(void) const
+   {
+      InfoBounds bounds;
+      if (_pWindow == nullptr)
+      {
+         return bounds;
+      }
+
+      const auto windowWidth = static_cast<float>(_pWindow->getSize().x);
+      const auto windowHeight = static_cast<float>(_pWindow->getSize().y);
+      const float contentHeight =
+         (static_cast<float>(MenuInfoContentLineCount) * MenuInfoLineGap) +
+         (MenuInfoSectionGap * 2.0f);
+      const float panelHeight =
+         MenuInfoFirstLineTop + contentHeight + MenuBackTopExtra + MenuButtonHeight +
+         MenuPanelPaddingBottom;
+      const float panelLeft = (windowWidth - MenuInfoPanelWidth) * 0.5f;
+      const float panelTop = (windowHeight - panelHeight) * 0.5f;
+      bounds.panel = sf::FloatRect({panelLeft, panelTop}, {MenuInfoPanelWidth, panelHeight});
+
+      const float centerX = panelLeft + (MenuInfoPanelWidth * 0.5f);
+      float lineTop = panelTop + MenuInfoFirstLineTop;
+      lineTop += MenuInfoLineGap;
+      lineTop += MenuInfoLineGap + MenuInfoSectionGap;
+      lineTop += MenuInfoLineGap;
+      lineTop += MenuInfoLineGap;
+      if (_pFont != nullptr)
+      {
+         bounds.profileUrl = MeasureCenteredTextBounds(
+            *_pFont,
+            AppGithubProfileUrl,
+            centerX,
+            lineTop,
+            13);
+         constexpr float LinkHitPaddingX = 6.0f;
+         constexpr float LinkHitPaddingY = 4.0f;
+         bounds.profileUrl.position.x -= LinkHitPaddingX;
+         bounds.profileUrl.position.y -= LinkHitPaddingY;
+         bounds.profileUrl.size.x += LinkHitPaddingX * 2.0f;
+         bounds.profileUrl.size.y += LinkHitPaddingY * 2.0f;
+      }
+      lineTop += MenuInfoLineGap + MenuInfoSectionGap;
+      lineTop += MenuInfoLineGap;
+      lineTop += MenuInfoLineGap;
+      if (_pFont != nullptr)
+      {
+         bounds.repositoryUrl = MeasureCenteredTextBounds(
+            *_pFont,
+            AppGithubRepositoryUrl,
+            centerX,
+            lineTop,
+            13);
+         constexpr float LinkHitPaddingX = 6.0f;
+         constexpr float LinkHitPaddingY = 4.0f;
+         bounds.repositoryUrl.position.x -= LinkHitPaddingX;
+         bounds.repositoryUrl.position.y -= LinkHitPaddingY;
+         bounds.repositoryUrl.size.x += LinkHitPaddingX * 2.0f;
+         bounds.repositoryUrl.size.y += LinkHitPaddingY * 2.0f;
+      }
+
+      const float buttonLeft = panelLeft + ((MenuInfoPanelWidth - MenuButtonWidth) * 0.5f);
+      const float backTop =
+         panelTop + MenuInfoFirstLineTop + contentHeight + MenuBackTopExtra;
+      bounds.back = sf::FloatRect({buttonLeft, backTop}, {MenuButtonWidth, MenuButtonHeight});
       return bounds;
    }
 
@@ -597,6 +711,16 @@ namespace MiniDb
          panelTop + MenuSubtitleTop,
          16,
          sf::Color(80, 75, 70));
+      std::ostringstream versionStream;
+      versionStream << "v" << AppVersion << "  ·  " << AppReleaseDate;
+      DrawCenteredText(
+         *_pWindow,
+         *_pFont,
+         versionStream.str(),
+         centerX,
+         panelTop + MenuVersionTop,
+         14,
+         sf::Color(100, 95, 90));
 
       ButtonHover startHover = ButtonHover::No;
       if (ContainsPixel(bounds.start, cursorPixel))
@@ -621,6 +745,13 @@ namespace MiniDb
          settingsHover = ButtonHover::Yes;
       }
       DrawPanelButton(*_pWindow, *_pFont, bounds.settings, "Settings", settingsHover);
+
+      ButtonHover infoHover = ButtonHover::No;
+      if (ContainsPixel(bounds.info, cursorPixel))
+      {
+         infoHover = ButtonHover::Yes;
+      }
+      DrawPanelButton(*_pWindow, *_pFont, bounds.info, "Info", infoHover);
 
       ButtonHover quitHover = ButtonHover::No;
       if (ContainsPixel(bounds.quit, cursorPixel))
@@ -779,6 +910,129 @@ namespace MiniDb
       DrawPanelButton(*_pWindow, *_pFont, bounds.back, "Back", backHover);
    }
 
+   void MainMenu::DrawInfo(sf::Vector2i cursorPixel)
+   {
+      const InfoBounds bounds = ComputeInfoBounds();
+      sf::RectangleShape panel(bounds.panel.size);
+      panel.setPosition(bounds.panel.position);
+      panel.setFillColor(sf::Color(255, 252, 245, 235));
+      panel.setOutlineColor(sf::Color(120, 110, 100));
+      panel.setOutlineThickness(1.0f);
+      _pWindow->draw(panel);
+
+      const float centerX = bounds.panel.position.x + (bounds.panel.size.x * 0.5f);
+      const float panelTop = bounds.panel.position.y;
+      DrawCenteredText(
+         *_pWindow,
+         *_pFont,
+         "Info",
+         centerX,
+         panelTop + MenuInfoTitleTop,
+         28,
+         sf::Color(35, 35, 35));
+
+      float lineTop = panelTop + MenuInfoFirstLineTop;
+      std::ostringstream versionStream;
+      versionStream << "Version  " << AppVersion;
+      DrawCenteredText(
+         *_pWindow,
+         *_pFont,
+         versionStream.str(),
+         centerX,
+         lineTop,
+         16,
+         sf::Color(35, 35, 35));
+      lineTop += MenuInfoLineGap;
+
+      std::ostringstream dateStream;
+      dateStream << "Date  " << AppReleaseDate;
+      DrawCenteredText(
+         *_pWindow,
+         *_pFont,
+         dateStream.str(),
+         centerX,
+         lineTop,
+         16,
+         sf::Color(35, 35, 35));
+      lineTop += MenuInfoLineGap + MenuInfoSectionGap;
+
+      DrawCenteredText(
+         *_pWindow,
+         *_pFont,
+         "GitHub profile",
+         centerX,
+         lineTop,
+         14,
+         sf::Color(90, 85, 80));
+      lineTop += MenuInfoLineGap;
+      DrawCenteredText(
+         *_pWindow,
+         *_pFont,
+         AppAuthorGithub,
+         centerX,
+         lineTop,
+         16,
+         sf::Color(35, 35, 35));
+      lineTop += MenuInfoLineGap;
+
+      const bool profileHover = ContainsPixel(bounds.profileUrl, cursorPixel);
+      sf::Color profileLinkColor = sf::Color(40, 80, 140);
+      if (profileHover)
+      {
+         profileLinkColor = sf::Color(20, 110, 200);
+      }
+      DrawCenteredText(
+         *_pWindow,
+         *_pFont,
+         AppGithubProfileUrl,
+         centerX,
+         lineTop,
+         13,
+         profileLinkColor);
+      lineTop += MenuInfoLineGap + MenuInfoSectionGap;
+
+      DrawCenteredText(
+         *_pWindow,
+         *_pFont,
+         "Repository",
+         centerX,
+         lineTop,
+         14,
+         sf::Color(90, 85, 80));
+      lineTop += MenuInfoLineGap;
+      DrawCenteredText(
+         *_pWindow,
+         *_pFont,
+         AppGithubRepositoryName,
+         centerX,
+         lineTop,
+         16,
+         sf::Color(35, 35, 35));
+      lineTop += MenuInfoLineGap;
+
+      const bool repositoryHover = ContainsPixel(bounds.repositoryUrl, cursorPixel);
+      sf::Color repositoryLinkColor = sf::Color(40, 80, 140);
+      if (repositoryHover)
+      {
+         repositoryLinkColor = sf::Color(20, 110, 200);
+      }
+      DrawCenteredText(
+         *_pWindow,
+         *_pFont,
+         AppGithubRepositoryUrl,
+         centerX,
+         lineTop,
+         13,
+         repositoryLinkColor);
+
+      ButtonHover backHover = ButtonHover::No;
+      if (ContainsPixel(bounds.back, cursorPixel))
+      {
+         backHover = ButtonHover::Yes;
+      }
+      DrawPanelButton(*_pWindow, *_pFont, bounds.back, "Back", backHover);
+   }
+
    void MainMenu::Draw(HasActiveGame hasActiveGame, uint32_t catalogStationCount, sf::Vector2i cursorPixel)
    {
       if (_pWindow == nullptr || _pFont == nullptr)
@@ -789,6 +1043,11 @@ namespace MiniDb
       if (_page == MenuPage::Settings)
       {
          DrawSettings(catalogStationCount, cursorPixel);
+         return;
+      }
+      if (_page == MenuPage::Info)
+      {
+         DrawInfo(cursorPixel);
          return;
       }
 
@@ -809,6 +1068,11 @@ namespace MiniDb
       if (ContainsPixel(bounds.settings, pixel))
       {
          _page = MenuPage::Settings;
+         return MenuAction::None;
+      }
+      if (ContainsPixel(bounds.info, pixel))
+      {
+         _page = MenuPage::Info;
          return MenuAction::None;
       }
       if (ContainsPixel(bounds.quit, pixel))
@@ -905,6 +1169,28 @@ namespace MiniDb
       return MenuAction::None;
    }
 
+   MenuAction MainMenu::HandleInfoClick(sf::Vector2i pixel)
+   {
+      const InfoBounds bounds = ComputeInfoBounds();
+      if (ContainsPixel(bounds.profileUrl, pixel))
+      {
+         OpenUrlInBrowser(AppGithubProfileUrl);
+         return MenuAction::None;
+      }
+      if (ContainsPixel(bounds.repositoryUrl, pixel))
+      {
+         OpenUrlInBrowser(AppGithubRepositoryUrl);
+         return MenuAction::None;
+      }
+      if (ContainsPixel(bounds.back, pixel))
+      {
+         ShowRootPage();
+         return MenuAction::None;
+      }
+
+      return MenuAction::None;
+   }
+
    MenuAction MainMenu::HandleClick(
       sf::Vector2i pixel,
       HasActiveGame hasActiveGame,
@@ -913,6 +1199,10 @@ namespace MiniDb
       if (_page == MenuPage::Settings)
       {
          return HandleSettingsClick(pixel, catalogStationCount);
+      }
+      if (_page == MenuPage::Info)
+      {
+         return HandleInfoClick(pixel);
       }
 
       return HandleRootClick(pixel, hasActiveGame);
@@ -984,6 +1274,17 @@ namespace MiniDb
       return MenuAction::None;
    }
 
+   MenuAction MainMenu::HandleInfoKeyPressed(const sf::Event::KeyPressed& keyPressed)
+   {
+      if (keyPressed.code == sf::Keyboard::Key::Escape)
+      {
+         ShowRootPage();
+         return MenuAction::None;
+      }
+
+      return MenuAction::None;
+   }
+
    MenuAction MainMenu::HandleKeyPressed(
       const sf::Event::KeyPressed& keyPressed,
       HasActiveGame hasActiveGame,
@@ -992,6 +1293,10 @@ namespace MiniDb
       if (_page == MenuPage::Settings)
       {
          return HandleSettingsKeyPressed(keyPressed, catalogStationCount);
+      }
+      if (_page == MenuPage::Info)
+      {
+         return HandleInfoKeyPressed(keyPressed);
       }
 
       return HandleRootKeyPressed(keyPressed, hasActiveGame);
