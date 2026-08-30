@@ -4,6 +4,8 @@
 
 **Version 1.0.0** · 30.08.2026 · [ViezTrinker](https://github.com/ViezTrinker) · [Repository](https://github.com/ViezTrinker/MiniDB)
 
+![MiniDB gameplay screenshot](media/MiniDB.png)
+
 Cities appear on a schematic map of Germany at their real coordinates. You draw lines, buy trains, and keep passengers moving — while track costs, maintenance, and platform patience try to ruin your day.
 
 Inspired by the spirit of *Mini Metro*, but grounded in German geography and a gravity-based demand model: Berlin pulls more trips than a 12,000-person town.
@@ -93,7 +95,7 @@ Unless **Sandbox** is on:
 | Condition | Rule |
 | --- | --- |
 | Bankruptcy | Balance stays negative for **5 minutes of real time** (pause freezes the timer) |
-| Platform patience | After **10 sim minutes** of grace: **120 s** wait on a connected platform, or **300 s** if the station is still unconnected |
+| Platform patience | After **20 sim minutes** of grace: **360 s** wait on a connected platform, or **900 s** if the station is still unconnected |
 
 **Never lose** keeps economy numbers running but disables both lose conditions.
 

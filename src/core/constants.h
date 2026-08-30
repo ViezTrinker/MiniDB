@@ -108,11 +108,11 @@ namespace MiniDb
    inline constexpr float StationCrowdingDwellSeconds = 4.0f;
    inline constexpr float NegativeBalanceGameOverRealSeconds = 300.0f;
    inline constexpr float BankruptcyHudWarningSeconds = 60.0f;
-   inline constexpr float MaxPassengerPlatformWaitSeconds = 120.0f;
-   inline constexpr float PassengerPlatformWaitWarningSeconds = 90.0f;
-   inline constexpr float MaxUnconnectedPassengerPlatformWaitSeconds = 300.0f;
-   inline constexpr float UnconnectedPassengerPlatformWaitWarningSeconds = 270.0f;
-   inline constexpr float PlatformPatienceGraceSeconds = 600.0f;
+   inline constexpr float MaxPassengerPlatformWaitSeconds = 360.0f;
+   inline constexpr float PassengerPlatformWaitWarningSeconds = 330.0f;
+   inline constexpr float MaxUnconnectedPassengerPlatformWaitSeconds = 900.0f;
+   inline constexpr float UnconnectedPassengerPlatformWaitWarningSeconds = 870.0f;
+   inline constexpr float PlatformPatienceGraceSeconds = 1200.0f;
    inline constexpr float PlatformWaitBlinkPeriodSeconds = 0.4f;
    inline constexpr float PlatformWaitWarningLeadSeconds = 30.0f;
    inline constexpr float PlaySessionSnapshotRealSeconds = 10.0f;
